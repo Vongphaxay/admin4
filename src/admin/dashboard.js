@@ -24,7 +24,7 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ' , path: '/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
     { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ' , path: '/petbathing'},
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ' , path: '/bathpet'},
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ' },
 ];
