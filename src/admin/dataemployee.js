@@ -80,7 +80,7 @@ const menuItems = [
     { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding'},
     { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet'},
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar'},
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ'},
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet'},
 ];
 
 const EmployeeManagement = () => {

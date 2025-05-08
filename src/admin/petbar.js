@@ -35,7 +35,7 @@ const menuItems = [
     { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding'},
     { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar', active: true },
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ' },
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ' , path: '/treatpet'},
 ];
 
 const PetBar = () => {
@@ -377,7 +377,7 @@ const PetBar = () => {
                     <Box sx={{ mb: 4 }}>
                         <Typography variant="h4" fontWeight="bold" color="primary">
                             <Hotel sx={{ mr: 1, verticalAlign: 'middle' }} />
-                            ຝາກສັດລ້ຽງ
+                            ຕັດຂົນສັດລ້ຽງ
                         </Typography>
                     </Box>
 
