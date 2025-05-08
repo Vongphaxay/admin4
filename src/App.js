@@ -12,7 +12,11 @@ import {
   IconButton,
   Fade,
   Grid,
-  Divider
+  Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import Dashboard from './admin/dashboard';
@@ -23,12 +27,13 @@ import PetBoarding from './admin/petboard';
 import BathPet from './admin/bathpet';
 import PetBar from './admin/petbar';
 import TreatPet from './admin/treatpet';
-import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets } from '@mui/icons-material';
+import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
 
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('admin'); // Changed from empty string to 'admin' as default
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -162,35 +167,70 @@ const AdminLogin = () => {
 
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField
-                  label="ຊື່ຜູ້ໃຊ້"
-                  variant="outlined"
-                  fullWidth
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Person sx={{ color: '#5c2c1d' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '12px',
-                      '& fieldset': {
-                        borderColor: '#ddd',
+                <Box display="flex" alignItems="flex-start" gap={2}>
+                  <TextField
+                    label="ຊື່ຜູ້ໃຊ້"
+                    variant="outlined"
+                    fullWidth
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Person sx={{ color: '#5c2c1d' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        '& fieldset': {
+                          borderColor: '#ddd',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#5c2c1d',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#5c2c1d',
+                        },
                       },
-                      '&:hover fieldset': {
-                        borderColor: '#5c2c1d',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#5c2c1d',
-                      },
-                    },
-                  }}
-                />
+                    }}
+                  />
+                  
+                  <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel id="role-select-label">ປະເພດຜູ້ໃຊ້</InputLabel>
+                    <Select
+                      labelId="role-select-label"
+                      id="role-select"
+                      value={role}
+                      label="ປະເພດຜູ້ໃຊ້"
+                      onChange={(e) => setRole(e.target.value)}
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <WorkOutline sx={{ color: '#5c2c1d' }} />
+                        </InputAdornment>
+                      }
+                      sx={{
+                        borderRadius: '12px',
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#ddd',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#5c2c1d',
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#5c2c1d',
+                        },
+                      }}
+                    >
+                      <MenuItem value="admin"> ແອັດມິນ</MenuItem>
+                      <MenuItem value="doctor"> ທ່ານໝໍ</MenuItem>
+                      <MenuItem value="groomer"> ຊ່າງຕັດຂົນສັດ</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
               </Grid>
+              
               <Grid item xs={12}>
                 <TextField
                   label="ລະຫັດຜ່ານ"
@@ -233,6 +273,7 @@ const AdminLogin = () => {
                   }}
                 />
               </Grid>
+              
               <Grid item xs={12}>
                 <Button
                   variant="contained"
