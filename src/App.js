@@ -21,6 +21,7 @@ import EmployeeManagement from './admin/dataemployee';
 import CustomerManagement from './admin/datacustomer';
 import PetBoarding from './admin/petboard';
 import BathPet from './admin/bathpet';
+import PetBar from './admin/petbar';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets } from '@mui/icons-material';
 
 
@@ -281,6 +282,7 @@ const App = () => {
         <Route path="/datacustomer" element={<CustomerManagement />} />
         <Route path="/petboarding" element={<PetBoarding />} />
         <Route path="/bathpet" element={<BathPet />} />
+        <Route path="/petbar" element={<PetBar />} />
       </Routes>
     </Router>
   );
