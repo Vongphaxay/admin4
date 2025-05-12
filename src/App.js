@@ -36,7 +36,7 @@ import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, Work
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('admin');
+  const [role, setRole] = useState('owner');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,12 +56,18 @@ const AdminLogin = () => {
     setTimeout(() => {
       setLoading(false);
       
-      if (role === 'admin') {
+      if (role === 'owner') {
+        navigate('/dashboard'); // Redirect owner to dashboard
+      } else if (role === 'admin') {
         navigate('/dashboard');
       } else if (role === 'doctor') {
         navigate('/doctor/treatpet');
       } else if (role === 'groomer') {
-        navigate('/petbar'); // Redirect groomers to pet grooming page
+        // Fixed the error: Changed the comma to semicolon and added braces for the if block
+        navigate('/groomer/bathpet');
+      } else if (role === 'groomer') {
+        // Fixed the error: Changed the comma to semicolon and added braces for the if block
+        navigate('/groomer/petbar');
       }
     }, 800);
   };
@@ -240,6 +246,7 @@ const AdminLogin = () => {
                         },
                       }}
                     >
+                      <MenuItem value="owner"> ເຈົ້າຂອງຄລີນິກ</MenuItem>
                       <MenuItem value="admin"> ແອັດມິນ</MenuItem>
                       <MenuItem value="doctor"> ທ່ານໝໍ</MenuItem>
                       <MenuItem value="groomer"> ຊ່າງຕັດຂົນສັດ</MenuItem>

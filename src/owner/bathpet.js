@@ -1,22 +1,76 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider,
-    IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText,
-    Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent,
-    DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead,
-    TableRow, TextField, MenuItem, Select, InputLabel, FormControl,
-    useTheme, styled, Container, Card, CardContent, Chip
+    Box,
+    CssBaseline,
+    Drawer,
+    AppBar,
+    Toolbar,
+    List,
+    Typography,
+    Divider,
+    IconButton,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Paper,
+    Grid,
+    Button,
+    Avatar,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    MenuItem,
+    Select,
+    InputLabel,
+    FormControl,
+    useTheme,
+    styled,
+    Container,
+    Card,
+    CardContent,
+    Chip
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth,
-    Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications,
-    Close, Logout, Phone, Search, Info, PetsOutlined, MedicalServices,
-    LocalHospital, CalendarToday, AttachMoney, Assignment, EventNote
+    Edit,
+    Delete,
+    AddCircle,
+    Home,
+    Person,
+    People,
+    CalendarMonth,
+    Pets,
+    Bathtub, 
+    ContentCut,
+    Vaccines,
+    Menu,
+    ChevronRight,
+    Notifications,
+    Close,
+    Logout,
+    Phone,
+    Email,
+    Search,
+    DateRange,
+    AccessTime,
+    Info,
+    EventNote,
+    PetsOutlined,
+    Soap,
+    Shower,
+    CheckCircle
 } from '@mui/icons-material';
-import { Description } from '@mui/icons-material';
 
-// ກຳນົດ container ສຳລັບ logo
+// Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -25,15 +79,22 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
-// ກຳນົດຄວາມກວ້າງຂອງ drawer
+// Define the drawer width
 const drawerWidth = 240;
 
-// ລາຍການເມນູ
+// Menu items
 const menuItems = [
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/doctor/treatpet', active: true },
+    { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard' },
+    { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
+    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
+    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet'},
 ];
 
-const TreatPet = () => {
+const BathPet = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -42,161 +103,175 @@ const TreatPet = () => {
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [treatmentData, setTreatmentData] = useState([
+    const [bathData, setBathData] = useState([
         { 
             id: 1, 
-            petName: 'ນ້ອຍໂຕ້', 
+            petName: 'ດາວດາຍ', 
             petType: 'ໝາ', 
-            breed: 'ພັນລາບລາດໍ', 
-            weight: '15.2',
-            ownerName: 'ທ. ສົມຈິດ ພູເງິນ', 
-            phone: '020 1234 5678',
-            treatmentDate: '2025-05-05', 
-            nextAppointment: '2025-05-20', 
-            status: 'Completed',
-            diagnosis: 'ອາການເປັນໄຂ້, ບໍ່ກິນອາຫານ',
-            treatment: 'ຢາປະຕິຊີວະນະ, ຢາລົດໄຂ້',
-            symptoms: 'ເປັນໄຂ້, ບໍ່ກິນອາຫານມື້ວານ, ອິດເມື່ອຍ',
-            vetName: 'ດຣ. ສຸກສະຫວັນ',
-            price: '350000',
-            notes: 'ໃຫ້ຢາ 2 ຄັ້ງຕໍ່ມື້ ເປັນເວລາ 7 ວັນ'
+            breed: 'ພັນຈັງເຊຍ', 
+            weight: '12.5',
+            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ', 
+            phone: '020 7654 3210',
+            bathDate: '2025-05-08', 
+            timeSlot: '9:00 - 10:30',
+            status: 'Pending',
+            notes: 'ໃຊ້ແຊມພູພິເສດສຳລັບຜິວແພ້ງ່າຍ.',
+            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ, ຕັດເລັບ',
+            staffAssigned: 'ນ. ສະໝອນໃຈ',
+            price: '150000'
         },
         { 
             id: 2, 
-            petName: 'ມິກກີ້', 
+            petName: 'ແມວມີ່', 
             petType: 'ແມວ', 
-            breed: 'ພັນເປີຊຽນ', 
-            weight: '3.5',
-            ownerName: 'ນ. ນິດຕະຍາ ແກ້ວມະນີ', 
+            breed: 'ພັນແມວໄທ', 
+            weight: '4.2',
+            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ', 
             phone: '020 8765 4321',
-            treatmentDate: '2025-05-07', 
-            nextAppointment: '2025-05-14', 
+            bathDate: '2025-05-08', 
+            timeSlot: '10:30 - 12:00',
             status: 'InProgress',
-            diagnosis: 'ຄາງແຂງ, ບາດແຜທີ່ຂາ',
-            treatment: 'ລ້າງບາດແຜ, ຢາຕ້ານອັກເສບ, ຢາແກ້ປວດ',
-            symptoms: 'ກິນອາຫານບໍ່ໄດ້, ມີບາດແຜຢູ່ຂາຫຼັງ',
-            vetName: 'ດຣ. ພົງສະຫວັນ',
-            price: '280000',
-            notes: 'ນັດຕິດຕາມອາການອີກ 7 ວັນ'
+            notes: 'ຫຼີກລ້ຽງບໍລິເວນຫູ ເນື່ອງຈາກມີການຕິດເຊື້ອ.',
+            services: 'ອາບນ້ຳມາດຕະຖານ, ແປງຂົນ',
+            staffAssigned: 'ທ. ສຸລິຍາ',
+            price: '120000'
         },
         { 
             id: 3, 
-            petName: 'ເຈຄ', 
+            petName: 'ໂຕໂຕ້', 
             petType: 'ໝາ', 
-            breed: 'ພັນຊິບາ', 
-            weight: '12.0',
-            ownerName: 'ທ. ສີສະຫວາດ ຈັນທະລາ', 
-            phone: '020 5678 9012',
-            treatmentDate: '2025-05-01', 
-            nextAppointment: '2025-06-01', 
+            breed: 'ພັນຈີນິກເຊີ', 
+            weight: '3.8',
+            ownerName: 'ທ. ປະເສີດ ດວງຈັນ', 
+            phone: '020 9876 5432',
+            bathDate: '2025-05-07', 
+            timeSlot: '14:00 - 15:30',
             status: 'Completed',
-            diagnosis: 'ການສັກວັກຊີນປະຈຳປີ',
-            treatment: 'ສັກວັກຊີນພິດສຸນັກບ້າ, ວັກຊີນໄຂ້ຫວັດໝາ',
-            symptoms: 'ກວດສຸຂະພາບປະຈຳປີ, ບໍ່ມີອາການຜິດປົກກະຕິ',
-            vetName: 'ດຣ. ພົງສະຫວັນ',
-            price: '420000',
-            notes: 'ນັດສັກວັກຊີນຄັ້ງຕໍ່ໄປໃນອີກ 1 ເດືອນ'
+            notes: 'ແມງຕະນູໜ້ອຍ, ໃຊ້ຜະລິດຕະພັນກຳຈັດແມງຕະນູ.',
+            services: 'ອາບນ້ຳພິເສດ, ເປົ່າຂົນ, ຕັດເລັບ, ລ້າງຫູ',
+            staffAssigned: 'ນ. ສະໝອນໃຈ',
+            price: '180000'
         },
         { 
             id: 4, 
-            petName: 'ລີລີ່', 
+            petName: 'ໝີເຊີ', 
             petType: 'ໝາ', 
             breed: 'ພັນພູເດີ້ນ', 
-            weight: '18.3',
-            ownerName: 'ນ. ມະນີລາ ສຸວັນນະສອນ', 
-            phone: '020 3456 7890',
-            treatmentDate: '2025-05-08', 
-            nextAppointment: '2025-05-10', 
-            status: 'Critical',
-            diagnosis: 'ອາການເຈັບທ້ອງຮຸນແຮງ, ສົງໄສການກິນສິ່ງແປກປອມ',
-            treatment: 'ການໃຫ້ນ້ຳເກືອ, ຢາຕ້ານອັກເສບ, ການກວດ X-ray',
-            symptoms: 'ຮາກ, ທ້ອງເສຍ, ບໍ່ກິນອາຫານ 2 ມື້, ປວດທ້ອງ',
-            vetName: 'ດຣ. ສຸກສະຫວັນ',
-            price: '650000',
-            notes: 'ຕ້ອງເຝົ້າຕິດຕາມອາການຢ່າງໃກ້ຊິດ, ອາດຈຳເປັນຕ້ອງຜ່າຕັດ'
+            weight: '22.0',
+            ownerName: 'ນ. ມະນີຈັນ ແສງສະຫວ່າງ', 
+            phone: '020 5566 7788',
+            bathDate: '2025-05-08', 
+            timeSlot: '13:00 - 14:30',
+            status: 'Canceled',
+            notes: 'ລູກຄ້າຍົກເລີກເນື່ອງຈາກເຈັບປ່ວຍ.',
+            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ',
+            staffAssigned: '-',
+            price: '150000'
         },
     ]);
-    const [currentTreatment, setCurrentTreatment] = useState({ 
-        petName: '', petType: '', breed: '', weight: '',
-        ownerName: '', phone: '', treatmentDate: '', nextAppointment: '', 
-        status: '', diagnosis: '', treatment: '', symptoms: '',
-        vetName: '', price: '', notes: ''
+    const [currentBath, setCurrentBath] = useState({ 
+        petName: '', 
+        petType: '', 
+        breed: '', 
+        weight: '',
+        ownerName: '', 
+        phone: '',
+        bathDate: '', 
+        timeSlot: '', 
+        status: '',
+        notes: '',
+        services: '',
+        staffAssigned: '',
+        price: ''
     });
-    const [selectedTreatment, setSelectedTreatment] = useState(null);
+    const [selectedBath, setSelectedBath] = useState(null);
 
-    // ຟັງຊັ່ນ handleDialog ທີ່ປັບປຸງໃຫ້ກະທັດຮັດ
-    const handleDialogOpen = (treatment = null) => {
-        if (treatment) {
-            setCurrentTreatment(treatment);
+    const handleDialogOpen = (bath = null) => {
+        if (bath) {
+            setCurrentBath(bath);
             setEditMode(true);
         } else {
-            setCurrentTreatment({ 
-                petName: '', petType: '', breed: '', weight: '',
-                ownerName: '', phone: '',
-                treatmentDate: new Date().toISOString().split('T')[0], 
-                nextAppointment: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], 
-                status: 'Scheduled', diagnosis: '', treatment: '', symptoms: '',
-                vetName: '', price: '', notes: ''
+            setCurrentBath({ 
+                petName: '', 
+                petType: '', 
+                breed: '', 
+                weight: '',
+                ownerName: '', 
+                phone: '',
+                bathDate: new Date().toISOString().split('T')[0], 
+                timeSlot: '', 
+                status: 'Pending',
+                notes: '',
+                services: '',
+                staffAssigned: '',
+                price: ''
             });
             setEditMode(false);
         }
         setOpenDialog(true);
     };
 
-    const handleDetailsOpen = (treatment) => {
-        setSelectedTreatment(treatment);
+    const handleDetailsOpen = (bath) => {
+        setSelectedBath(bath);
         setOpenDetailsDialog(true);
     };
 
-    const handleDetailsClose = () => setOpenDetailsDialog(false);
-    const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
-    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-    const handleDialogClose = () => setOpenDialog(false);
-    const handleLogout = () => navigate('/');
+    const handleDetailsClose = () => {
+        setOpenDetailsDialog(false);
+    };
 
-    // ຟັງຊັ່ນບັນທຶກຂໍ້ມູນ
-    const handleSaveTreatment = () => {
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
+
+    const handleDialogClose = () => setOpenDialog(false);
+
+    const handleSaveBath = () => {
         if (editMode) {
-            setTreatmentData(prevData => prevData.map(item => 
-                item.id === currentTreatment.id ? currentTreatment : item));
+            setBathData(prevData => prevData.map(item => item.id === currentBath.id ? currentBath : item));
         } else {
-            setTreatmentData(prevData => 
-                [...prevData, { ...currentTreatment, id: prevData.length + 1 }]);
+            setBathData(prevData => [...prevData, { ...currentBath, id: prevData.length + 1 }]);
         }
         setOpenDialog(false);
     };
 
-    // ຟັງຊັ່ນລຶບຂໍ້ມູນ
-    const handleDeleteTreatment = (id) => 
-        setTreatmentData(prevData => prevData.filter(item => item.id !== id));
+    const handleDeleteBath = (id) => setBathData(prevData => prevData.filter(item => item.id !== id));
 
-    // ກອງຂໍ້ມູນຕາມການຄົ້ນຫາ
-    const filteredData = treatmentData.filter(treatment => 
-        treatment.petName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        treatment.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        treatment.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        treatment.diagnosis.toLowerCase().includes(searchTerm.toLowerCase())
+    const handleLogout = () => {
+        navigate('/');
+    };
+
+    const filteredData = bathData.filter(bath => 
+        bath.petName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        bath.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bath.phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // ຄຳນວນສະຖິຕິ
-    const completedCount = treatmentData.filter(item => item.status === 'Completed').length;
-    const inProgressCount = treatmentData.filter(item => item.status === 'InProgress').length;
-    const criticalCount = treatmentData.filter(item => item.status === 'Critical').length;
-    const scheduledCount = treatmentData.filter(item => item.status === 'Scheduled').length;
-    const totalRevenue = treatmentData.reduce((sum, item) => sum + parseInt(item.price || 0), 0);
+    // Get status counts for dashboard stats
+    const pendingCount = bathData.filter(item => item.status === 'Pending').length;
+    const inProgressCount = bathData.filter(item => item.status === 'InProgress').length;
+    const completedCount = bathData.filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0]).length;
 
-    // ຟັງຊັ່ນສຳລັບສະແດງສະຖານະ
+    // Get status color and label
     const getStatusInfo = (status) => {
         switch(status) {
-            case 'Scheduled': return { color: 'info', label: 'ນັດໝາຍໄວ້' };
-            case 'InProgress': return { color: 'warning', label: 'ກຳລັງປິ່ນປົວ' };
-            case 'Completed': return { color: 'success', label: 'ສຳເລັດແລ້ວ' };
-            case 'Critical': return { color: 'error', label: 'ອາການຮຸນແຮງ' };
-            default: return { color: 'default', label: status };
+            case 'Pending':
+                return { color: 'warning', label: 'ລໍຖ້າ' };
+            case 'InProgress':
+                return { color: 'info', label: 'ກຳລັງດຳເນີນການ' };
+            case 'Completed':
+                return { color: 'success', label: 'ສຳເລັດແລ້ວ' };
+            case 'Canceled':
+                return { color: 'error', label: 'ຍົກເລີກ' };
+            default:
+                return { color: 'default', label: status };
         }
     };
 
-    // ເນື້ອຫາຂອງແຖບເມນູ
     const drawerContent = (
         <>
             <LogoContainer>
@@ -310,13 +385,19 @@ const TreatPet = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* ເມນູສຳລັບໂມບາຍ */}
-            <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+            {/* Mobile Drawer */}
+            <Box
+                component="nav"
+                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+            >
+                {/* Mobile Drawer */}
                 <Drawer
                     variant="temporary"
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
-                    ModalProps={{ keepMounted: true }}
+                    ModalProps={{
+                        keepMounted: true, // Better open performance on mobile.
+                    }}
                     sx={{
                         display: { xs: 'block', sm: 'none' },
                         '& .MuiDrawer-paper': {
@@ -330,7 +411,7 @@ const TreatPet = () => {
                     {drawerContent}
                 </Drawer>
 
-                {/* ເມນູສຳລັບເດສທອບ */}
+                {/* Desktop Drawer */}
                 <Drawer
                     variant="permanent"
                     sx={{
@@ -360,7 +441,7 @@ const TreatPet = () => {
                 </Drawer>
             </Box>
 
-            {/* ເນື້ອຫາຫຼັກ */}
+            {/* Main Content */}
             <Box component="main" sx={{
                 flexGrow: 1,
                 p: 3,
@@ -374,15 +455,15 @@ const TreatPet = () => {
                 minHeight: '100vh'
             }}>
                 <Container maxWidth="xl">
-                    {/* ຫົວຂໍ້ໜ້າ */}
+                    {/* Page Header */}
                     <Box sx={{ mb: 4 }}>
                         <Typography variant="h4" fontWeight="bold" color="primary">
-                            <LocalHospital sx={{ mr: 1, verticalAlign: 'middle' }} />
-                            ປິ່ນປົວສັດລ້ຽງ
+                            <Bathtub sx={{ mr: 1, verticalAlign: 'middle' }} />
+                            ອາບນ້ຳສັດລ້ຽງ
                         </Typography>
                     </Box>
 
-                    {/* ຄົ້ນຫາ ແລະ ປຸ່ມເພີ່ມ */}
+                    {/* Search and Add Button Row */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: { xs: '100%', md: '50%' } }}>
                             <TextField
@@ -403,25 +484,25 @@ const TreatPet = () => {
                             sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
                             startIcon={<AddCircle />}
                             onClick={() => handleDialogOpen()}
-                        >ເພີ່ມການປິ່ນປົວ</Button>
+                        >ເພີ່ມການອາບນ້ຳສັດລ້ຽງ</Button>
                     </Box>
 
-                    {/* ສະຖິຕິ */}
+                    {/* Dashboard Stats */}
                     <Grid container spacing={3} sx={{ mb: 3 }}>
                         <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#e8f5e9', boxShadow: 2 }}>
+                            <Card sx={{ bgcolor: '#fff3e0', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ສຳເລັດແລ້ວ</Typography>
+                                    <Typography variant="h6" color="primary" gutterBottom>ລໍຖ້າ</Typography>
                                     <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {completedCount}
+                                        {pendingCount}
                                     </Typography>
                                 </CardContent>
                             </Card>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#fff3e0', boxShadow: 2 }}>
+                            <Card sx={{ bgcolor: '#e1f5fe', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ກຳລັງປິ່ນປົວ</Typography>
+                                    <Typography variant="h6" color="primary" gutterBottom>ກຳລັງດຳເນີນການ</Typography>
                                     <Typography variant="h4" fontWeight="bold" color="primary">
                                         {inProgressCount}
                                     </Typography>
@@ -429,28 +510,29 @@ const TreatPet = () => {
                             </Card>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#ffebee', boxShadow: 2 }}>
+                            <Card sx={{ bgcolor: '#c8e6c9', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ອາການຮຸນແຮງ</Typography>
+                                    <Typography variant="h6" color="primary" gutterBottom>ສຳເລັດແລ້ວວັນນີ້</Typography>
                                     <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {criticalCount}
+                                        {completedCount}
                                     </Typography>
                                 </CardContent>
                             </Card>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#e3f2fd', boxShadow: 2 }}>
+                            <Card sx={{ bgcolor: '#ede7f6', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ລາຍຮັບທັງໝົດ</Typography>
+                                    <Typography variant="h6" color="primary" gutterBottom>ລາຍຮັບວັນນີ້</Typography>
                                     <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {totalRevenue.toLocaleString()} ₭
+                                        {bathData
+                                            .filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0])
+                                            .reduce((sum, item) => sum + parseInt(item.price), 0).toLocaleString()} ₭
                                     </Typography>
                                 </CardContent>
                             </Card>
                         </Grid>
                     </Grid>
 
-                    {/* ຕາຕະລາງຂໍ້ມູນ */}
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
@@ -459,42 +541,40 @@ const TreatPet = () => {
                                     <TableCell>ຊະນິດສັດລ້ຽງ</TableCell>
                                     <TableCell>ເຈົ້າຂອງ</TableCell>
                                     <TableCell>ເບີໂທລະສັບ</TableCell>
-                                    <TableCell>ວັນທີປິ່ນປົວ</TableCell>
-                                    <TableCell>ການບົ່ງມະຕິ</TableCell>
-                                    <TableCell>ສັດຕະວະແພດ</TableCell>
-                                    <TableCell>ນັດໝາຍຄັ້ງຕໍ່ໄປ</TableCell>
+                                    <TableCell>ວັນທີ</TableCell>
+                                    <TableCell>ເວລາ</TableCell>
+                                    <TableCell>ພະນັກງານ</TableCell>
                                     <TableCell>ລາຄາ</TableCell>
                                     <TableCell>ສະຖານະ</TableCell>
                                     <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredData.map((treatment) => (
-                                    <TableRow key={treatment.id}>
-                                        <TableCell>{treatment.petName}</TableCell>
-                                        <TableCell>{treatment.petType}</TableCell>
-                                        <TableCell>{treatment.ownerName}</TableCell>
-                                        <TableCell>{treatment.phone}</TableCell>
-                                        <TableCell>{treatment.treatmentDate}</TableCell>
-                                        <TableCell>{treatment.diagnosis}</TableCell>
-                                        <TableCell>{treatment.vetName}</TableCell>
-                                        <TableCell>{treatment.nextAppointment}</TableCell>
-                                        <TableCell>{parseInt(treatment.price).toLocaleString()} ₭</TableCell>
+                                {filteredData.map((bath) => (
+                                    <TableRow key={bath.id}>
+                                        <TableCell>{bath.petName}</TableCell>
+                                        <TableCell>{bath.petType}</TableCell>
+                                        <TableCell>{bath.ownerName}</TableCell>
+                                        <TableCell>{bath.phone}</TableCell>
+                                        <TableCell>{bath.bathDate}</TableCell>
+                                        <TableCell>{bath.timeSlot}</TableCell>
+                                        <TableCell>{bath.staffAssigned}</TableCell>
+                                        <TableCell>{parseInt(bath.price).toLocaleString()} ₭</TableCell>
                                         <TableCell>
                                             <Chip 
-                                                label={getStatusInfo(treatment.status).label}
-                                                color={getStatusInfo(treatment.status).color}
+                                                label={getStatusInfo(bath.status).label}
+                                                color={getStatusInfo(bath.status).color}
                                                 size="small"
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <IconButton onClick={() => handleDetailsOpen(treatment)} sx={{ color: '#1976d2' }}>
+                                            <IconButton onClick={() => handleDetailsOpen(bath)} sx={{ color: '#1976d2' }}>
                                                 <Info />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDialogOpen(treatment)} sx={{ color: '#1976d2' }}>
+                                            <IconButton onClick={() => handleDialogOpen(bath)} sx={{ color: '#1976d2' }}>
                                                 <Edit />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDeleteTreatment(treatment.id)} color="error">
+                                            <IconButton onClick={() => handleDeleteBath(bath.id)} color="error">
                                                 <Delete />
                                             </IconButton>
                                         </TableCell>
@@ -504,10 +584,10 @@ const TreatPet = () => {
                         </Table>
                     </TableContainer>
 
-                    {/* ແບບຟອມເພີ່ມ/ແກ້ໄຂ */}
+                    {/* Add/Edit Dialog */}
                     <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
                         <DialogTitle>
-                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນການປິ່ນປົວສັດລ້ຽງ' : 'ເພີ່ມການປິ່ນປົວສັດລ້ຽງ'}
+                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນການອາບນ້ຳສັດລ້ຽງ' : 'ເພີ່ມການອາບນ້ຳສັດລ້ຽງ'}
                         </DialogTitle>
                         <DialogContent>
                             <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -515,8 +595,8 @@ const TreatPet = () => {
                                     <TextField
                                         label="ຊື່ສັດລ້ຽງ"
                                         fullWidth
-                                        value={currentTreatment.petName}
-                                        onChange={(e) => setCurrentTreatment({ ...currentTreatment, petName: e.target.value })}
+                                        value={currentBath.petName}
+                                        onChange={(e) => setCurrentBath({ ...currentBath, petName: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
                                                 <PetsOutlined sx={{ color: 'action.active', mr: 1 }} />
@@ -528,18 +608,39 @@ const TreatPet = () => {
                                     <FormControl fullWidth>
                                         <InputLabel>ຊະນິດສັດລ້ຽງ</InputLabel>
                                         <Select
-                                            value={currentTreatment.petType}
-                                            onChange={(e) => setCurrentTreatment({ ...currentTreatment, petType: e.target.value })}
+                                            value={currentBath.petType}
+                                            onChange={(e) => setCurrentBath({ ...currentBath, petType: e.target.value })}
                                             label="ຊະນິດສັດລ້ຽງ"
-                                        ></Select>
+                                        >
+                                            <MenuItem value="ໝາ">ໝາ</MenuItem>
+                                            <MenuItem value="ແມວ">ແມວ</MenuItem>
+                                            <MenuItem value="ອື່ນໆ">ອື່ນໆ</MenuItem>
+                                        </Select>
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <TextField
-                                        label="ຊື່ຜູ້ນໍາເຂົ້າ"
+                                        label="ສາຍພັນ"
                                         fullWidth
-                                        value={currentTreatment.ownerName}
-                                        onChange={(e) => setCurrentTreatment({ ...currentTreatment, ownerName: e.target.value })}
+                                        value={currentBath.breed}
+                                        onChange={(e) => setCurrentBath({ ...currentBath, breed: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="ນ້ຳໜັກ (kg)"
+                                        fullWidth
+                                        type="number"
+                                        value={currentBath.weight}
+                                        onChange={(e) => setCurrentBath({ ...currentBath, weight: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="ຊື່ເຈົ້າຂອງ"
+                                        fullWidth
+                                        value={currentBath.ownerName}
+                                        onChange={(e) => setCurrentBath({ ...currentBath, ownerName: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
                                                 <Person sx={{ color: 'action.active', mr: 1 }} />
@@ -549,10 +650,10 @@ const TreatPet = () => {
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <TextField
-                                        label="ເບີໂທ"
+                                        label="ເບີໂທລະສັບ"
                                         fullWidth
-                                        value={currentTreatment.phone}
-                                        onChange={(e) => setCurrentTreatment({ ...currentTreatment, phone: e.target.value })}
+                                        value={currentBath.phone}
+                                        onChange={(e) => setCurrentBath({ ...currentBath, phone: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
                                                 <Phone sx={{ color: 'action.active', mr: 1 }} />
@@ -562,40 +663,44 @@ const TreatPet = () => {
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <TextField
-                                        label="ວັນທີປິ່ນປົວສັດລ້ຽງ"
+                                        label="ວັນທີອາບນ້ຳ"
+                                        type="date"
                                         fullWidth
-                                        value={currentTreatment.treatmentDate}
-                                        onChange={(e) => setCurrentTreatment({ ...currentTreatment, treatmentDate: e.target.value })}
+                                        value={currentBath.bathDate}
+                                        onChange={(e) => setCurrentBath({ ...currentBath, bathDate: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
-                                                <CalendarMonth sx={{ color: 'action.active', mr: 1 }} />
+                                                <DateRange sx={{ color: 'action.active', mr: 1 }} />
                                             ),
                                         }}
+                                        InputLabelProps={{ shrink: true }}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ປະຫວັດສັດລ້ຽງ"
-                                        fullWidth
-                                        value={currentTreatment.diagnosis}  
-                                        onChange={(e) => setCurrentTreatment({ ...currentTreatment, diagnosis: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Description sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
+                                    <FormControl fullWidth>
+                                        <InputLabel>ເວລາ</InputLabel>
+                                        <Select
+                                            value={currentBath.timeSlot}
+                                            onChange={(e) => setCurrentBath({ ...currentBath, timeSlot: e.target.value })}
+                                            label="ເວລາ"
+                                            startAdornment={<AccessTime sx={{ color: 'action.active', mr: 1 }} />}
+                                        >
+                                            <MenuItem value="9:00 - 10:30">9:00 - 10:30</MenuItem>
+                                            <MenuItem value="10:30 - 12:00">10:30 - 12:00</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                             </Grid>
                         </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleDialogClose}>ຍົກເລີກ</Button>
-                            {/* <Button onClick={handleSave}>ບັນທຶກ</Button> */}
-                        </DialogActions>
+                        {/* <DialogActions>
+                            <Button onClick={handleClose}>ຍົກເລີກ</Button>
+                            <Button onClick={handleSave}>ບັນທຶກ</Button>
+                        </DialogActions> */}
                     </Dialog>
                 </Container>
             </Box>
         </Box>
     );
 }
-export default TreatPet;
+
+export default BathPet;

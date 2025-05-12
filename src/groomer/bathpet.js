@@ -84,8 +84,8 @@ const drawerWidth = 240;
 
 // Menu items
 const menuItems = [
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true },
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/groomer/bathpet', active: true },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/groomer/petbar' },
 ];
 
 const BathPet = () => {

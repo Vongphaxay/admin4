@@ -28,8 +28,8 @@ const drawerWidth = 240;
 
 // ລາຍການເມນູ
 const menuItems = [
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar', active: true },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/groomer/bathpet' },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/groomer/petbar', active: true },
 ];
 
 const PetBar = () => {
