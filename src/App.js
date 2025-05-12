@@ -18,7 +18,7 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import Dashboard from './admin/dashboard';
 import BookingTable from './admin/databooking';
 import EmployeeManagement from './admin/dataemployee';
@@ -27,13 +27,16 @@ import PetBoarding from './admin/petboard';
 import BathPet from './admin/bathpet';
 import PetBar from './admin/petbar';
 import TreatPet from './admin/treatpet';
+import DoctorTreatPet from './doctor/treatpet'; // Import the doctor's treatpet component
+import GroomerPetBar from './groomer/petbar';
+import GroomerBathpet from './groomer/bathpet';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
 
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('admin'); // Changed from empty string to 'admin' as default
+  const [role, setRole] = useState('admin');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,10 +45,24 @@ const AdminLogin = () => {
   const handleLogin = () => {
     setLoading(true);
     
-    // Simulate loading for better UX
+    // Simple validation
+    if (!username.trim() || !password.trim()) {
+      setError('ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ');
+      setLoading(false);
+      return;
+    }
+    
+    // Simulate authentication and redirect based on role
     setTimeout(() => {
       setLoading(false);
-      navigate('/dashboard');
+      
+      if (role === 'admin') {
+        navigate('/dashboard');
+      } else if (role === 'doctor') {
+        navigate('/doctor/treatpet');
+      } else if (role === 'groomer') {
+        navigate('/petbar'); // Redirect groomers to pet grooming page
+      }
     }, 800);
   };
 
@@ -326,6 +343,10 @@ const App = () => {
         <Route path="/bathpet" element={<BathPet />} />
         <Route path="/petbar" element={<PetBar />} />
         <Route path="/treatpet" element={<TreatPet />} />
+        {/* Added route for doctor's treatpet page */}
+        <Route path="/doctor/treatpet" element={<DoctorTreatPet />} />
+        <Route path="/groomer/petbar" element={<GroomerPetBar />} />
+        <Route path="/groomer/bathpet" element={<GroomerBathpet />} />
       </Routes>
     </Router>
   );

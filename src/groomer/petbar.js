@@ -1,76 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Box,
-    CssBaseline,
-    Drawer,
-    AppBar,
-    Toolbar,
-    List,
-    Typography,
-    Divider,
-    IconButton,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Paper,
-    Grid,
-    Button,
-    Avatar,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
-    useTheme,
-    styled,
-    Container,
-    Card,
-    CardContent,
-    Chip
+    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider,
+    IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText,
+    Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent,
+    DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead,
+    TableRow, TextField, MenuItem, Select, InputLabel, FormControl,
+    useTheme, styled, Container, Card, CardContent, Chip
 } from '@mui/material';
 import {
-    Edit,
-    Delete,
-    AddCircle,
-    Home,
-    Person,
-    People,
-    CalendarMonth,
-    Pets,
-    Bathtub, 
-    ContentCut,
-    Vaccines,
-    Menu,
-    ChevronRight,
-    Notifications,
-    Close,
-    Logout,
-    Phone,
-    Email,
-    Search,
-    DateRange,
-    AccessTime,
-    Info,
-    EventNote,
-    PetsOutlined,
-    Soap,
-    Shower,
-    CheckCircle
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth,
+    Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications,
+    Close, Logout, Phone, Search, Info, PetsOutlined, Hotel
 } from '@mui/icons-material';
 
-// Create a custom styled container for the logo
+// ກຳນົດ container ສຳລັບ logo
 const LogoContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -79,22 +23,16 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
-// Define the drawer width
+// ກຳນົດຄວາມກວ້າງຂອງ drawer
 const drawerWidth = 240;
 
-// Menu items
+// ລາຍການເມນູ
 const menuItems = [
-    { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard' },
-    { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
-    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
-    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true },
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet'},
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar', active: true },
 ];
 
-const BathPet = () => {
+const PetBar = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -103,175 +41,155 @@ const BathPet = () => {
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [bathData, setBathData] = useState([
+    const [petBarData, setPetBarData] = useState([
         { 
             id: 1, 
-            petName: 'ດາວດາຍ', 
+            petName: 'ນ້ອຍໂຕ້', 
             petType: 'ໝາ', 
-            breed: 'ພັນຈັງເຊຍ', 
-            weight: '12.5',
-            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ', 
-            phone: '020 7654 3210',
-            bathDate: '2025-05-08', 
-            timeSlot: '9:00 - 10:30',
-            status: 'Pending',
-            notes: 'ໃຊ້ແຊມພູພິເສດສຳລັບຜິວແພ້ງ່າຍ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ, ຕັດເລັບ',
-            staffAssigned: 'ນ. ສະໝອນໃຈ',
-            price: '150000'
+            breed: 'ພັນລາບລາດໍ', 
+            weight: '15.2',
+            ownerName: 'ທ. ສົມຈິດ ພູເງິນ', 
+            phone: '020 1234 5678',
+            checkInDate: '2025-05-05', 
+            checkOutDate: '2025-05-12', 
+            status: 'CheckedIn',
+            notes: 'ກິນອາຫານ 2 ຄັ້ງຕໍ່ມື້. ຕ້ອງໄດ້ພາອອກຍ່າງຕອນເຊົ້າ.',
+            services: 'ຫ້ອງພັກມາດຕະຖານ, ອາຫານ, ຍ່າງຫຼິ້ນ',
+            staffAssigned: 'ທ. ວິໄລ',
+            price: '450000',
+            cageNumber: 'A12'
         },
         { 
             id: 2, 
-            petName: 'ແມວມີ່', 
+            petName: 'ມິກກີ້', 
             petType: 'ແມວ', 
-            breed: 'ພັນແມວໄທ', 
-            weight: '4.2',
-            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ', 
+            breed: 'ພັນເປີຊຽນ', 
+            weight: '3.5',
+            ownerName: 'ນ. ນິດຕະຍາ ແກ້ວມະນີ', 
             phone: '020 8765 4321',
-            bathDate: '2025-05-08', 
-            timeSlot: '10:30 - 12:00',
-            status: 'InProgress',
-            notes: 'ຫຼີກລ້ຽງບໍລິເວນຫູ ເນື່ອງຈາກມີການຕິດເຊື້ອ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ແປງຂົນ',
-            staffAssigned: 'ທ. ສຸລິຍາ',
-            price: '120000'
+            checkInDate: '2025-05-07', 
+            checkOutDate: '2025-05-10', 
+            status: 'Reserved',
+            notes: 'ແພ້ອາຫານແມວທົ່ວໄປ, ມີອາຫານສະເພາະນຳມາໃຫ້.',
+            services: 'ຫ້ອງພັກພິເສດ, ຫຼິ້ນກັບແມວ',
+            staffAssigned: 'ນ. ສຸກສະຫວັນ',
+            price: '320000',
+            cageNumber: 'B05'
         },
         { 
             id: 3, 
-            petName: 'ໂຕໂຕ້', 
+            petName: 'ເຈຄ', 
             petType: 'ໝາ', 
-            breed: 'ພັນຈີນິກເຊີ', 
-            weight: '3.8',
-            ownerName: 'ທ. ປະເສີດ ດວງຈັນ', 
-            phone: '020 9876 5432',
-            bathDate: '2025-05-07', 
-            timeSlot: '14:00 - 15:30',
-            status: 'Completed',
-            notes: 'ແມງຕະນູໜ້ອຍ, ໃຊ້ຜະລິດຕະພັນກຳຈັດແມງຕະນູ.',
-            services: 'ອາບນ້ຳພິເສດ, ເປົ່າຂົນ, ຕັດເລັບ, ລ້າງຫູ',
-            staffAssigned: 'ນ. ສະໝອນໃຈ',
-            price: '180000'
+            breed: 'ພັນຊິບາ', 
+            weight: '12.0',
+            ownerName: 'ທ. ສີສະຫວາດ ຈັນທະລາ', 
+            phone: '020 5678 9012',
+            checkInDate: '2025-05-01', 
+            checkOutDate: '2025-05-08', 
+            status: 'CheckedOut',
+            notes: 'ຢາກິນປະຈຳວັນຕອນເຊົ້າ.',
+            services: 'ຫ້ອງພັກມາດຕະຖານ, ອາບນ້ຳ, ອາຫານ',
+            staffAssigned: 'ທ. ວິໄລ',
+            price: '400000',
+            cageNumber: 'A08'
         },
         { 
             id: 4, 
-            petName: 'ໝີເຊີ', 
+            petName: 'ລີລີ່', 
             petType: 'ໝາ', 
             breed: 'ພັນພູເດີ້ນ', 
-            weight: '22.0',
-            ownerName: 'ນ. ມະນີຈັນ ແສງສະຫວ່າງ', 
-            phone: '020 5566 7788',
-            bathDate: '2025-05-08', 
-            timeSlot: '13:00 - 14:30',
-            status: 'Canceled',
-            notes: 'ລູກຄ້າຍົກເລີກເນື່ອງຈາກເຈັບປ່ວຍ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ',
-            staffAssigned: '-',
-            price: '150000'
+            weight: '18.3',
+            ownerName: 'ນ. ມະນີລາ ສຸວັນນະສອນ', 
+            phone: '020 3456 7890',
+            checkInDate: '2025-05-08', 
+            checkOutDate: '2025-05-15', 
+            status: 'CheckedIn',
+            notes: 'ຢ້ານສຽງດັງ, ຕ້ອງອາບນ້ຳໜຶ່ງຄັ້ງ.',
+            services: 'ຫ້ອງພັກພິເສດ, ອາຫານພິເສດ, ອາບນ້ຳ, ຍ່າງຫຼິ້ນ',
+            staffAssigned: 'ນ. ສຸກສະຫວັນ',
+            price: '550000',
+            cageNumber: 'A15'
         },
     ]);
-    const [currentBath, setCurrentBath] = useState({ 
-        petName: '', 
-        petType: '', 
-        breed: '', 
-        weight: '',
-        ownerName: '', 
-        phone: '',
-        bathDate: '', 
-        timeSlot: '', 
-        status: '',
-        notes: '',
-        services: '',
-        staffAssigned: '',
-        price: ''
+    const [currentPetBar, setCurrentPetBar] = useState({ 
+        petName: '', petType: '', breed: '', weight: '',
+        ownerName: '', phone: '', checkInDate: '', checkOutDate: '', 
+        status: '', notes: '', services: '', staffAssigned: '',
+        price: '', cageNumber: ''
     });
-    const [selectedBath, setSelectedBath] = useState(null);
+    const [selectedPetBar, setSelectedPetBar] = useState(null);
 
-    const handleDialogOpen = (bath = null) => {
-        if (bath) {
-            setCurrentBath(bath);
+    // ຟັງຊັ່ນ handleDialog ທີ່ປັບປຸງໃຫ້ກະທັດຮັດ
+    const handleDialogOpen = (petBar = null) => {
+        if (petBar) {
+            setCurrentPetBar(petBar);
             setEditMode(true);
         } else {
-            setCurrentBath({ 
-                petName: '', 
-                petType: '', 
-                breed: '', 
-                weight: '',
-                ownerName: '', 
-                phone: '',
-                bathDate: new Date().toISOString().split('T')[0], 
-                timeSlot: '', 
-                status: 'Pending',
-                notes: '',
-                services: '',
-                staffAssigned: '',
-                price: ''
+            setCurrentPetBar({ 
+                petName: '', petType: '', breed: '', weight: '',
+                ownerName: '', phone: '',
+                checkInDate: new Date().toISOString().split('T')[0], 
+                checkOutDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], 
+                status: 'Reserved', notes: '', services: '',
+                staffAssigned: '', price: '', cageNumber: ''
             });
             setEditMode(false);
         }
         setOpenDialog(true);
     };
 
-    const handleDetailsOpen = (bath) => {
-        setSelectedBath(bath);
+    const handleDetailsOpen = (petBar) => {
+        setSelectedPetBar(petBar);
         setOpenDetailsDialog(true);
     };
 
-    const handleDetailsClose = () => {
-        setOpenDetailsDialog(false);
-    };
-
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
-
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
-    };
-
+    const handleDetailsClose = () => setOpenDetailsDialog(false);
+    const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const handleDialogClose = () => setOpenDialog(false);
+    const handleLogout = () => navigate('/');
 
-    const handleSaveBath = () => {
+    // ຟັງຊັ່ນບັນທຶກຂໍ້ມູນ
+    const handleSavePetBar = () => {
         if (editMode) {
-            setBathData(prevData => prevData.map(item => item.id === currentBath.id ? currentBath : item));
+            setPetBarData(prevData => prevData.map(item => 
+                item.id === currentPetBar.id ? currentPetBar : item));
         } else {
-            setBathData(prevData => [...prevData, { ...currentBath, id: prevData.length + 1 }]);
+            setPetBarData(prevData => 
+                [...prevData, { ...currentPetBar, id: prevData.length + 1 }]);
         }
         setOpenDialog(false);
     };
 
-    const handleDeleteBath = (id) => setBathData(prevData => prevData.filter(item => item.id !== id));
+    // ຟັງຊັ່ນລຶບຂໍ້ມູນ
+    const handleDeletePetBar = (id) => 
+        setPetBarData(prevData => prevData.filter(item => item.id !== id));
 
-    const handleLogout = () => {
-        navigate('/');
-    };
-
-    const filteredData = bathData.filter(bath => 
-        bath.petName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        bath.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        bath.phone.toLowerCase().includes(searchTerm.toLowerCase())
+    // ກອງຂໍ້ມູນຕາມການຄົ້ນຫາ
+    const filteredData = petBarData.filter(petBar => 
+        petBar.petName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        petBar.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        petBar.phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Get status counts for dashboard stats
-    const pendingCount = bathData.filter(item => item.status === 'Pending').length;
-    const inProgressCount = bathData.filter(item => item.status === 'InProgress').length;
-    const completedCount = bathData.filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0]).length;
+    // ຄຳນວນສະຖິຕິ
+    const checkedInCount = petBarData.filter(item => item.status === 'CheckedIn').length;
+    const reservedCount = petBarData.filter(item => item.status === 'Reserved').length;
+    const totalCages = 30;
+    const occupancyRate = Math.round((checkedInCount / totalCages) * 100);
 
-    // Get status color and label
+    // ຟັງຊັ່ນສຳລັບສະແດງສະຖານະ
     const getStatusInfo = (status) => {
         switch(status) {
-            case 'Pending':
-                return { color: 'warning', label: 'ລໍຖ້າ' };
-            case 'InProgress':
-                return { color: 'info', label: 'ກຳລັງດຳເນີນການ' };
-            case 'Completed':
-                return { color: 'success', label: 'ສຳເລັດແລ້ວ' };
-            case 'Canceled':
-                return { color: 'error', label: 'ຍົກເລີກ' };
-            default:
-                return { color: 'default', label: status };
+            case 'Reserved': return { color: 'warning', label: 'ຈອງແລ້ວ' };
+            case 'CheckedIn': return { color: 'success', label: 'ເຂົ້າພັກແລ້ວ' };
+            case 'CheckedOut': return { color: 'info', label: 'ອອກແລ້ວ' };
+            case 'Canceled': return { color: 'error', label: 'ຍົກເລີກ' };
+            default: return { color: 'default', label: status };
         }
     };
 
+    // ເນື້ອຫາຂອງແຖບເມນູ
     const drawerContent = (
         <>
             <LogoContainer>
@@ -385,19 +303,13 @@ const BathPet = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* Mobile Drawer */}
-            <Box
-                component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-            >
-                {/* Mobile Drawer */}
+            {/* ເມນູສຳລັບໂມບາຍ */}
+            <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
                 <Drawer
                     variant="temporary"
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
-                    ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
-                    }}
+                    ModalProps={{ keepMounted: true }}
                     sx={{
                         display: { xs: 'block', sm: 'none' },
                         '& .MuiDrawer-paper': {
@@ -411,7 +323,7 @@ const BathPet = () => {
                     {drawerContent}
                 </Drawer>
 
-                {/* Desktop Drawer */}
+                {/* ເມນູສຳລັບເດສທອບ */}
                 <Drawer
                     variant="permanent"
                     sx={{
@@ -441,7 +353,7 @@ const BathPet = () => {
                 </Drawer>
             </Box>
 
-            {/* Main Content */}
+            {/* ເນື້ອຫາຫຼັກ */}
             <Box component="main" sx={{
                 flexGrow: 1,
                 p: 3,
@@ -455,15 +367,15 @@ const BathPet = () => {
                 minHeight: '100vh'
             }}>
                 <Container maxWidth="xl">
-                    {/* Page Header */}
+                    {/* ຫົວຂໍ້ໜ້າ */}
                     <Box sx={{ mb: 4 }}>
                         <Typography variant="h4" fontWeight="bold" color="primary">
-                            <Bathtub sx={{ mr: 1, verticalAlign: 'middle' }} />
-                            ອາບນ້ຳສັດລ້ຽງ
+                            <Hotel sx={{ mr: 1, verticalAlign: 'middle' }} />
+                            ຕັດຂົນສັດລ້ຽງ
                         </Typography>
                     </Box>
 
-                    {/* Search and Add Button Row */}
+                    {/* ຄົ້ນຫາ ແລະ ປຸ່ມເພີ່ມ */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: { xs: '100%', md: '50%' } }}>
                             <TextField
@@ -484,37 +396,37 @@ const BathPet = () => {
                             sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
                             startIcon={<AddCircle />}
                             onClick={() => handleDialogOpen()}
-                        >ເພີ່ມການອາບນ້ຳສັດລ້ຽງ</Button>
+                        >ເພີ່ມການຝາກສັດລ້ຽງ</Button>
                     </Box>
 
-                    {/* Dashboard Stats */}
+                    {/* ສະຖິຕິ */}
                     <Grid container spacing={3} sx={{ mb: 3 }}>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <Card sx={{ bgcolor: '#e8f5e9', boxShadow: 2 }}>
+                                <CardContent sx={{ textAlign: 'center' }}>
+                                    <Typography variant="h6" color="primary" gutterBottom>ກຳລັງຝາກຢູ່</Typography>
+                                    <Typography variant="h4" fontWeight="bold" color="primary">
+                                        {checkedInCount}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                         <Grid item xs={12} sm={6} md={3}>
                             <Card sx={{ bgcolor: '#fff3e0', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ລໍຖ້າ</Typography>
+                                    <Typography variant="h6" color="primary" gutterBottom>ຈອງລ່ວງໜ້າ</Typography>
                                     <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {pendingCount}
+                                        {reservedCount}
                                     </Typography>
                                 </CardContent>
                             </Card>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#e1f5fe', boxShadow: 2 }}>
+                            <Card sx={{ bgcolor: '#e3f2fd', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ກຳລັງດຳເນີນການ</Typography>
+                                    <Typography variant="h6" color="primary" gutterBottom>ອັດຕາການເຂົ້າພັກ</Typography>
                                     <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {inProgressCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#c8e6c9', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ສຳເລັດແລ້ວວັນນີ້</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {completedCount}
+                                        {occupancyRate}%
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -522,10 +434,10 @@ const BathPet = () => {
                         <Grid item xs={12} sm={6} md={3}>
                             <Card sx={{ bgcolor: '#ede7f6', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ລາຍຮັບວັນນີ້</Typography>
+                                    <Typography variant="h6" color="primary" gutterBottom>ລາຍຮັບປະຈຳເດືອນ</Typography>
                                     <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {bathData
-                                            .filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0])
+                                        {petBarData
+                                            .filter(item => item.status === 'CheckedOut')
                                             .reduce((sum, item) => sum + parseInt(item.price), 0).toLocaleString()} ₭
                                     </Typography>
                                 </CardContent>
@@ -533,6 +445,7 @@ const BathPet = () => {
                         </Grid>
                     </Grid>
 
+                    {/* ຕາຕະລາງຂໍ້ມູນ */}
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
@@ -541,8 +454,9 @@ const BathPet = () => {
                                     <TableCell>ຊະນິດສັດລ້ຽງ</TableCell>
                                     <TableCell>ເຈົ້າຂອງ</TableCell>
                                     <TableCell>ເບີໂທລະສັບ</TableCell>
-                                    <TableCell>ວັນທີ</TableCell>
-                                    <TableCell>ເວລາ</TableCell>
+                                    <TableCell>ວັນທີເຂົ້າ</TableCell>
+                                    <TableCell>ວັນທີອອກ</TableCell>
+                                    <TableCell>ຫ້ອງ/ກົງ</TableCell>
                                     <TableCell>ພະນັກງານ</TableCell>
                                     <TableCell>ລາຄາ</TableCell>
                                     <TableCell>ສະຖານະ</TableCell>
@@ -550,31 +464,32 @@ const BathPet = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredData.map((bath) => (
-                                    <TableRow key={bath.id}>
-                                        <TableCell>{bath.petName}</TableCell>
-                                        <TableCell>{bath.petType}</TableCell>
-                                        <TableCell>{bath.ownerName}</TableCell>
-                                        <TableCell>{bath.phone}</TableCell>
-                                        <TableCell>{bath.bathDate}</TableCell>
-                                        <TableCell>{bath.timeSlot}</TableCell>
-                                        <TableCell>{bath.staffAssigned}</TableCell>
-                                        <TableCell>{parseInt(bath.price).toLocaleString()} ₭</TableCell>
+                                {filteredData.map((petBar) => (
+                                    <TableRow key={petBar.id}>
+                                        <TableCell>{petBar.petName}</TableCell>
+                                        <TableCell>{petBar.petType}</TableCell>
+                                        <TableCell>{petBar.ownerName}</TableCell>
+                                        <TableCell>{petBar.phone}</TableCell>
+                                        <TableCell>{petBar.checkInDate}</TableCell>
+                                        <TableCell>{petBar.checkOutDate}</TableCell>
+                                        <TableCell>{petBar.cageNumber}</TableCell>
+                                        <TableCell>{petBar.staffAssigned}</TableCell>
+                                        <TableCell>{parseInt(petBar.price).toLocaleString()} ₭</TableCell>
                                         <TableCell>
                                             <Chip 
-                                                label={getStatusInfo(bath.status).label}
-                                                color={getStatusInfo(bath.status).color}
+                                                label={getStatusInfo(petBar.status).label}
+                                                color={getStatusInfo(petBar.status).color}
                                                 size="small"
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <IconButton onClick={() => handleDetailsOpen(bath)} sx={{ color: '#1976d2' }}>
+                                            <IconButton onClick={() => handleDetailsOpen(petBar)} sx={{ color: '#1976d2' }}>
                                                 <Info />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDialogOpen(bath)} sx={{ color: '#1976d2' }}>
+                                            <IconButton onClick={() => handleDialogOpen(petBar)} sx={{ color: '#1976d2' }}>
                                                 <Edit />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDeleteBath(bath.id)} color="error">
+                                            <IconButton onClick={() => handleDeletePetBar(petBar.id)} color="error">
                                                 <Delete />
                                             </IconButton>
                                         </TableCell>
@@ -584,10 +499,10 @@ const BathPet = () => {
                         </Table>
                     </TableContainer>
 
-                    {/* Add/Edit Dialog */}
+                    {/* ແບບຟອມເພີ່ມ/ແກ້ໄຂ */}
                     <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
                         <DialogTitle>
-                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນການອາບນ້ຳສັດລ້ຽງ' : 'ເພີ່ມການອາບນ້ຳສັດລ້ຽງ'}
+                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນການຝາກສັດລ້ຽງ' : 'ເພີ່ມການຝາກສັດລ້ຽງ'}
                         </DialogTitle>
                         <DialogContent>
                             <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -595,8 +510,8 @@ const BathPet = () => {
                                     <TextField
                                         label="ຊື່ສັດລ້ຽງ"
                                         fullWidth
-                                        value={currentBath.petName}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, petName: e.target.value })}
+                                        value={currentPetBar.petName}
+                                        onChange={(e) => setCurrentPetBar({ ...currentPetBar, petName: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
                                                 <PetsOutlined sx={{ color: 'action.active', mr: 1 }} />
@@ -608,8 +523,8 @@ const BathPet = () => {
                                     <FormControl fullWidth>
                                         <InputLabel>ຊະນິດສັດລ້ຽງ</InputLabel>
                                         <Select
-                                            value={currentBath.petType}
-                                            onChange={(e) => setCurrentBath({ ...currentBath, petType: e.target.value })}
+                                            value={currentPetBar.petType}
+                                            onChange={(e) => setCurrentPetBar({ ...currentPetBar, petType: e.target.value })}
                                             label="ຊະນິດສັດລ້ຽງ"
                                         >
                                             <MenuItem value="ໝາ">ໝາ</MenuItem>
@@ -622,8 +537,8 @@ const BathPet = () => {
                                     <TextField
                                         label="ສາຍພັນ"
                                         fullWidth
-                                        value={currentBath.breed}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, breed: e.target.value })}
+                                        value={currentPetBar.breed}
+                                        onChange={(e) => setCurrentPetBar({ ...currentPetBar, breed: e.target.value })}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
@@ -631,16 +546,16 @@ const BathPet = () => {
                                         label="ນ້ຳໜັກ (kg)"
                                         fullWidth
                                         type="number"
-                                        value={currentBath.weight}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, weight: e.target.value })}
+                                        value={currentPetBar.weight}
+                                        onChange={(e) => setCurrentPetBar({ ...currentPetBar, weight: e.target.value })}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <TextField
                                         label="ຊື່ເຈົ້າຂອງ"
                                         fullWidth
-                                        value={currentBath.ownerName}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, ownerName: e.target.value })}
+                                        value={currentPetBar.ownerName}
+                                        onChange={(e) => setCurrentPetBar({ ...currentPetBar, ownerName: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
                                                 <Person sx={{ color: 'action.active', mr: 1 }} />
@@ -652,8 +567,8 @@ const BathPet = () => {
                                     <TextField
                                         label="ເບີໂທລະສັບ"
                                         fullWidth
-                                        value={currentBath.phone}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, phone: e.target.value })}
+                                        value={currentPetBar.phone}
+                                        onChange={(e) => setCurrentPetBar({ ...currentPetBar, phone: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
                                                 <Phone sx={{ color: 'action.active', mr: 1 }} />
@@ -661,41 +576,12 @@ const BathPet = () => {
                                         }}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ວັນທີອາບນ້ຳ"
-                                        type="date"
-                                        fullWidth
-                                        value={currentBath.bathDate}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, bathDate: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <DateRange sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ເວລາ</InputLabel>
-                                        <Select
-                                            value={currentBath.timeSlot}
-                                            onChange={(e) => setCurrentBath({ ...currentBath, timeSlot: e.target.value })}
-                                            label="ເວລາ"
-                                            startAdornment={<AccessTime sx={{ color: 'action.active', mr: 1 }} />}
-                                        >
-                                            <MenuItem value="9:00 - 10:30">9:00 - 10:30</MenuItem>
-                                            <MenuItem value="10:30 - 12:00">10:30 - 12:00</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
                             </Grid>
                         </DialogContent>
-                        {/* <DialogActions>
-                            <Button onClick={handleClose}>ຍົກເລີກ</Button>
-                            <Button onClick={handleSave}>ບັນທຶກ</Button>
-                        </DialogActions> */}
+                        <DialogActions>
+                            <Button onClick={handleDialogClose}>ຍົກເລີກ</Button>
+                            <Button onClick={handleSavePetBar}>ບັນທຶກ</Button>
+                        </DialogActions>
                     </Dialog>
                 </Container>
             </Box>
@@ -703,4 +589,4 @@ const BathPet = () => {
     );
 }
 
-export default BathPet;
+export default PetBar;
