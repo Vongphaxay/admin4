@@ -31,6 +31,8 @@ import DoctorTreatPet from './doctor/treatpet'; // Import the doctor's treatpet 
 import GroomerPetBar from './groomer/petbar';
 import GroomerBathpet from './groomer/bathpet';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
+import {loginAdmin , loginGroomer, loginOwner, loginDoctor} from './services/login.service';
+import Cookies from "js-cookie";
 
 
 const AdminLogin = () => {
@@ -41,6 +43,115 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+    const APILOGINAdmin = async () => {
+    try {
+      const response = await loginAdmin(username, password);
+      console.log(response);
+
+      // ✅ Set cookies
+      Cookies.set("name", response.name);
+      Cookies.set("cus_id", response.cus_id);
+      Cookies.set("role", response.role);
+      Cookies.set("accessToken", response.accessToken, {
+        secure: true,
+        sameSite: "strict",
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      const message = error?.response?.data?.error || "Login failed";
+      // if (message === "Password is incorrect") {
+      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
+      // } else if (message === "User not found") {
+      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
+      // } else {
+      //   setError("ເກີດຂໍ້ຜິດພາດ");
+      // }
+    }
+  };
+
+      const APILOGINDoctor = async () => {
+    try {
+      const response = await loginDoctor(username, password);
+      console.log(response);
+
+      // ✅ Set cookies
+      Cookies.set("name", response.name);
+      Cookies.set("cus_id", response.cus_id);
+      Cookies.set("role", response.role);
+      Cookies.set("accessToken", response.accessToken, {
+        secure: true,
+        sameSite: "strict",
+      });
+
+      navigate("/doctor/treatpet");
+    } catch (error) {
+      const message = error?.response?.data?.error || "Login failed";
+      // if (message === "Password is incorrect") {
+      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
+      // } else if (message === "User not found") {
+      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
+      // } else {
+      //   setError("ເກີດຂໍ້ຜິດພາດ");
+      // }
+    }
+  };
+
+      const APILOGINGroomer = async () => {
+    try {
+      const response = await loginGroomer(username, password);
+      console.log(response);
+
+      // ✅ Set cookies
+      Cookies.set("name", response.name);
+      Cookies.set("cus_id", response.cus_id);
+      Cookies.set("role", response.role);
+      Cookies.set("accessToken", response.accessToken, {
+        secure: true,
+        sameSite: "strict",
+      });
+
+      navigate("/groomer/bathpet");
+    } catch (error) {
+      const message = error?.response?.data?.error || "Login failed";
+      // if (message === "Password is incorrect") {
+      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
+      // } else if (message === "User not found") {
+      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
+      // } else {
+      //   setError("ເກີດຂໍ້ຜິດພາດ");
+      // }
+    }
+  };
+
+      const APILOGINOwner = async () => {
+    try {
+      const response = await loginOwner(username, password);
+      console.log(response);
+
+      // ✅ Set cookies
+      Cookies.set("name", response.name);
+      Cookies.set("cus_id", response.cus_id);
+      Cookies.set("role", response.role);
+      Cookies.set("accessToken", response.accessToken, {
+        secure: true,
+        sameSite: "strict",
+      });
+
+      navigate("/owner/dashboard");
+    } catch (error) {
+      const message = error?.response?.data?.error || "Login failed";
+      // if (message === "Password is incorrect") {
+      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
+      // } else if (message === "User not found") {
+      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
+      // } else {
+      //   setError("ເກີດຂໍ້ຜິດພາດ");
+      // }
+    }
+  };
+
 
   const handleLogin = () => {
     setLoading(true);
