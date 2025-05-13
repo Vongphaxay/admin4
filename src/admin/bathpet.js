@@ -49,7 +49,7 @@ import {
     People,
     CalendarMonth,
     Pets,
-    Bathtub, 
+    Bathtub,
     ContentCut,
     Vaccines,
     Menu,
@@ -69,6 +69,7 @@ import {
     Shower,
     CheckCircle
 } from '@mui/icons-material';
+import Cookies from 'js-cookie';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -78,6 +79,10 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     height: 64,
     backgroundColor: theme.palette.primary.dark
 }));
+
+const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const cus_id = Cookies.get("cus_ida");
+const accessToken = Cookies.get("accessTokena");
 
 // Define the drawer width
 const drawerWidth = 240;
@@ -91,7 +96,7 @@ const menuItems = [
     { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
     { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet'},
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
 const BathPet = () => {
@@ -104,15 +109,15 @@ const BathPet = () => {
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [bathData, setBathData] = useState([
-        { 
-            id: 1, 
-            petName: 'ດາວດາຍ', 
-            petType: 'ໝາ', 
-            breed: 'ພັນຈັງເຊຍ', 
+        {
+            id: 1,
+            petName: 'ດາວດາຍ',
+            petType: 'ໝາ',
+            breed: 'ພັນຈັງເຊຍ',
             weight: '12.5',
-            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ', 
+            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ',
             phone: '020 7654 3210',
-            bathDate: '2025-05-08', 
+            bathDate: '2025-05-08',
             timeSlot: '9:00 - 10:30',
             status: 'Pending',
             notes: 'ໃຊ້ແຊມພູພິເສດສຳລັບຜິວແພ້ງ່າຍ.',
@@ -120,15 +125,15 @@ const BathPet = () => {
             staffAssigned: 'ນ. ສະໝອນໃຈ',
             price: '150000'
         },
-        { 
-            id: 2, 
-            petName: 'ແມວມີ່', 
-            petType: 'ແມວ', 
-            breed: 'ພັນແມວໄທ', 
+        {
+            id: 2,
+            petName: 'ແມວມີ່',
+            petType: 'ແມວ',
+            breed: 'ພັນແມວໄທ',
             weight: '4.2',
-            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ', 
+            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ',
             phone: '020 8765 4321',
-            bathDate: '2025-05-08', 
+            bathDate: '2025-05-08',
             timeSlot: '10:30 - 12:00',
             status: 'InProgress',
             notes: 'ຫຼີກລ້ຽງບໍລິເວນຫູ ເນື່ອງຈາກມີການຕິດເຊື້ອ.',
@@ -136,15 +141,15 @@ const BathPet = () => {
             staffAssigned: 'ທ. ສຸລິຍາ',
             price: '120000'
         },
-        { 
-            id: 3, 
-            petName: 'ໂຕໂຕ້', 
-            petType: 'ໝາ', 
-            breed: 'ພັນຈີນິກເຊີ', 
+        {
+            id: 3,
+            petName: 'ໂຕໂຕ້',
+            petType: 'ໝາ',
+            breed: 'ພັນຈີນິກເຊີ',
             weight: '3.8',
-            ownerName: 'ທ. ປະເສີດ ດວງຈັນ', 
+            ownerName: 'ທ. ປະເສີດ ດວງຈັນ',
             phone: '020 9876 5432',
-            bathDate: '2025-05-07', 
+            bathDate: '2025-05-07',
             timeSlot: '14:00 - 15:30',
             status: 'Completed',
             notes: 'ແມງຕະນູໜ້ອຍ, ໃຊ້ຜະລິດຕະພັນກຳຈັດແມງຕະນູ.',
@@ -152,15 +157,15 @@ const BathPet = () => {
             staffAssigned: 'ນ. ສະໝອນໃຈ',
             price: '180000'
         },
-        { 
-            id: 4, 
-            petName: 'ໝີເຊີ', 
-            petType: 'ໝາ', 
-            breed: 'ພັນພູເດີ້ນ', 
+        {
+            id: 4,
+            petName: 'ໝີເຊີ',
+            petType: 'ໝາ',
+            breed: 'ພັນພູເດີ້ນ',
             weight: '22.0',
-            ownerName: 'ນ. ມະນີຈັນ ແສງສະຫວ່າງ', 
+            ownerName: 'ນ. ມະນີຈັນ ແສງສະຫວ່າງ',
             phone: '020 5566 7788',
-            bathDate: '2025-05-08', 
+            bathDate: '2025-05-08',
             timeSlot: '13:00 - 14:30',
             status: 'Canceled',
             notes: 'ລູກຄ້າຍົກເລີກເນື່ອງຈາກເຈັບປ່ວຍ.',
@@ -169,15 +174,15 @@ const BathPet = () => {
             price: '150000'
         },
     ]);
-    const [currentBath, setCurrentBath] = useState({ 
-        petName: '', 
-        petType: '', 
-        breed: '', 
+    const [currentBath, setCurrentBath] = useState({
+        petName: '',
+        petType: '',
+        breed: '',
         weight: '',
-        ownerName: '', 
+        ownerName: '',
         phone: '',
-        bathDate: '', 
-        timeSlot: '', 
+        bathDate: '',
+        timeSlot: '',
         status: '',
         notes: '',
         services: '',
@@ -191,15 +196,15 @@ const BathPet = () => {
             setCurrentBath(bath);
             setEditMode(true);
         } else {
-            setCurrentBath({ 
-                petName: '', 
-                petType: '', 
-                breed: '', 
+            setCurrentBath({
+                petName: '',
+                petType: '',
+                breed: '',
                 weight: '',
-                ownerName: '', 
+                ownerName: '',
                 phone: '',
-                bathDate: new Date().toISOString().split('T')[0], 
-                timeSlot: '', 
+                bathDate: new Date().toISOString().split('T')[0],
+                timeSlot: '',
                 status: 'Pending',
                 notes: '',
                 services: '',
@@ -242,11 +247,16 @@ const BathPet = () => {
     const handleDeleteBath = (id) => setBathData(prevData => prevData.filter(item => item.id !== id));
 
     const handleLogout = () => {
+        Cookies.remove("name_admin");
+        Cookies.remove("cus_ida");
+        Cookies.remove("accessTokena");
+        Cookies.remove("rolea");
         navigate('/');
+        window.location.reload(); // Force reload
     };
 
-    const filteredData = bathData.filter(bath => 
-        bath.petName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const filteredData = bathData.filter(bath =>
+        bath.petName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         bath.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         bath.phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -258,7 +268,7 @@ const BathPet = () => {
 
     // Get status color and label
     const getStatusInfo = (status) => {
-        switch(status) {
+        switch (status) {
             case 'Pending':
                 return { color: 'warning', label: 'ລໍຖ້າ' };
             case 'InProgress':
@@ -367,8 +377,12 @@ const BathPet = () => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        DR. P VETERINARY
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
+                    >
+                        admin: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
@@ -561,7 +575,7 @@ const BathPet = () => {
                                         <TableCell>{bath.staffAssigned}</TableCell>
                                         <TableCell>{parseInt(bath.price).toLocaleString()} ₭</TableCell>
                                         <TableCell>
-                                            <Chip 
+                                            <Chip
                                                 label={getStatusInfo(bath.status).label}
                                                 color={getStatusInfo(bath.status).color}
                                                 size="small"

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Container, 
-  Paper, 
-  CssBaseline, 
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Paper,
+  CssBaseline,
   Alert,
   InputAdornment,
   IconButton,
@@ -31,7 +31,7 @@ import DoctorTreatPet from './doctor/treatpet'; // Import the doctor's treatpet 
 import GroomerPetBar from './groomer/petbar';
 import GroomerBathpet from './groomer/bathpet';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
-import {loginAdmin , loginGroomer, loginOwner, loginDoctor} from './services/login.service';
+import { loginAdmin, loginGroomer, loginOwner, loginDoctor } from './services/login.service';
 import Cookies from "js-cookie";
 
 
@@ -44,21 +44,22 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-    const APILOGINAdmin = async () => {
+  const APILOGINAdmin = async () => {
     try {
       const response = await loginAdmin(username, password);
       console.log(response);
 
       // ✅ Set cookies
-      Cookies.set("name", response.name);
-      Cookies.set("cus_id", response.cus_id);
-      Cookies.set("role", response.role);
-      Cookies.set("accessToken", response.accessToken, {
+      Cookies.set("name_admin", response.name);
+      Cookies.set("cus_ida", response.cus_id);
+      Cookies.set("rolea", response.role);
+      Cookies.set("accessTokena", response.accessToken, {
         secure: true,
         sameSite: "strict",
       });
 
       navigate("/dashboard");
+      window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
       // if (message === "Password is incorrect") {
@@ -71,21 +72,22 @@ const AdminLogin = () => {
     }
   };
 
-      const APILOGINDoctor = async () => {
+  const APILOGINDoctor = async () => {
     try {
       const response = await loginDoctor(username, password);
       console.log(response);
 
       // ✅ Set cookies
-      Cookies.set("name", response.name);
-      Cookies.set("cus_id", response.cus_id);
-      Cookies.set("role", response.role);
-      Cookies.set("accessToken", response.accessToken, {
+      Cookies.set("name_admin", response.name);
+      Cookies.set("cus_ida", response.cus_id);
+      Cookies.set("rolea", response.role);
+      Cookies.set("accessTokena", response.accessToken, {
         secure: true,
         sameSite: "strict",
       });
 
       navigate("/doctor/treatpet");
+      window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
       // if (message === "Password is incorrect") {
@@ -98,21 +100,22 @@ const AdminLogin = () => {
     }
   };
 
-      const APILOGINGroomer = async () => {
+  const APILOGINGroomer = async () => {
     try {
       const response = await loginGroomer(username, password);
       console.log(response);
 
       // ✅ Set cookies
-      Cookies.set("name", response.name);
-      Cookies.set("cus_id", response.cus_id);
-      Cookies.set("role", response.role);
-      Cookies.set("accessToken", response.accessToken, {
+      Cookies.set("name_admin", response.name);
+      Cookies.set("cus_ida", response.cus_id);
+      Cookies.set("rolea", response.role);
+      Cookies.set("accessTokena", response.accessToken, {
         secure: true,
         sameSite: "strict",
       });
 
       navigate("/groomer/bathpet");
+      window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
       // if (message === "Password is incorrect") {
@@ -125,62 +128,65 @@ const AdminLogin = () => {
     }
   };
 
-      const APILOGINOwner = async () => {
+  const APILOGINOwner = async () => {
     try {
       const response = await loginOwner(username, password);
       console.log(response);
 
       // ✅ Set cookies
-      Cookies.set("name", response.name);
-      Cookies.set("cus_id", response.cus_id);
-      Cookies.set("role", response.role);
-      Cookies.set("accessToken", response.accessToken, {
+      Cookies.set("name_admin", response.name);
+      Cookies.set("cus_ida", response.cus_id);
+      Cookies.set("rolea", response.role);
+      Cookies.set("accessTokena", response.accessToken, {
         secure: true,
         sameSite: "strict",
       });
 
-      navigate("/owner/dashboard");
+      navigate("/dashboard");
+      window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
-      // if (message === "Password is incorrect") {
-      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
-      // } else if (message === "User not found") {
-      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
-      // } else {
-      //   setError("ເກີດຂໍ້ຜິດພາດ");
-      // }
+      if (message === "Password is incorrect") {
+        setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
+      } else if (message === "Owner not found") {
+        setError("ບໍ່ພົບຜູ້ໃຊ້");
+      } else {
+        setError("ເກີດຂໍ້ຜິດພາດ");
+      }
     }
   };
 
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setLoading(true);
-    
-    // Simple validation
+
     if (!username.trim() || !password.trim()) {
       setError('ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ');
       setLoading(false);
       return;
     }
-    
-    // Simulate authentication and redirect based on role
-    setTimeout(() => {
-      setLoading(false);
-      
+
       if (role === 'owner') {
-        navigate('/dashboard'); // Redirect owner to dashboard
+        await APILOGINOwner(); // only navigates if successful
       } else if (role === 'admin') {
-        navigate('/dashboard');
+        await APILOGINAdmin(); // only navigates if successful
       } else if (role === 'doctor') {
-        navigate('/doctor/treatpet');
+        await APILOGINDoctor(); // only navigates if successful
       } else if (role === 'groomer') {
-        // Fixed the error: Changed the comma to semicolon and added braces for the if block
-        navigate('/groomer/bathpet');
-      } else if (role === 'groomer') {
-        // Fixed the error: Changed the comma to semicolon and added braces for the if block
-        navigate('/groomer/petbar');
+        await APILOGINGroomer(); // only navigates if successful
       }
-    }, 800);
+      
+        // Simulate loading delay
+        setTimeout(() => {
+          // setLoading(false);
+          // if (role === 'admin') {
+          //   navigate('/dashboard');
+          // } else if (role === 'doctor') {
+          //   navigate('/doctor/treatpet');
+          // } else if (role === 'groomer') {
+          //   navigate('/groomer/bathpet'); // Choose correct path here
+          // }
+        }, 800);
   };
 
   const handleClickShowPassword = () => {
@@ -252,14 +258,14 @@ const AdminLogin = () => {
               }}
             />
 
-            <Box 
-              display="flex" 
-              flexDirection="column" 
-              alignItems="center" 
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
               width="100%"
               mb={4}
             >
-              <Box 
+              <Box
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -284,12 +290,12 @@ const AdminLogin = () => {
               <Divider sx={{ width: '40%', my: 2 }} />
             </Box>
 
-            {error && 
+            {error &&
               <Fade in={!!error}>
-                <Alert 
-                  severity="error" 
-                  sx={{ 
-                    width: '100%', 
+                <Alert
+                  severity="error"
+                  sx={{
+                    width: '100%',
                     marginBottom: 2,
                     boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                   }}
@@ -330,7 +336,7 @@ const AdminLogin = () => {
                       },
                     }}
                   />
-                  
+
                   <FormControl sx={{ minWidth: 200 }}>
                     <InputLabel id="role-select-label">ປະເພດຜູ້ໃຊ້</InputLabel>
                     <Select
@@ -365,7 +371,7 @@ const AdminLogin = () => {
                   </FormControl>
                 </Box>
               </Grid>
-              
+
               <Grid item xs={12}>
                 <TextField
                   label="ລະຫັດຜ່ານ"
@@ -408,13 +414,13 @@ const AdminLogin = () => {
                   }}
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
                 <Button
                   variant="contained"
                   fullWidth
                   onClick={handleLogin}
-                  disabled={loading}
+                  // disabled={loading}
                   startIcon={<LoginIcon />}
                   sx={{
                     marginTop: 1,
@@ -431,7 +437,7 @@ const AdminLogin = () => {
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  {loading ? 'ກຳລັງເຂົ້າສູ່ລະບົບ...' : 'ເຂົ້າສູ່ລະບົບ'}
+                  ເຂົ້າສູ່ລະບົບ
                 </Button>
               </Grid>
             </Grid>

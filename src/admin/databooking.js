@@ -46,7 +46,7 @@ import {
     People,
     CalendarMonth,
     Pets,
-    Bathtub, 
+    Bathtub,
     ContentCut,
     Vaccines,
     Menu,
@@ -55,6 +55,7 @@ import {
     Close,
     Logout
 } from '@mui/icons-material';
+import Cookies from 'js-cookie';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -65,6 +66,10 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
+const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const cus_id = Cookies.get("cus_ida");
+const accessToken = Cookies.get("accessTokena");
+
 // Define the drawer width
 const drawerWidth = 240;
 
@@ -72,11 +77,11 @@ const drawerWidth = 240;
 const menuItems = [
     { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard' },
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
-    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ' , path: '/datacustomer' },
+    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking', active: true },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ' , path: '/petboarding'},
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
     { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ' , path: '/petbar'},
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
@@ -225,8 +230,12 @@ const BookingTable = () => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        DR. P VETERINARY
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
+                    >
+                        admin: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />

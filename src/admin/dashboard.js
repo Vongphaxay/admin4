@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, LinearProgress, Chip, Stack, Container, useTheme, styled
 } from '@mui/material';
@@ -6,6 +5,10 @@ import {
     ChevronRight, Home, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, TrendingUp, CheckCircle, AttachMoney, Notifications, Close
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { getNormalReport } from '../services/report.service';
+import React, { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -16,17 +19,21 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
+const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const cus_id = Cookies.get("cus_ida");
+const accessToken = Cookies.get("accessTokena");
+
 
 // Mock data from the original code
 const menuItems = [
     { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard', active: true },
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
-    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ' , path: '/datacustomer' },
+    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
     { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ' , path: '/bathpet'},
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ' , path: '/treatpet'},
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
 const recentBookings = [
@@ -46,10 +53,36 @@ const services = [
 // Define the drawer width
 const drawerWidth = 240;
 
+
+
 const Dashboard = () => {
     const theme = useTheme();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [reportData, setReportData] = useState(null);
+
+    // Count the number of 'ໝາ' and 'ແມວ' pets
+    const pets = reportData?.report?.report_pet ?? [];
+
+    // Calculate dog and cat counts
+    const dogCount = pets.filter(pet => pet.pet_type === 'ໝາ').length;
+    const catCount = pets.filter(pet => pet.pet_type === 'ແມວ').length;
+
+    // Calculate percentages
+    const totalPets = pets.length;
+    const dogPercentage = totalPets ? (dogCount / totalPets) * 100 : 0;
+    const catPercentage = totalPets ? (catCount / totalPets) * 100 : 0;
+
+
+
+    useEffect(() => {
+        const getNormalReportapi = async () => {
+            const response = await getNormalReport(accessToken);
+            console.log(response);
+            setReportData(response);
+        };
+        getNormalReportapi();
+    }, []);
 
     // Toggle sidebar for desktop
     const toggleSidebar = () => {
@@ -62,8 +95,14 @@ const Dashboard = () => {
     };
 
     const handleLogout = () => {
+        Cookies.remove("name_admin");
+        Cookies.remove("cus_ida");
+        Cookies.remove("accessTokena");
+        Cookies.remove("rolea");
         navigate('/');
+        window.location.reload(); // Force reload
     };
+
     const navigate = useNavigate();
 
 
@@ -163,9 +202,14 @@ const Dashboard = () => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        admin
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
+                    >
+                        admin: {admin_name}
                     </Typography>
+
                     <IconButton color="inherit">
                         <Notifications />
                     </IconButton>
@@ -178,6 +222,7 @@ const Dashboard = () => {
                     >
                         ອອກຈາກລະບົບ
                     </Button>
+
                 </Toolbar>
             </AppBar>
 
@@ -259,8 +304,11 @@ const Dashboard = () => {
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Box>
                                                 <Typography variant="h6" color="text.secondary">ລູກຄ້າທັງໝົດ</Typography>
-                                                <Typography variant="h3" fontWeight="bold" color="primary.dark" mt={2}>865</Typography>
+                                                <Typography variant="h3" fontWeight="bold" color="primary.dark" mt={2}>
+                                                    {reportData?.report?.report_customer?.length ?? 0}
+                                                </Typography>
                                             </Box>
+
                                             <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.dark', width: 56, height: 56 }}>
                                                 <People sx={{ fontSize: 32 }} />
                                             </Avatar>
@@ -286,7 +334,9 @@ const Dashboard = () => {
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Box>
                                                 <Typography variant="h6" color="text.secondary">ສັດລ້ຽງມື້ນີ້</Typography>
-                                                <Typography variant="h3" fontWeight="bold" color="secondary.dark" mt={2}>32</Typography>
+                                                <Typography variant="h3" fontWeight="bold" color="secondary.dark" mt={2}>
+                                                    {reportData?.report?.report_pet?.length ?? 0}
+                                                </Typography>
                                             </Box>
                                             <Avatar sx={{ bgcolor: 'secondary.light', color: 'secondary.dark', width: 56, height: 56 }}>
                                                 <Pets sx={{ fontSize: 32 }} />
@@ -316,7 +366,9 @@ const Dashboard = () => {
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Box>
                                                 <Typography variant="h6" color="text.secondary">ການຈອງທັງໝົດ</Typography>
-                                                <Typography variant="h3" fontWeight="bold" color="warning.dark" mt={2}>126</Typography>
+                                                <Typography variant="h3" fontWeight="bold" color="warning.dark" mt={2}>
+                                                    {reportData?.report?.report_book?.length ?? 0}
+                                                </Typography>
                                             </Box>
                                             <Avatar sx={{ bgcolor: 'warning.light', color: 'warning.dark', width: 56, height: 56 }}>
                                                 <CalendarMonth sx={{ fontSize: 32 }} />
@@ -343,7 +395,11 @@ const Dashboard = () => {
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Box>
                                                 <Typography variant="h6" color="text.secondary">ກົງສັດລ້ຽງທີ່ຍັງວ່າງ</Typography>
-                                                <Typography variant="h3" fontWeight="bold" color="success.dark" mt={2}>8/12</Typography>
+                                                <Typography variant="h3" fontWeight="bold" color="success.dark" mt={2}>
+                                                    {
+                                                        `${reportData?.report?.report_roompet?.filter(room => room.status === "ບໍ່ວ່າງ")?.length ?? 0} / ${reportData?.report?.report_roompet?.length ?? 0}`
+                                                    }
+                                                </Typography>
                                             </Box>
                                             <Avatar sx={{ bgcolor: 'success.light', color: 'success.dark', width: 56, height: 56 }}>
                                                 <Pets sx={{ fontSize: 32 }} />
@@ -394,9 +450,10 @@ const Dashboard = () => {
                         <Grid item xs={12} md={6}>
                             <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
                                 <Typography variant="h6" fontWeight="bold" mb={3}>ປະເພດສັດລ້ຽງ</Typography>
-                                {/* Donut Chart Placeholder */}
+
+                                {/* Donut Chart */}
                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 240, position: 'relative' }}>
-                                    {/* Using Box components to mock a donut chart */}
+                                    {/* Donut Chart Container */}
                                     <Box sx={{
                                         position: 'relative',
                                         width: 160,
@@ -407,7 +464,7 @@ const Dashboard = () => {
                                         borderColor: 'primary.main',
                                         boxSizing: 'border-box'
                                     }}>
-                                        {/* Pink section - 30% */}
+                                        {/* Dog section */}
                                         <Box sx={{
                                             position: 'absolute',
                                             top: -16,
@@ -415,12 +472,13 @@ const Dashboard = () => {
                                             width: 160,
                                             height: 160,
                                             borderRadius: '50%',
-                                            clipPath: 'polygon(50% 50%, 100% 0, 100% 60%, 50% 50%)',
+                                            clipPath: `polygon(50% 50%, 100% 0, 100% ${dogPercentage}%, 50% 50%)`,
                                             border: '16px solid',
                                             borderColor: 'secondary.main',
                                             boxSizing: 'border-box'
                                         }} />
                                     </Box>
+
                                     {/* Legend */}
                                     <Stack
                                         direction="row"
@@ -434,11 +492,15 @@ const Dashboard = () => {
                                     >
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Box sx={{ width: 12, height: 12, borderRadius: 6, bgcolor: 'primary.main', mr: 1 }} />
-                                            <Typography variant="caption" color="text.secondary">ໝາ 60%</Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                {dogCount} ໝາ ({dogPercentage.toFixed(1)}%)
+                                            </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Box sx={{ width: 12, height: 12, borderRadius: 6, bgcolor: 'secondary.main', mr: 1 }} />
-                                            <Typography variant="caption" color="text.secondary">ແມວ 30%</Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                {catCount} ແມວ ({catPercentage.toFixed(1)}%)
+                                            </Typography>
                                         </Box>
                                     </Stack>
                                 </Box>
@@ -447,7 +509,7 @@ const Dashboard = () => {
                     </Grid>
                 </Container>
             </Box>
-        </Box>
+        </Box >
     );
 };
 

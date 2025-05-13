@@ -15,6 +15,7 @@ import {
     LocalHospital, CalendarToday, AttachMoney, Assignment, EventNote
 } from '@mui/icons-material';
 import { Description } from '@mui/icons-material';
+import Cookies from 'js-cookie';
 
 // ກຳນົດ container ສຳລັບ logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -25,6 +26,9 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
+const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const cus_id = Cookies.get("cus_ida");
+const accessToken = Cookies.get("accessTokena");
 // ກຳນົດຄວາມກວ້າງຂອງ drawer
 const drawerWidth = 240;
 
@@ -299,8 +303,12 @@ const TreatPet = () => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        DR. P VETERINARY
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
+                    >
+                        admin: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />

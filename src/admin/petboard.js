@@ -66,6 +66,7 @@ import {
     EventNote,
     PetsOutlined
 } from '@mui/icons-material';
+import Cookies from 'js-cookie';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -75,6 +76,10 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     height: 64,
     backgroundColor: theme.palette.primary.dark
 }));
+
+const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const cus_id = Cookies.get("cus_ida");
+const accessToken = Cookies.get("accessTokena");
 
 // Define the drawer width
 const drawerWidth = 240;
@@ -317,8 +322,12 @@ const PetBoarding = () => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        DR. P VETERINARY
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
+                    >
+                        admin: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
