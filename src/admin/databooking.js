@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -56,6 +56,7 @@ import {
     Logout
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+import { GetAllbooking } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -92,11 +93,53 @@ const BookingTable = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [bookingData, setBookingData] = useState([
-        { id: 1, petName: 'Max', ownerName: 'John Doe', service: 'Bath', date: '2025-05-05', status: 'Confirmed' },
-        { id: 2, petName: 'Bella', ownerName: 'Jane Smith', service: 'Vaccination', date: '2025-05-06', status: 'Pending' },
-        { id: 3, petName: 'Charlie', ownerName: 'Sam Wilson', service: 'Grooming', date: '2025-05-07', status: 'Confirmed' },
-    ]);
+    const [reportData, setReportData] = useState(null);
+    const [bookingData, setBookingData] = useState([]);
+
+    useEffect(() => {
+        const getAllbokapi = async () => {
+            try {
+                const response = await GetAllbooking(accessToken);
+                const flatBookings = [];
+
+                response.report.forEach((room) => {
+                    room.tb_bookings.forEach((b) => {
+                        flatBookings.push({
+                            id: b.book_id,
+                            roomName: room.room_name,
+                            roomId: room.room_id,
+                            price: room.price,
+                            status: room.status,
+                            start_date: b.start_date,
+                            stop_date: b.stop_date,
+                            total: b.total,
+                            petName: b.pet?.pet_name || "",
+                            customerName: b.cu?.cus_name || "",
+                            pet: {
+                                id: b.pet?.pet_id,
+                                type: b.pet?.pet_type,
+                                gender: b.pet?.gender,
+                                size: b.pet?.size,
+                            },
+                            customer: {
+                                id: b.cu?.cus_id,
+                                phone: b.cu?.tel,
+                                address: b.cu?.address,
+                            }
+                        });
+                    });
+                });
+
+                setBookingData(flatBookings);
+                setReportData(response); // raw backup
+            } catch (error) {
+                console.error('Error fetching bookings:', error);
+            }
+        };
+
+        getAllbokapi();
+    }, [accessToken]);
+
     const [currentBooking, setCurrentBooking] = useState({ petName: '', ownerName: '', service: '', date: '', status: '' });
 
     const handleDialogOpen = (booking = null) => {
@@ -326,14 +369,6 @@ const BookingTable = () => {
                     <Box sx={{ mb: 4 }}>
                         <Typography variant="h4" fontWeight="bold" color="primary">ຕາຕະລາງການຈອງ</Typography>
                     </Box>
-
-                    <Button
-                        variant="contained"
-                        sx={{ mb: 3, bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
-                        startIcon={<AddCircle />}
-                        onClick={() => handleDialogOpen()}
-                    >ເພີ່ມການຈອງ</Button>
-
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
@@ -341,8 +376,9 @@ const BookingTable = () => {
                                     <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
                                     <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
                                     <TableCell>ບໍລິການ</TableCell>
-                                    <TableCell>ວັນທີ</TableCell>
-                                    <TableCell>ສະຖານະ</TableCell>
+                                    <TableCell>ວັນທີເລີ່ມ</TableCell>
+                                    <TableCell>ວັນທີສິ້ນສຸດ</TableCell>
+                                    <TableCell>ລາຄາ</TableCell>
                                     <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -350,13 +386,14 @@ const BookingTable = () => {
                                 {bookingData.map((booking) => (
                                     <TableRow key={booking.id}>
                                         <TableCell>{booking.petName}</TableCell>
-                                        <TableCell>{booking.ownerName}</TableCell>
+                                        <TableCell>{booking.customerName}</TableCell>
                                         <TableCell>{booking.service === 'Bath' ? 'ອາບນ້ຳ' : booking.service === 'Vaccination' ? 'ວັກຊີນ' : booking.service === 'Grooming' ? 'ຕັດຂົນ' : booking.service}</TableCell>
-                                        <TableCell>{booking.date}</TableCell>
-                                        <TableCell>{booking.status === 'Confirmed' ? 'ຢືນຢັນແລ້ວ' : booking.status === 'Pending' ? 'ລໍຖ້າ' : booking.status === 'Cancelled' ? 'ຍົກເລີກ' : booking.status}</TableCell>
+                                        <TableCell>{booking.start_date}</TableCell>
+                                        <TableCell>{booking.stop_date}</TableCell>
+                                        <TableCell>{booking.total}</TableCell>
+                                        {/* <TableCell>{booking.status === 'Confirmed' ? 'ຢືນຢັນແລ້ວ' : booking.status === 'Pending' ? 'ລໍຖ້າ' : booking.status === 'Cancelled' ? 'ຍົກເລີກ' : booking.status}</TableCell> */}
                                         <TableCell>
                                             <IconButton onClick={() => handleDialogOpen(booking)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
-                                            <IconButton onClick={() => handleDeleteBooking(booking.id)} color="error"><Delete /></IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -380,8 +417,8 @@ const BookingTable = () => {
                                     <TextField
                                         label="ຊື່ເຈົ້າຂອງ"
                                         fullWidth
-                                        value={currentBooking.ownerName}
-                                        onChange={(e) => setCurrentBooking({ ...currentBooking, ownerName: e.target.value })}
+                                        value={currentBooking.customerName}
+                                        onChange={(e) => setCurrentBooking({ ...currentBooking, customerName: e.target.value })}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -400,27 +437,33 @@ const BookingTable = () => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
-                                        label="ວັນທີ"
+                                        label="ວັນທີເລີ່ມ"
                                         type="date"
                                         fullWidth
-                                        value={currentBooking.date}
-                                        onChange={(e) => setCurrentBooking({ ...currentBooking, date: e.target.value })}
+                                        value={currentBooking.start_date}
+                                        onChange={(e) => setCurrentBooking({ ...currentBooking, start_date: e.target.value })}
                                         InputLabelProps={{ shrink: true }}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ສະຖານະ</InputLabel>
-                                        <Select
-                                            value={currentBooking.status}
-                                            onChange={(e) => setCurrentBooking({ ...currentBooking, status: e.target.value })}
-                                            label="ສະຖານະ"
-                                        >
-                                            <MenuItem value="Confirmed">ຢືນຢັນແລ້ວ</MenuItem>
-                                            <MenuItem value="Pending">ລໍຖ້າ</MenuItem>
-                                            <MenuItem value="Cancelled">ຍົກເລີກ</MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                    <TextField
+                                        label="ວັນທີສິ້ນສຸດ"
+                                        type="date"
+                                        fullWidth
+                                        value={currentBooking.stop_date}
+                                        onChange={(e) => setCurrentBooking({ ...currentBooking, stop_date: e.target.value })}
+                                        InputLabelProps={{ shrink: true }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="ລາຄາ"
+                                        type="price"
+                                        fullWidth
+                                        value={currentBooking.total}
+                                        onChange={(e) => setCurrentBooking({ ...currentBooking, total: e.target.value })}
+                                        InputLabelProps={{ shrink: true }}
+                                    />
                                 </Grid>
                             </Grid>
                         </DialogContent>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container, Chip
@@ -7,6 +7,8 @@ import {
     Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+import { getReportallcus, DeleteCustomer } from '../services/report.service';
+
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -23,6 +25,28 @@ const accessToken = Cookies.get("accessTokena");
 
 // Define the drawer width
 const drawerWidth = 240;
+
+const Deletecusapi = async (cus_id) => {
+    try {
+        const response = await DeleteCustomer(cus_id, accessToken);
+        return response;
+    } catch (error) {
+        const message = error?.response?.data?.error;
+
+        if (message?.includes("foreign key constraint fails")) {
+            alert("ບໍ່ສາມາດລົບລູກຄ້ານີ້ໄດ້ ເນື່ອງຈາກຍັງມີຂໍ້ມູນການຈອງຢູ່.");
+        } else {
+            // แสดงข้อความทั่วไป ถ้าไม่ใช่ error แบบ foreign key
+            alert("ເກີດຂໍ້ຜິດພາດໃນການລົບຂໍ້ມູນ. ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.");
+        }
+
+        // Log ใน console สำหรับนักพัฒนา
+        console.error("❌ Delete error:", error.response?.data || error.message);
+    }
+};
+
+
+
 
 // Menu items
 const menuItems = [
@@ -44,47 +68,27 @@ const CustomerManagement = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [petDialogOpen, setPetDialogOpen] = useState(false);
-    const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
-    const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [customerData, setCustomerData] = useState([
-        {
-            id: 1,
-            name: 'ທ. ສຸລິຍະ ແສງມະນີ',
-            phone: '020 5555 1234',
-            email: 'suriya@example.com',
-            address: 'ບ້ານ ດົງໂດກ, ເມືອງ ໄຊທານີ, ນະຄອນຫຼວງວຽງຈັນ',
-            status: 'Regular',
-            pets: [
-                { id: 1, name: 'ມີກີ້', type: 'ໝາ', breed: 'ປອມ', age: '3 ປີ', gender: 'ຜູ້' },
-                { id: 2, name: 'ໂຕໂຕ້', type: 'ໝາ', breed: 'ຊິບ້າ', age: '1 ປີ', gender: 'ແມ່' }
-            ]
-        },
-        {
-            id: 2,
-            name: 'ນ. ນິດຕະຍາ ພົມມະວົງ',
-            phone: '020 7777 8888',
-            email: 'nittaya@example.com',
-            address: 'ບ້ານ ທາດຫຼວງ, ເມືອງ ຈັນທະບູລີ, ນະຄອນຫຼວງວຽງຈັນ',
-            status: 'VIP',
-            pets: [
-                { id: 3, name: 'ກິບກີ້', type: 'ແມວ', breed: 'ເປີເຊຍ', age: '2 ປີ', gender: 'ແມ່' }
-            ]
-        },
-        {
-            id: 3,
-            name: 'ທ. ຄຳຫຼ້າ ສຸວັນນະພູມ',
-            phone: '020 9999 0000',
-            email: 'khamla@example.com',
-            address: 'ບ້ານ ໂພນຕ້ອງ, ເມືອງ ສີໂຄດຕະບອງ, ນະຄອນຫຼວງວຽງຈັນ',
-            status: 'New',
-            pets: [
-                { id: 4, name: 'ໂລຊີ', type: 'ໝາ', breed: 'ກົນຈອນ', age: '5 ປີ', gender: 'ແມ່' },
-                { id: 5, name: 'ບາດູ', type: 'ໝາ', breed: 'ພິດບູນ', age: '4 ປີ', gender: 'ຜູ້' },
-                { id: 6, name: 'ລູລູ່', type: 'ແມວ', breed: 'ສະກັອດຕິຊໂຟລ', age: '1 ປີ', gender: 'ແມ່' }
-            ]
-        },
-    ]);
+    const [reportData, setReportData] = useState(null);
+
+    const [customerData, setCustomerData] = useState([]);
+    useEffect(() => {
+        const getReportallcusapi = async () => {
+            const response = await getReportallcus(accessToken);
+            const mappedData = response.report.map((item) => ({
+                id: item.cus_id,
+                name: item.cus_name,
+                gender: item.gender,
+                phone: item.tel,
+                address: item.address,
+                username: item.username,
+                pets: [] // หากไม่มี pets จาก API ก็ใส่ array ว่างไว้
+            }));
+            setCustomerData(mappedData);
+            setReportData(response); // เก็บ raw data เผื่อไว้ใช้
+        };
+        getReportallcusapi();
+    }, [accessToken]);
+
     const [currentCustomer, setCurrentCustomer] = useState({
         name: '',
         phone: '',
@@ -97,6 +101,7 @@ const CustomerManagement = () => {
     const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
     const handleDialogOpen = (customer = null) => {
+        console.log(customer.id);
         if (customer) {
             setCurrentCustomer({ ...customer });
             setEditMode(true);
@@ -111,10 +116,6 @@ const CustomerManagement = () => {
         setMobileOpen(!mobileOpen);
     };
 
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
-    };
-
     const handleDialogClose = () => setOpenDialog(false);
 
     const handleSaveCustomer = () => {
@@ -126,71 +127,14 @@ const CustomerManagement = () => {
         setOpenDialog(false);
     };
 
-    const handleDeleteCustomer = (id) => {
+    const handleDeleteCustomer = async (id) => {
+        console.log(id);
         if (window.confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນລູກຄ້ານີ້?')) {
-            setCustomerData(prevData => prevData.filter(item => item.id !== id));
+            await Deletecusapi(id);
+            // setCustomerData(prevData => prevData.filter(item => item.id !== id));
+            window.location.reload();
+
         }
-    };
-
-    const handlePetDialogOpen = (customerId, pet = null) => {
-        setSelectedCustomerId(customerId);
-        if (pet) {
-            setCurrentPet({ ...pet });
-            setEditMode(true);
-        } else {
-            setCurrentPet({ name: '', type: '', breed: '', age: '', gender: '' });
-            setEditMode(false);
-        }
-        setPetDialogOpen(true);
-    };
-
-    const handlePetDialogClose = () => setPetDialogOpen(false);
-
-    const handleSavePet = () => {
-        const updatedCustomerData = customerData.map(customer => {
-            if (customer.id === selectedCustomerId) {
-                if (editMode) {
-                    const updatedPets = customer.pets.map(pet =>
-                        pet.id === currentPet.id ? currentPet : pet
-                    );
-                    return { ...customer, pets: updatedPets };
-                } else {
-                    const newPet = {
-                        ...currentPet,
-                        id: Math.max(0, ...customer.pets.map(p => p.id)) + 1
-                    };
-                    return { ...customer, pets: [...customer.pets, newPet] };
-                }
-            }
-            return customer;
-        });
-
-        setCustomerData(updatedCustomerData);
-        setPetDialogOpen(false);
-    };
-
-    const handleDeletePet = (customerId, petId) => {
-        if (window.confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນສັດລ້ຽງນີ້?')) {
-            const updatedCustomerData = customerData.map(customer => {
-                if (customer.id === customerId) {
-                    return {
-                        ...customer,
-                        pets: customer.pets.filter(pet => pet.id !== petId)
-                    };
-                }
-                return customer;
-            });
-            setCustomerData(updatedCustomerData);
-        }
-    };
-
-    const handleViewDetails = (customer) => {
-        setSelectedCustomer(customer);
-        setViewDetailsOpen(true);
-    };
-
-    const handleViewDetailsClose = () => {
-        setViewDetailsOpen(false);
     };
 
     const handleNavigate = (path) => {
@@ -203,20 +147,17 @@ const CustomerManagement = () => {
         }
     };
 
-    const filteredCustomers = customerData.filter(customer =>
-        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone.includes(searchQuery) ||
-        customer.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredCustomers = customerData.filter((customer) => {
+        const name = customer.name?.toLowerCase() || '';
+        const phone = customer.phone || '';
+        const gender = customer.gender?.toLowerCase() || '';
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'VIP': return { bg: '#ffa000', color: '#fff' };
-            case 'Regular': return { bg: '#2e7d32', color: '#fff' };
-            case 'New': return { bg: '#1976d2', color: '#fff' };
-            default: return { bg: '#9e9e9e', color: '#fff' };
-        }
-    };
+        return (
+            name.includes(searchQuery.toLowerCase()) ||
+            phone.includes(searchQuery) ||
+            gender.includes(searchQuery.toLowerCase())
+        );
+    });
 
     const drawerContent = (
         <>
@@ -452,14 +393,74 @@ const CustomerManagement = () => {
                                 {filteredCustomers.map((customer) => (
                                     <TableRow key={customer.id}>
                                         <TableCell>{customer.name}</TableCell>
+                                        <TableCell>{customer.gender}</TableCell>
+                                        <TableCell>{customer.address}</TableCell>
                                         <TableCell>{customer.phone}</TableCell>
-                                        <TableCell>{customer.email}</TableCell>
-                                        <TableCell>{customer.phone}</TableCell>
-                                        <TableCell>{customer.pets?.length || 0}</TableCell>
+                                        <TableCell>{customer.username}</TableCell>
                                         <TableCell>
-                                            <IconButton onClick={() => handleDialogOpen()} sx={{ color: '#1976d2' }}><Edit /></IconButton>
-                                            <IconButton onClick={() => handleDeleteCustomer()} color="error"><Delete /></IconButton>
+                                            <IconButton onClick={() => handleDialogOpen(customer)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
+                                            <IconButton onClick={() => handleDeleteCustomer(customer.id)} color="error"><Delete /></IconButton>
                                         </TableCell>
+
+                                        {/* Dialog */}
+                                        <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
+                                            <DialogTitle sx={{ bgcolor: theme.palette.primary.main, color: 'white' }}>
+                                                {editMode ? 'ແກ້ໄຂຂໍ້ມູນລູກຄ້າ' : 'ເພີ່ມຂໍ້ມູນລູກຄ້າໃໝ່'}
+                                            </DialogTitle>
+                                            <DialogContent sx={{ pt: 2, mt: 2 }}>
+                                                <Grid container spacing={2}>
+                                                    <Grid item xs={12}><Typography variant="subtitle1" fontWeight="bold">ຂໍ້ມູນລູກຄ້າ</Typography></Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="ຊື່ ແລະ ນາມສະກຸນ"
+                                                            value={currentCustomer.name}
+                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, name: e.target.value })}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="ເພດ"
+                                                            value={currentCustomer.gender}
+                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, gender: e.target.value })}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="ຊື່ຜູ້ໃຊ້"
+                                                            value={currentCustomer.username}
+                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, username: e.target.value })}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="ທີ່ຢູ່"
+                                                            multiline
+                                                            rows={2}
+                                                            value={currentCustomer.address}
+                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, address: e.target.value })}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="ເບີໂທລະສັບ"
+                                                            value={currentCustomer.phone}
+                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, phone: e.target.value })}
+                                                        />
+                                                    </Grid>
+                                                </Grid>
+                                            </DialogContent>
+                                            <DialogActions sx={{ px: 3, pb: 2 }}>
+                                                <Button onClick={handleDialogClose} variant="outlined">ຍົກເລີກ</Button>
+                                                <Button onClick={handleSaveCustomer} variant="contained" color="primary" startIcon={<Edit />}>
+                                                    {editMode ? 'ແກ້ໄຂ' : 'ບັນທຶກ'}
+                                                </Button>
+                                            </DialogActions>
+                                        </Dialog>
                                     </TableRow>
                                 ))}
                                 {filteredCustomers.length === 0 && (
