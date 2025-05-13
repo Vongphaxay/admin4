@@ -31,7 +31,7 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer', active: true },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
     { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet'},
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
@@ -317,7 +317,7 @@ const CustomerManagement = () => {
                         component="div"
                         sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
                     >
-                        admin: {admin_name}
+                        Admin: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
@@ -433,14 +433,6 @@ const CustomerManagement = () => {
                             }}
                             sx={{ flexGrow: 1 }}
                         />
-                        <Button
-                            variant="contained"
-                            startIcon={<AddCircle />}
-                            onClick={() => handleDialogOpen()}
-                            sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
-                        >
-                            ເພີ່ມລູກຄ້າ
-                        </Button>
                     </Paper>
 
                     {/* Customer Table */}
@@ -449,10 +441,10 @@ const CustomerManagement = () => {
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
                                     <TableCell>ຊື່ ແລະ ນາມສະກຸນ</TableCell>
+                                    <TableCell>ເພດ</TableCell>
+                                    <TableCell>ທີ່ຢູ່</TableCell>
                                     <TableCell>ເບີໂທລະສັບ</TableCell>
-                                    <TableCell>ອີເມວ</TableCell>
-                                    <TableCell>ສະຖານະ</TableCell>
-                                    <TableCell>ຈຳນວນສັດລ້ຽງ</TableCell>
+                                    <TableCell>ຊື່ຜູ້ໃຊ້</TableCell>
                                     <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -462,31 +454,11 @@ const CustomerManagement = () => {
                                         <TableCell>{customer.name}</TableCell>
                                         <TableCell>{customer.phone}</TableCell>
                                         <TableCell>{customer.email}</TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={customer.status === 'VIP' ? 'ວີໄອພີ' :
-                                                    customer.status === 'Regular' ? 'ປົກກະຕິ' :
-                                                        customer.status === 'New' ? 'ໃໝ່' : customer.status}
-                                                sx={{
-                                                    bgcolor: getStatusColor(customer.status).bg,
-                                                    color: getStatusColor(customer.status).color,
-                                                    fontWeight: 'medium'
-                                                }}
-                                                size="small"
-                                            />
-                                        </TableCell>
+                                        <TableCell>{customer.phone}</TableCell>
                                         <TableCell>{customer.pets?.length || 0}</TableCell>
                                         <TableCell>
-                                            <Button 
-                                                variant="text" 
-                                                color="primary" 
-                                                size="small"
-                                                onClick={() => handleViewDetails(customer)}
-                                            >
-                                                ລາຍລະອຽດ
-                                            </Button>
-                                            <IconButton onClick={() => handleDialogOpen(customer)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
-                                            <IconButton onClick={() => handleDeleteCustomer(customer.id)} color="error"><Delete /></IconButton>
+                                            <IconButton onClick={() => handleDialogOpen()} sx={{ color: '#1976d2' }}><Edit /></IconButton>
+                                            <IconButton onClick={() => handleDeleteCustomer()} color="error"><Delete /></IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -498,278 +470,6 @@ const CustomerManagement = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-
-                    {/* Add/Edit Customer Dialog */}
-                    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-                        <DialogTitle>{editMode ? 'ແກ້ໄຂຂໍ້ມູນລູກຄ້າ' : 'ເພີ່ມລູກຄ້າ'}</DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ຊື່ ແລະ ນາມສະກຸນ"
-                                        fullWidth
-                                        value={currentCustomer.name}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, name: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Person sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ເບີໂທລະສັບ"
-                                        fullWidth
-                                        value={currentCustomer.phone}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, phone: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Phone sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ອີເມວ"
-                                        type="email"
-                                        fullWidth
-                                        value={currentCustomer.email}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, email: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Email sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ທີ່ຢູ່"
-                                        fullWidth
-                                        multiline
-                                        rows={2}
-                                        value={currentCustomer.address}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, address: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <LocationOn sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ສະຖານະ</InputLabel>
-                                        <Select
-                                            value={currentCustomer.status || 'New'}
-                                            label="ສະຖານະ"
-                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, status: e.target.value })}
-                                        >
-                                            <MenuItem value="New">ໃໝ່</MenuItem>
-                                            <MenuItem value="Regular">ປົກກະຕິ</MenuItem>
-                                            <MenuItem value="VIP">ວີໄອພີ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Grid>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleDialogClose}>ຍົກເລີກ</Button>
-                            <Button onClick={handleSaveCustomer} variant="contained" color="primary">ບັນທຶກ</Button>
-                        </DialogActions>
-                    </Dialog>
-
-                    {/* View Customer Details Dialog */}
-                    <Dialog open={viewDetailsOpen} onClose={handleViewDetailsClose} maxWidth="md" fullWidth>
-                        {selectedCustomer && (
-                            <>
-                                <DialogTitle>
-                                    <Box display="flex" alignItems="center" justifyContent="space-between">
-                                        <Typography variant="h6">{selectedCustomer.name}</Typography>
-                                        <Chip
-                                            label={selectedCustomer.status === 'VIP' ? 'ວີໄອພີ' :
-                                                selectedCustomer.status === 'Regular' ? 'ປົກກະຕິ' :
-                                                    selectedCustomer.status === 'New' ? 'ໃໝ່' : selectedCustomer.status}
-                                            sx={{
-                                                bgcolor: getStatusColor(selectedCustomer.status).bg,
-                                                color: getStatusColor(selectedCustomer.status).color,
-                                                fontWeight: 'medium'
-                                            }}
-                                            size="small"
-                                        />
-                                    </Box>
-                                </DialogTitle>
-                                <DialogContent>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} md={6}>
-                                            <Paper elevation={1} sx={{ p: 2, height: '100%' }}>
-                                                <Typography variant="subtitle1" color="primary" fontWeight="bold" mb={2}>
-                                                    ຂໍ້ມູນສ່ວນຕົວ
-                                                </Typography>
-                                                <Box display="flex" alignItems="center" mb={1}>
-                                                    <Phone sx={{ color: 'text.secondary', mr: 1 }} fontSize="small" />
-                                                    <Typography>{selectedCustomer.phone}</Typography>
-                                                </Box>
-                                                <Box display="flex" alignItems="center" mb={1}>
-                                                    <Email sx={{ color: 'text.secondary', mr: 1 }} fontSize="small" />
-                                                    <Typography>{selectedCustomer.email}</Typography>
-                                                </Box>
-                                                <Box display="flex" mb={1}>
-                                                    <LocationOn sx={{ color: 'text.secondary', mr: 1 }} fontSize="small" />
-                                                    <Typography>{selectedCustomer.address}</Typography>
-                                                </Box>
-                                            </Paper>
-                                        </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <Paper elevation={1} sx={{ p: 2, height: '100%' }}>
-                                                <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-                                                    <Typography variant="subtitle1" color="primary" fontWeight="bold">
-                                                        ສັດລ້ຽງ ({selectedCustomer.pets?.length || 0})
-                                                    </Typography>
-                                                    <Button 
-                                                        size="small" 
-                                                        startIcon={<AddCircle />}
-                                                        variant="outlined"
-                                                        onClick={() => handlePetDialogOpen(selectedCustomer.id)}
-                                                    >
-                                                        ເພີ່ມສັດລ້ຽງ
-                                                    </Button>
-                                                </Box>
-                                                {selectedCustomer.pets && selectedCustomer.pets.length > 0 ? (
-                                                    <TableContainer>
-                                                        <Table size="small">
-                                                            <TableHead>
-                                                                <TableRow>
-                                                                    <TableCell>ຊື່</TableCell>
-                                                                    <TableCell>ປະເພດ</TableCell>
-                                                                    <TableCell>ພັນ</TableCell>
-                                                                    <TableCell>ອາຍຸ</TableCell>
-                                                                    <TableCell>ເພດ</TableCell>
-                                                                    <TableCell>ຈັດການ</TableCell>
-                                                                </TableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-                                                                {selectedCustomer.pets.map((pet) => (
-                                                                    <TableRow key={pet.id}>
-                                                                        <TableCell>{pet.name}</TableCell>
-                                                                        <TableCell>{pet.type}</TableCell>
-                                                                        <TableCell>{pet.breed}</TableCell>
-                                                                        <TableCell>{pet.age}</TableCell>
-                                                                        <TableCell>{pet.gender}</TableCell>
-                                                                        <TableCell>
-                                                                            <IconButton 
-                                                                                size="small" 
-                                                                                color="primary"
-                                                                                onClick={() => handlePetDialogOpen(selectedCustomer.id, pet)}
-                                                                            >
-                                                                                <Edit fontSize="small" />
-                                                                            </IconButton>
-                                                                            <IconButton 
-                                                                                size="small" 
-                                                                                color="error"
-                                                                                onClick={() => handleDeletePet(selectedCustomer.id, pet.id)}
-                                                                            >
-                                                                                <Delete fontSize="small" />
-                                                                            </IconButton>
-                                                                        </TableCell>
-                                                                    </TableRow>
-                                                                ))}
-                                                            </TableBody>
-                                                        </Table>
-                                                    </TableContainer>
-                                                ) : (
-                                                    <Box sx={{ py: 2, textAlign: 'center' }}>
-                                                        <Typography color="text.secondary">ບໍ່ມີຂໍ້ມູນສັດລ້ຽງ</Typography>
-                                                    </Box>
-                                                )}
-                                            </Paper>
-                                        </Grid>
-                                    </Grid>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleViewDetailsClose}>ປິດ</Button>
-                                    <Button 
-                                        variant="contained" 
-                                        color="primary"
-                                        onClick={() => {
-                                            handleViewDetailsClose();
-                                            handleDialogOpen(selectedCustomer);
-                                        }}
-                                    >
-                                        ແກ້ໄຂຂໍ້ມູນ
-                                    </Button>
-                                </DialogActions>
-                            </>
-                        )}
-                    </Dialog>
-
-                    {/* Add/Edit Pet Dialog */}
-                    <Dialog open={petDialogOpen} onClose={handlePetDialogClose} maxWidth="sm" fullWidth>
-                        <DialogTitle>{editMode ? 'ແກ້ໄຂຂໍ້ມູນສັດລ້ຽງ' : 'ເພີ່ມສັດລ້ຽງ'}</DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ຊື່ສັດລ້ຽງ"
-                                        fullWidth
-                                        value={currentPet.name}
-                                        onChange={(e) => setCurrentPet({ ...currentPet, name: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ປະເພດ</InputLabel>
-                                        <Select
-                                            value={currentPet.type}
-                                            label="ປະເພດ"
-                                            onChange={(e) => setCurrentPet({ ...currentPet, type: e.target.value })}
-                                        >
-                                            <MenuItem value="ໝາ">ໝາ</MenuItem>
-                                            <MenuItem value="ແມວ">ແມວ</MenuItem>
-                                            <MenuItem value="ນົກ">ນົກ</MenuItem>
-                                            <MenuItem value="ປາ">ປາ</MenuItem>
-                                            <MenuItem value="ອື່ນໆ">ອື່ນໆ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ພັນ"
-                                        fullWidth
-                                        value={currentPet.breed}
-                                        onChange={(e) => setCurrentPet({ ...currentPet, breed: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ອາຍຸ"
-                                        fullWidth
-                                        value={currentPet.age}
-                                        onChange={(e) => setCurrentPet({ ...currentPet, age: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ເພດ</InputLabel>
-                                        <Select
-                                            value={currentPet.gender}
-                                            label="ເພດ"
-                                            onChange={(e) => setCurrentPet({ ...currentPet, gender: e.target.value })}
-                                        >
-                                            <MenuItem value="ຜູ້">ຜູ້</MenuItem>
-                                            <MenuItem value="ແມ່">ແມ່</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Grid>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handlePetDialogClose}>ຍົກເລີກ</Button>
-                            <Button onClick={handleSavePet} variant="contained" color="primary">ບັນທຶກ</Button>
-                        </DialogActions>
-                    </Dialog>
                 </Container>
             </Box>
         </Box>

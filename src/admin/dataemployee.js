@@ -96,18 +96,18 @@ const EmployeeManagement = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [employeeData, setEmployeeData] = useState([
-        { id: 1, name: 'ທ. ສົມສະໄໝ ພອນວິໄລ', position: 'ສັດຕະວະແພດ', phone: '020 1234 5678', email: 'somsamai@drpvet.la', status: 'Active' },
-        { id: 2, name: 'ນ. ມະນີຈັນ ວົງສະວົງ', position: 'ພະຍາບານ', phone: '020 2345 6789', email: 'manychan@drpvet.la', status: 'Active' },
-        { id: 3, name: 'ທ. ສົມພອນ ພູມີໄຊ', position: 'ຜູ້ຊ່ວຍສັດຕະວະແພດ', phone: '020 3456 7890', email: 'somphon@drpvet.la', status: 'Leave' },
+        { id: 1, name: 'ທ. ສົມສະໄໝ ພອນວິໄລ', position: 'ສັດຕະວະແພດ', phone: '020 1234 5678', gender: 'somsamai@drpvet.la', status: 'Active' },
+        { id: 2, name: 'ນ. ມະນີຈັນ ວົງສະວົງ', position: 'ພະຍາບານ', phone: '020 2345 6789', gender: 'manychan@drpvet.la', status: 'Active' },
+        { id: 3, name: 'ທ. ສົມພອນ ພູມີໄຊ', position: 'ຜູ້ຊ່ວຍສັດຕະວະແພດ', phone: '020 3456 7890', gender: 'somphon@drpvet.la', status: 'Leave' },
     ]);
-    const [currentEmployee, setCurrentEmployee] = useState({ name: '', position: '', phone: '', email: '', status: '' });
+    const [currentEmployee, setCurrentEmployee] = useState({ name: '', position: '', phone: '', gender: '', status: '' });
 
     const handleDialogOpen = (employee = null) => {
         if (employee) {
             setCurrentEmployee(employee);
             setEditMode(true);
         } else {
-            setCurrentEmployee({ name: '', position: '', phone: '', email: '', status: '' });
+            setCurrentEmployee({ name: '', position: '', phone: '', gender: '', status: '' });
             setEditMode(false);
         }
         setOpenDialog(true);
@@ -238,7 +238,7 @@ const EmployeeManagement = () => {
                         component="div"
                         sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
                     >
-                        admin: {admin_name}
+                        Admin: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
@@ -344,7 +344,7 @@ const EmployeeManagement = () => {
                                     <TableCell>ຊື່ ແລະ ນາມສະກຸນ</TableCell>
                                     <TableCell>ຕຳແໜ່ງ</TableCell>
                                     <TableCell>ເບີໂທລະສັບ</TableCell>
-                                    <TableCell>ອີເມວ</TableCell>
+                                    <TableCell>ເພດ</TableCell>
                                     <TableCell>ສະຖານະ</TableCell>
                                     <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
@@ -355,7 +355,7 @@ const EmployeeManagement = () => {
                                         <TableCell>{employee.name}</TableCell>
                                         <TableCell>{employee.position}</TableCell>
                                         <TableCell>{employee.phone}</TableCell>
-                                        <TableCell>{employee.email}</TableCell>
+                                        <TableCell>{employee.gender}</TableCell>
                                         <TableCell>{employee.status === 'Active' ? 'ເຮັດວຽກຢູ່' : employee.status === 'Leave' ? 'ພັກວຽກ' : employee.status === 'Resigned' ? 'ລາອອກ' : employee.status}</TableCell>
                                         <TableCell>
                                             <IconButton onClick={() => handleDialogOpen(employee)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
@@ -412,8 +412,8 @@ const EmployeeManagement = () => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
-                                        label="ອີເມວ"
-                                        type="email"
+                                        label="ເພດ"
+                                        type="gender"
                                         fullWidth
                                         value={currentEmployee.email}
                                         onChange={(e) => setCurrentEmployee({ ...currentEmployee, email: e.target.value })}

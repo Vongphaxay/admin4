@@ -207,7 +207,7 @@ const Dashboard = () => {
                         component="div"
                         sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
                     >
-                        admin: {admin_name}
+                        Admin: {admin_name}
                     </Typography>
 
                     <IconButton color="inherit">
@@ -333,7 +333,7 @@ const Dashboard = () => {
                                         />
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Box>
-                                                <Typography variant="h6" color="text.secondary">ສັດລ້ຽງມື້ນີ້</Typography>
+                                                <Typography variant="h6" color="text.secondary">ສັດລ້ຽງທັງໝົດ</Typography>
                                                 <Typography variant="h3" fontWeight="bold" color="secondary.dark" mt={2}>
                                                     {reportData?.report?.report_pet?.length ?? 0}
                                                 </Typography>
@@ -394,7 +394,7 @@ const Dashboard = () => {
                                         />
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Box>
-                                                <Typography variant="h6" color="text.secondary">ກົງສັດລ້ຽງທີ່ຍັງວ່າງ</Typography>
+                                                <Typography variant="h6" color="text.secondary">ກົງສັດລ້ຽງທີ່ຖືກຈອງ</Typography>
                                                 <Typography variant="h3" fontWeight="bold" color="success.dark" mt={2}>
                                                     {
                                                         `${reportData?.report?.report_roompet?.filter(room => room.status === "ບໍ່ວ່າງ")?.length ?? 0} / ${reportData?.report?.report_roompet?.length ?? 0}`
@@ -449,35 +449,33 @@ const Dashboard = () => {
                         {/* Pet Types - Right Component */}
                         <Grid item xs={12} md={6}>
                             <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
-                                <Typography variant="h6" fontWeight="bold" mb={3}>ປະເພດສັດລ້ຽງ</Typography>
+                                <Typography variant="h6" fontWeight="bold" mb={3}>
+                                    ປະເພດສັດລ້ຽງ
+                                </Typography>
 
-                                {/* Donut Chart */}
                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 240, position: 'relative' }}>
-                                    {/* Donut Chart Container */}
-                                    <Box sx={{
-                                        position: 'relative',
-                                        width: 160,
-                                        height: 160,
-                                        borderRadius: '50%',
-                                        bgcolor: 'transparent',
-                                        border: '16px solid',
-                                        borderColor: 'primary.main',
-                                        boxSizing: 'border-box'
-                                    }}>
-                                        {/* Dog section */}
-                                        <Box sx={{
-                                            position: 'absolute',
-                                            top: -16,
-                                            left: -16,
+                                    {/* Donut Chart with conic-gradient */}
+                                    <Box
+                                        sx={{
+                                            position: 'relative',
                                             width: 160,
                                             height: 160,
                                             borderRadius: '50%',
-                                            clipPath: `polygon(50% 50%, 100% 0, 100% ${dogPercentage}%, 50% 50%)`,
-                                            border: '16px solid',
-                                            borderColor: 'secondary.main',
-                                            boxSizing: 'border-box'
-                                        }} />
-                                    </Box>
+                                            background: `conic-gradient(${theme.palette.primary.main} 0% ${dogPercentage}%, ${theme.palette.secondary.main} ${dogPercentage}% 100%)`,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            '&::before': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                width: '70%',
+                                                height: '70%',
+                                                borderRadius: '50%',
+                                                backgroundColor: 'background.paper',
+                                                zIndex: 1
+                                            }
+                                        }}
+                                    />
 
                                     {/* Legend */}
                                     <Stack
