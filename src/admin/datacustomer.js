@@ -95,18 +95,28 @@ const CustomerManagement = () => {
         email: '',
         address: '',
         status: 'New',
-        pets: []
+        pets: [],
+        gender: '',
+        username: ''
     });
     const [currentPet, setCurrentPet] = useState({ name: '', type: '', breed: '', age: '', gender: '' });
     const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
     const handleDialogOpen = (customer = null) => {
-        console.log(customer.id);
         if (customer) {
             setCurrentCustomer({ ...customer });
             setEditMode(true);
         } else {
-            setCurrentCustomer({ name: '', phone: '', email: '', address: '', status: 'New', pets: [] });
+            setCurrentCustomer({ 
+                name: '', 
+                phone: '', 
+                email: '', 
+                address: '', 
+                status: 'New', 
+                pets: [],
+                gender: '',
+                username: ''
+            });
             setEditMode(false);
         }
         setOpenDialog(true);
@@ -128,12 +138,9 @@ const CustomerManagement = () => {
     };
 
     const handleDeleteCustomer = async (id) => {
-        console.log(id);
         if (window.confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນລູກຄ້ານີ້?')) {
             await Deletecusapi(id);
-            // setCustomerData(prevData => prevData.filter(item => item.id !== id));
             window.location.reload();
-
         }
     };
 
@@ -398,69 +405,13 @@ const CustomerManagement = () => {
                                         <TableCell>{customer.phone}</TableCell>
                                         <TableCell>{customer.username}</TableCell>
                                         <TableCell>
-                                            <IconButton onClick={() => handleDialogOpen(customer)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
-                                            <IconButton onClick={() => handleDeleteCustomer(customer.id)} color="error"><Delete /></IconButton>
+                                            <IconButton onClick={() => handleDialogOpen(customer)} sx={{ color: '#1976d2' }}>
+                                                <Edit />
+                                            </IconButton>
+                                            <IconButton onClick={() => handleDeleteCustomer(customer.id)} color="error">
+                                                <Delete />
+                                            </IconButton>
                                         </TableCell>
-
-                                        {/* Dialog */}
-                                        <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
-                                            <DialogTitle sx={{ bgcolor: theme.palette.primary.main, color: 'white' }}>
-                                                {editMode ? 'ແກ້ໄຂຂໍ້ມູນລູກຄ້າ' : 'ເພີ່ມຂໍ້ມູນລູກຄ້າໃໝ່'}
-                                            </DialogTitle>
-                                            <DialogContent sx={{ pt: 2, mt: 2 }}>
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12}><Typography variant="subtitle1" fontWeight="bold">ຂໍ້ມູນລູກຄ້າ</Typography></Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="ຊື່ ແລະ ນາມສະກຸນ"
-                                                            value={currentCustomer.name}
-                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, name: e.target.value })}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="ເພດ"
-                                                            value={currentCustomer.gender}
-                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, gender: e.target.value })}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="ຊື່ຜູ້ໃຊ້"
-                                                            value={currentCustomer.username}
-                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, username: e.target.value })}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="ທີ່ຢູ່"
-                                                            multiline
-                                                            rows={2}
-                                                            value={currentCustomer.address}
-                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, address: e.target.value })}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="ເບີໂທລະສັບ"
-                                                            value={currentCustomer.phone}
-                                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, phone: e.target.value })}
-                                                        />
-                                                    </Grid>
-                                                </Grid>
-                                            </DialogContent>
-                                            <DialogActions sx={{ px: 3, pb: 2 }}>
-                                                <Button onClick={handleDialogClose} variant="outlined">ຍົກເລີກ</Button>
-                                                <Button onClick={handleSaveCustomer} variant="contained" color="primary" startIcon={<Edit />}>
-                                                    {editMode ? 'ແກ້ໄຂ' : 'ບັນທຶກ'}
-                                                </Button>
-                                            </DialogActions>
-                                        </Dialog>
                                     </TableRow>
                                 ))}
                                 {filteredCustomers.length === 0 && (
@@ -471,9 +422,77 @@ const CustomerManagement = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+
+                    {/* Dialog ສຳລັບແກ້ໄຂຂໍ້ມູນລູກຄ້າ */}
+                    <Dialog 
+                        open={openDialog} 
+                        onClose={handleDialogClose} 
+                        maxWidth="md" 
+                        fullWidth
+                    >
+                        <DialogTitle sx={{ bgcolor: theme.palette.primary.main, color: 'white' }}>
+                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນລູກຄ້າ' : 'ເພີ່ມຂໍ້ມູນລູກຄ້າໃໝ່'}
+                        </DialogTitle>
+                        <DialogContent sx={{ pt: 2, mt: 2 }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <Typography variant="subtitle1" fontWeight="bold">ຂໍ້ມູນລູກຄ້າ</Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="ຊື່ ແລະ ນາມສະກຸນ"
+                                        value={currentCustomer.name || ''}
+                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, name: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="ເພດ"
+                                        value={currentCustomer.gender || ''}
+                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, gender: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="ຊື່ຜູ້ໃຊ້"
+                                        value={currentCustomer.username || ''}
+                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, username: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="ເບີໂທລະສັບ"
+                                        value={currentCustomer.phone || ''}
+                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, phone: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="ທີ່ຢູ່"
+                                        multiline
+                                        rows={2}
+                                        value={currentCustomer.address || ''}
+                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, address: e.target.value })}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions sx={{ px: 3, pb: 2 }}>
+                            <Button onClick={handleDialogClose} variant="outlined">ຍົກເລີກ</Button>
+                            <Button onClick={handleSaveCustomer} variant="contained" color="primary" startIcon={<Edit />}>
+                                {editMode ? 'ແກ້ໄຂ' : 'ບັນທຶກ'}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Container>
             </Box>
         </Box>
     );
 };
+
 export default CustomerManagement;

@@ -1,62 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Box,
-    CssBaseline,
-    Drawer,
-    AppBar,
-    Toolbar,
-    List,
-    Typography,
-    Divider,
-    IconButton,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Paper,
-    Grid,
-    Button,
-    Avatar,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
-    useTheme,
-    styled,
-    Container
+import {Box, CssBaseline,Drawer,AppBar,Toolbar,List,Typography,Divider,IconButton,ListItem,ListItemButton,ListItemIcon, ListItemText,Paper,Grid,Button,Avatar,Dialog,DialogActions,DialogContent,DialogTitle,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,TextField,useTheme,styled,Container,Snackbar,Alert
 } from '@mui/material';
-import {
-    Edit,
-    Delete,
-    AddCircle,
-    Home,
-    Person,
-    People,
-    CalendarMonth,
-    Pets,
-    Bathtub,
-    ContentCut,
-    Vaccines,
-    Menu,
-    ChevronRight,
-    Notifications,
-    Close,
-    Logout
+import {Edit,Delete,AddCircle,Home,Person,People,CalendarMonth,Pets,Bathtub,ContentCut,Vaccines,Menu,ChevronRight,Notifications,Close,Logout
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { GetAllbooking } from '../services/report.service';
+
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -66,10 +16,6 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     height: 64,
     backgroundColor: theme.palette.primary.dark
 }));
-
-const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
-const cus_id = Cookies.get("cus_ida");
-const accessToken = Cookies.get("accessTokena");
 
 // Define the drawer width
 const drawerWidth = 240;
@@ -95,6 +41,18 @@ const BookingTable = () => {
     const [editMode, setEditMode] = useState(false);
     const [reportData, setReportData] = useState(null);
     const [bookingData, setBookingData] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [currentBooking, setCurrentBooking] = useState({ 
+        petName: '', 
+        customerName: '', 
+        service: '', 
+        start_date: '', 
+        stop_date: '',
+        total: ''
+    });
+    
+    const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+    const accessToken = Cookies.get("accessTokena");
 
     useEffect(() => {
         const getAllbokapi = async () => {
@@ -102,33 +60,38 @@ const BookingTable = () => {
                 const response = await GetAllbooking(accessToken);
                 const flatBookings = [];
 
-                response.report.forEach((room) => {
-                    room.tb_bookings.forEach((b) => {
-                        flatBookings.push({
-                            id: b.book_id,
-                            roomName: room.room_name,
-                            roomId: room.room_id,
-                            price: room.price,
-                            status: room.status,
-                            start_date: b.start_date,
-                            stop_date: b.stop_date,
-                            total: b.total,
-                            petName: b.pet?.pet_name || "",
-                            customerName: b.cu?.cus_name || "",
-                            pet: {
-                                id: b.pet?.pet_id,
-                                type: b.pet?.pet_type,
-                                gender: b.pet?.gender,
-                                size: b.pet?.size,
-                            },
-                            customer: {
-                                id: b.cu?.cus_id,
-                                phone: b.cu?.tel,
-                                address: b.cu?.address,
-                            }
-                        });
+                if (response && response.report) {
+                    response.report.forEach((room) => {
+                        if (room.tb_bookings) {
+                            room.tb_bookings.forEach((b) => {
+                                flatBookings.push({
+                                    id: b.book_id,
+                                    roomName: room.room_name,
+                                    roomId: room.room_id,
+                                    price: room.price,
+                                    status: room.status,
+                                    start_date: b.start_date,
+                                    stop_date: b.stop_date,
+                                    total: b.total,
+                                    petName: b.pet?.pet_name || "",
+                                    customerName: b.cu?.cus_name || "",
+                                    service: room.room_name || "",
+                                    pet: {
+                                        id: b.pet?.pet_id,
+                                        type: b.pet?.pet_type,
+                                        gender: b.pet?.gender,
+                                        size: b.pet?.size,
+                                    },
+                                    customer: {
+                                        id: b.cu?.cus_id,
+                                        phone: b.cu?.tel,
+                                        address: b.cu?.address,
+                                    }
+                                });
+                            });
+                        }
                     });
-                });
+                }
 
                 setBookingData(flatBookings);
                 setReportData(response); // raw backup
@@ -140,14 +103,19 @@ const BookingTable = () => {
         getAllbokapi();
     }, [accessToken]);
 
-    const [currentBooking, setCurrentBooking] = useState({ petName: '', ownerName: '', service: '', date: '', status: '' });
-
     const handleDialogOpen = (booking = null) => {
         if (booking) {
             setCurrentBooking(booking);
             setEditMode(true);
         } else {
-            setCurrentBooking({ petName: '', ownerName: '', service: '', date: '', status: '' });
+            setCurrentBooking({ 
+                petName: '', 
+                customerName: '', 
+                service: '', 
+                start_date: '', 
+                stop_date: '',
+                total: ''
+            });
             setEditMode(false);
         }
         setOpenDialog(true);
@@ -169,6 +137,7 @@ const BookingTable = () => {
         } else {
             setBookingData(prevData => [...prevData, { ...currentBooking, id: prevData.length + 1 }]);
         }
+        setOpenSnackbar(true); // Show success message
         setOpenDialog(false);
     };
 
@@ -375,7 +344,7 @@ const BookingTable = () => {
                                 <TableRow>
                                     <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
                                     <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
-                                    <TableCell>ບໍລິການ</TableCell>
+                                    <TableCell>ກົງທີຈອງ</TableCell>
                                     <TableCell>ວັນທີເລີ່ມ</TableCell>
                                     <TableCell>ວັນທີສິ້ນສຸດ</TableCell>
                                     <TableCell>ລາຄາ</TableCell>
@@ -391,7 +360,6 @@ const BookingTable = () => {
                                         <TableCell>{booking.start_date}</TableCell>
                                         <TableCell>{booking.stop_date}</TableCell>
                                         <TableCell>{booking.total}</TableCell>
-                                        {/* <TableCell>{booking.status === 'Confirmed' ? 'ຢືນຢັນແລ້ວ' : booking.status === 'Pending' ? 'ລໍຖ້າ' : booking.status === 'Cancelled' ? 'ຍົກເລີກ' : booking.status}</TableCell> */}
                                         <TableCell>
                                             <IconButton onClick={() => handleDialogOpen(booking)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
                                         </TableCell>
@@ -402,7 +370,7 @@ const BookingTable = () => {
                     </TableContainer>
 
                     <Dialog open={openDialog} onClose={handleDialogClose}>
-                        <DialogTitle>{editMode ? 'ແກ້ໄຂການຈອງ' : 'ເພີ່ມການຈອງ'}</DialogTitle>
+                        <DialogTitle>{editMode ? 'ຊຳລະເງິນ' : 'ເພີ່ມການຈອງ'}</DialogTitle>
                         <DialogContent>
                             <Grid container spacing={2} sx={{ mt: 1 }}>
                                 <Grid item xs={12}>
@@ -420,20 +388,6 @@ const BookingTable = () => {
                                         value={currentBooking.customerName}
                                         onChange={(e) => setCurrentBooking({ ...currentBooking, customerName: e.target.value })}
                                     />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ບໍລິການ</InputLabel>
-                                        <Select
-                                            value={currentBooking.service}
-                                            onChange={(e) => setCurrentBooking({ ...currentBooking, service: e.target.value })}
-                                            label="ບໍລິການ"
-                                        >
-                                            <MenuItem value="Bath">ອາບນ້ຳ</MenuItem>
-                                            <MenuItem value="Vaccination">ວັກຊີນ</MenuItem>
-                                            <MenuItem value="Grooming">ຕັດຂົນ</MenuItem>
-                                        </Select>
-                                    </FormControl>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
@@ -458,20 +412,30 @@ const BookingTable = () => {
                                 <Grid item xs={12}>
                                     <TextField
                                         label="ລາຄາ"
-                                        type="price"
+                                        type="number"
                                         fullWidth
                                         value={currentBooking.total}
                                         onChange={(e) => setCurrentBooking({ ...currentBooking, total: e.target.value })}
-                                        InputLabelProps={{ shrink: true }}
                                     />
                                 </Grid>
                             </Grid>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleDialogClose} color="error">ຍົກເລີກ</Button>
-                            <Button onClick={handleSaveBooking} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ບັນທຶກ</Button>
+                            <Button onClick={handleSaveBooking} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ຊຳລະເງິນ</Button>
                         </DialogActions>
                     </Dialog>
+                    
+                    <Snackbar
+                        open={openSnackbar}
+                        autoHideDuration={3000}
+                        onClose={() => setOpenSnackbar(false)}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    >
+                        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+                            ຊຳລະເງິນສຳເລັດ!
+                        </Alert>
+                    </Snackbar>
                 </Container>
             </Box>
         </Box>

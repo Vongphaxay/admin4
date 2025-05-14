@@ -1,64 +1,21 @@
+import LockIcon from '@mui/icons-material/Lock';
+import { DialogContent, InputAdornment } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
+import WcIcon from '@mui/icons-material/Wc';
+import HomeIcon from '@mui/icons-material/Home';
+import PhoneIcon from '@mui/icons-material/Phone';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Box,
-    CssBaseline,
-    Drawer,
-    AppBar,
-    Toolbar,
-    List,
-    Typography,
-    Divider,
-    IconButton,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Paper,
-    Grid,
-    Button,
-    Avatar,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
-    useTheme,
-    styled,
-    Container
+    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container
 } from '@mui/material';
 import {
-    Edit,
-    Delete,
-    AddCircle,
-    Home,
-    Person,
-    People,
-    CalendarMonth,
-    Pets,
-    Bathtub, 
-    ContentCut,
-    Vaccines,
-    Menu,
-    ChevronRight,
-    Notifications,
-    Close,
-    Logout,
-    Phone,
-    Email,
-    Work
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, Work
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -82,10 +39,10 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee', active: true },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding'},
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet'},
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar'},
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet'},
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
 const EmployeeManagement = () => {
@@ -95,19 +52,41 @@ const EmployeeManagement = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [employeeData, setEmployeeData] = useState([
-        { id: 1, name: 'ທ. ສົມສະໄໝ ພອນວິໄລ', position: 'ສັດຕະວະແພດ', phone: '020 1234 5678', gender: 'somsamai@drpvet.la', status: 'Active' },
-        { id: 2, name: 'ນ. ມະນີຈັນ ວົງສະວົງ', position: 'ພະຍາບານ', phone: '020 2345 6789', gender: 'manychan@drpvet.la', status: 'Active' },
-        { id: 3, name: 'ທ. ສົມພອນ ພູມີໄຊ', position: 'ຜູ້ຊ່ວຍສັດຕະວະແພດ', phone: '020 3456 7890', gender: 'somphon@drpvet.la', status: 'Leave' },
-    ]);
-    const [currentEmployee, setCurrentEmployee] = useState({ name: '', position: '', phone: '', gender: '', status: '' });
+    const [employeeData, setEmployeeData] = useState([]);
+    const [currentEmployee, setCurrentEmployee] = useState({ 
+        name: '', 
+        position: '', 
+        phone: '', 
+        gender: '', 
+        address: '', 
+        tel: '', 
+        username: '', 
+        password: '',
+        status: '' 
+    });
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') return;
+        setOpenSnackbar(false);
+    };
 
     const handleDialogOpen = (employee = null) => {
         if (employee) {
             setCurrentEmployee(employee);
             setEditMode(true);
         } else {
-            setCurrentEmployee({ name: '', position: '', phone: '', gender: '', status: '' });
+            setCurrentEmployee({ 
+                name: '', 
+                position: '', 
+                phone: '', 
+                gender: '', 
+                address: '', 
+                tel: '', 
+                username: '', 
+                password: '',
+                status: '' 
+            });
             setEditMode(false);
         }
         setOpenDialog(true);
@@ -129,6 +108,7 @@ const EmployeeManagement = () => {
         } else {
             setEmployeeData(prevData => [...prevData, { ...currentEmployee, id: prevData.length + 1 }]);
         }
+        setOpenSnackbar(true);
         setOpenDialog(false);
     };
 
@@ -342,10 +322,10 @@ const EmployeeManagement = () => {
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
                                     <TableCell>ຊື່ ແລະ ນາມສະກຸນ</TableCell>
-                                    <TableCell>ຕຳແໜ່ງ</TableCell>
-                                    <TableCell>ເບີໂທລະສັບ</TableCell>
                                     <TableCell>ເພດ</TableCell>
-                                    <TableCell>ສະຖານະ</TableCell>
+                                    <TableCell>ທີ່ຢູ່</TableCell>
+                                    <TableCell>ເບີໂທລະສັບ</TableCell>
+                                    <TableCell>ຊື່ຜູ້ໃຊ້</TableCell>
                                     <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -353,10 +333,10 @@ const EmployeeManagement = () => {
                                 {employeeData.map((employee) => (
                                     <TableRow key={employee.id}>
                                         <TableCell>{employee.name}</TableCell>
-                                        <TableCell>{employee.position}</TableCell>
-                                        <TableCell>{employee.phone}</TableCell>
                                         <TableCell>{employee.gender}</TableCell>
-                                        <TableCell>{employee.status === 'Active' ? 'ເຮັດວຽກຢູ່' : employee.status === 'Leave' ? 'ພັກວຽກ' : employee.status === 'Resigned' ? 'ລາອອກ' : employee.status}</TableCell>
+                                        <TableCell>{employee.address}</TableCell>
+                                        <TableCell>{employee.tel}</TableCell>
+                                        <TableCell>{employee.username}</TableCell>
                                         <TableCell>
                                             <IconButton onClick={() => handleDialogOpen(employee)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
                                             <IconButton onClick={() => handleDeleteEmployee(employee.id)} color="error"><Delete /></IconButton>
@@ -379,33 +359,9 @@ const EmployeeManagement = () => {
                                         onChange={(e) => setCurrentEmployee({ ...currentEmployee, name: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
-                                                <Person sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ຕຳແໜ່ງ"
-                                        fullWidth
-                                        value={currentEmployee.position}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, position: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Work sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ເບີໂທລະສັບ"
-                                        fullWidth
-                                        value={currentEmployee.phone}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, phone: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Phone sx={{ color: 'action.active', mr: 1 }} />
+                                                <InputAdornment position="start">
+                                                    <PersonIcon sx={{ color: 'action.active' }} />
+                                                </InputAdornment>
                                             ),
                                         }}
                                     />
@@ -413,30 +369,79 @@ const EmployeeManagement = () => {
                                 <Grid item xs={12}>
                                     <TextField
                                         label="ເພດ"
-                                        type="gender"
                                         fullWidth
-                                        value={currentEmployee.email}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, email: e.target.value })}
+                                        value={currentEmployee.gender}
+                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, gender: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
-                                                <Email sx={{ color: 'action.active', mr: 1 }} />
+                                                <InputAdornment position="start">
+                                                    <WcIcon sx={{ color: 'action.active' }} />
+                                                </InputAdornment>
                                             ),
                                         }}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ສະຖານະ</InputLabel>
-                                        <Select
-                                            value={currentEmployee.status}
-                                            onChange={(e) => setCurrentEmployee({ ...currentEmployee, status: e.target.value })}
-                                            label="ສະຖານະ"
-                                        >
-                                            <MenuItem value="Active">ເຮັດວຽກຢູ່</MenuItem>
-                                            <MenuItem value="Leave">ພັກວຽກ</MenuItem>
-                                            <MenuItem value="Resigned">ລາອອກ</MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                    <TextField
+                                        label="ທີ່ຢູ່"
+                                        fullWidth
+                                        value={currentEmployee.address}
+                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, address: e.target.value })}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <HomeIcon sx={{ color: 'action.active' }} />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="ເບີໂທລະສັບ"
+                                        type="tel"
+                                        fullWidth
+                                        value={currentEmployee.tel}
+                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, tel: e.target.value })}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <PhoneIcon sx={{ color: 'action.active' }} />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="ຊື່ຜູ້ໃຊ້"
+                                        fullWidth
+                                        value={currentEmployee.username}
+                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, username: e.target.value })}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <AccountCircleIcon sx={{ color: 'action.active' }} />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="ລະຫັດຜ່ານ"
+                                        type="password"
+                                        fullWidth
+                                        value={currentEmployee.password}
+                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, password: e.target.value })}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <LockIcon sx={{ color: 'action.active' }} />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
                                 </Grid>
                             </Grid>
                         </DialogContent>
@@ -445,6 +450,24 @@ const EmployeeManagement = () => {
                             <Button onClick={handleSaveEmployee} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ບັນທຶກ</Button>
                         </DialogActions>
                     </Dialog>
+
+                    {/* Snackbar for success notification */}
+                    <Snackbar
+                        open={openSnackbar}
+                        autoHideDuration={3000}
+                        onClose={handleSnackbarClose}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    >
+                        <MuiAlert 
+                            onClose={handleSnackbarClose} 
+                            severity="success" 
+                            sx={{ width: '100%' }} 
+                            elevation={6} 
+                            variant="filled"
+                        >
+                            ບັນທຶກສຳເລັດ
+                        </MuiAlert>
+                    </Snackbar>
                 </Container>
             </Box>
         </Box>
