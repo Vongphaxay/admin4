@@ -5,7 +5,7 @@ import WcIcon from '@mui/icons-material/Wc';
 import HomeIcon from '@mui/icons-material/Home';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container
@@ -16,6 +16,7 @@ import {
 import Cookies from 'js-cookie';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { GetAllEmp } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -53,18 +54,32 @@ const EmployeeManagement = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [employeeData, setEmployeeData] = useState([]);
-    const [currentEmployee, setCurrentEmployee] = useState({ 
-        name: '', 
-        position: '', 
-        phone: '', 
-        gender: '', 
-        address: '', 
-        tel: '', 
-        username: '', 
-        password: '',
-        status: '' 
-    });
+    const [currentEmployee, setCurrentEmployee] = useState({});
     const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    useEffect(() => {
+        const getReportAllempapi = async () => {
+            const res = await GetAllEmp(accessToken);
+
+            const mappedData = res.report.map((item) => ({
+                id: item.doc_id,
+                docname: item.doc_name,
+                empname: item.emp_name,
+                position: item.position,
+                phone: item.phone,
+                gender: item.gender,
+                address: item.address,
+                tel: item.tel,
+                username: item.username,
+                status: item.status
+            }))
+            setEmployeeData(mappedData);
+            console.log(res);
+        }
+        getReportAllempapi();
+    }, [accessToken]);
+    const fieldKey = currentEmployee.docname !== undefined ? 'docname' : 'empname';
+
 
     const handleSnackbarClose = (event, reason) => {
         if (reason === 'clickaway') return;
@@ -76,16 +91,16 @@ const EmployeeManagement = () => {
             setCurrentEmployee(employee);
             setEditMode(true);
         } else {
-            setCurrentEmployee({ 
-                name: '', 
-                position: '', 
-                phone: '', 
-                gender: '', 
-                address: '', 
-                tel: '', 
-                username: '', 
+            setCurrentEmployee({
+                name: '',
+                position: '',
+                phone: '',
+                gender: '',
+                address: '',
+                tel: '',
+                username: '',
                 password: '',
-                status: '' 
+                status: ''
             });
             setEditMode(false);
         }
@@ -332,7 +347,7 @@ const EmployeeManagement = () => {
                             <TableBody>
                                 {employeeData.map((employee) => (
                                     <TableRow key={employee.id}>
-                                        <TableCell>{employee.name}</TableCell>
+                                        <TableCell>{employee.docname || employee.empname}</TableCell>
                                         <TableCell>{employee.gender}</TableCell>
                                         <TableCell>{employee.address}</TableCell>
                                         <TableCell>{employee.tel}</TableCell>
@@ -355,8 +370,8 @@ const EmployeeManagement = () => {
                                     <TextField
                                         label="ຊື່ ແລະ ນາມສະກຸນ"
                                         fullWidth
-                                        value={currentEmployee.name}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, name: e.target.value })}
+                                        value={currentEmployee.docname || currentEmployee.empname || ''}
+                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, [fieldKey]: e.target.value })}
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -458,11 +473,11 @@ const EmployeeManagement = () => {
                         onClose={handleSnackbarClose}
                         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                     >
-                        <MuiAlert 
-                            onClose={handleSnackbarClose} 
-                            severity="success" 
-                            sx={{ width: '100%' }} 
-                            elevation={6} 
+                        <MuiAlert
+                            onClose={handleSnackbarClose}
+                            severity="success"
+                            sx={{ width: '100%' }}
+                            elevation={6}
                             variant="filled"
                         >
                             ບັນທຶກສຳເລັດ

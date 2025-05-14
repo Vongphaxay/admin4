@@ -43,3 +43,12 @@ export const GetAllbooking = async (token) => {
     });
     return response.data;
 };
+
+export const GetAllEmp = async (token) => {
+    const response = await axios.get(`${REACT_APP_API_URL}/report/get-all-employee`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
