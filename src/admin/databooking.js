@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Box, CssBaseline,Drawer,AppBar,Toolbar,List,Typography,Divider,IconButton,ListItem,ListItemButton,ListItemIcon, ListItemText,Paper,Grid,Button,Avatar,Dialog,DialogActions,DialogContent,DialogTitle,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,TextField,useTheme,styled,Container,Snackbar,Alert
+import {
+    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton,
+    ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar,
+    Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, TextField, useTheme, styled, Container,
+    Snackbar, Alert
 } from '@mui/material';
-import {Edit,Delete,AddCircle,Home,Person,People,CalendarMonth,Pets,Bathtub,ContentCut,Vaccines,Menu,ChevronRight,Notifications,Close,Logout
+import {
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub,
+    ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { GetAllbooking } from '../services/report.service';
-import image from '../img/qrcode.png'
-
+import image from '../img/qrcode.png';
+import ReceiptPrinter from './ReceiptPrinter'; // Import the ReceiptPrinter component
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -33,7 +40,6 @@ const menuItems = [
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
-
 const BookingTable = () => {
     const theme = useTheme();
     const navigate = useNavigate();
@@ -44,6 +50,7 @@ const BookingTable = () => {
     const [reportData, setReportData] = useState(null);
     const [bookingData, setBookingData] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openReceiptDialog, setOpenReceiptDialog] = useState(false); // State for receipt dialog
     const [currentBooking, setCurrentBooking] = useState({ 
         petName: '', 
         customerName: '', 
@@ -372,62 +379,170 @@ const BookingTable = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <Dialog open={openDialog} onClose={handleDialogClose}>
-                        <DialogTitle>{editMode ? 'ຊຳລະເງິນ' : 'ເພີ່ມການຈອງ'}</DialogTitle>
+
+                    {/* Payment Dialog with QR Code on the right */}
+                    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
+                        <DialogTitle sx={{ fontWeight: 'bold', bgcolor: theme.palette.primary.main, color: 'white' }}>
+                            {editMode ? 'ຊຳລະເງິນ' : 'ເພີ່ມການຈອງ'}
+                        </DialogTitle>
                         <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ຊື່ສັດລ້ຽງ"
-                                        fullWidth
-                                        value={currentBooking.petName}
-                                        onChange={(e) => setCurrentBooking({ ...currentBooking, petName: e.target.value })}
-                                    />
+                            <Grid container spacing={3} sx={{ mt: 1 }}>
+                                {/* Left side - Booking Information */}
+                                <Grid item xs={12} md={7}>
+                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
+                                        ຂໍ້ມູນການຈອງ
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label="ຊື່ສັດລ້ຽງ"
+                                                fullWidth
+                                                value={currentBooking.petName}
+                                                onChange={(e) => setCurrentBooking({ ...currentBooking, petName: e.target.value })}
+                                                disabled={editMode}
+                                                sx={{ mb: 2 }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label="ຊື່ເຈົ້າຂອງ"
+                                                fullWidth
+                                                value={currentBooking.customerName}
+                                                onChange={(e) => setCurrentBooking({ ...currentBooking, customerName: e.target.value })}
+                                                disabled={editMode}
+                                                sx={{ mb: 2 }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label="ວັນທີເລີ່ມ"
+                                                type="date"
+                                                fullWidth
+                                                value={currentBooking.start_date}
+                                                onChange={(e) => setCurrentBooking({ ...currentBooking, start_date: e.target.value })}
+                                                InputLabelProps={{ shrink: true }}
+                                                disabled={editMode}
+                                                sx={{ mb: 2 }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label="ວັນທີສິ້ນສຸດ"
+                                                type="date"
+                                                fullWidth
+                                                value={currentBooking.stop_date}
+                                                onChange={(e) => setCurrentBooking({ ...currentBooking, stop_date: e.target.value })}
+                                                InputLabelProps={{ shrink: true }}
+                                                disabled={editMode}
+                                                sx={{ mb: 2 }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                label="ລາຄາ"
+                                                type="number"
+                                                fullWidth
+                                                value={currentBooking.total}
+                                                onChange={(e) => setCurrentBooking({ ...currentBooking, total: e.target.value })}
+                                                disabled={editMode}
+                                                InputProps={{
+                                                    endAdornment: <Typography variant="body2" color="text.secondary">ກີບ</Typography>
+                                                }}
+                                            />
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ຊື່ເຈົ້າຂອງ"
-                                        fullWidth
-                                        value={currentBooking.customerName}
-                                        onChange={(e) => setCurrentBooking({ ...currentBooking, customerName: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ວັນທີເລີ່ມ"
-                                        type="date"
-                                        fullWidth
-                                        value={currentBooking.start_date}
-                                        onChange={(e) => setCurrentBooking({ ...currentBooking, start_date: e.target.value })}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ວັນທີສິ້ນສຸດ"
-                                        type="date"
-                                        fullWidth
-                                        value={currentBooking.stop_date}
-                                        onChange={(e) => setCurrentBooking({ ...currentBooking, stop_date: e.target.value })}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ລາຄາ"
-                                        type="number"
-                                        fullWidth
-                                        value={currentBooking.total}
-                                        onChange={(e) => setCurrentBooking({ ...currentBooking, total: e.target.value })}
-                                    />
-                                </Grid>
+                                
+                                {/* Vertical Divider for desktop view */}
+                                {editMode && (
+                                    <Grid item xs={0} md={1} sx={{ 
+                                        display: { xs: 'none', md: 'flex' }, 
+                                        justifyContent: 'center',
+                                        position: 'relative'
+                                    }}>
+                                        <Divider orientation="vertical" sx={{ 
+                                            position: 'absolute',
+                                            height: '100%'
+                                        }} />
+                                    </Grid>
+                                )}
+                                
+                                {/* Horizontal Divider for mobile view */}
+                                {editMode && (
+                                    <Grid item xs={12} sx={{ display: { xs: 'block', md: 'none' }, my: 1 }}>
+                                        <Divider>
+                                            <Typography variant="subtitle2" color="primary">
+                                                ຊຳລະເງິນ
+                                            </Typography>
+                                        </Divider>
+                                    </Grid>
+                                )}
+                                
+                                {/* Right side - QR Code */}
+                                {editMode && (
+                                    <Grid item xs={12} md={4} sx={{ 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        justifyContent: 'center', 
+                                        alignItems: 'center'
+                                    }}>
+                                        <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
+                                            ສະແກນເພື່ອຊຳລະເງິນ
+                                        </Typography>
+                                        <Box 
+                                            component="img" 
+                                            src={image} 
+                                            alt="QR Code" 
+                                            sx={{ 
+                                                width: 180, 
+                                                height: 180, 
+                                                objectFit: 'contain',
+                                                border: '1px solid #eee',
+                                                borderRadius: 1,
+                                                p: 1,
+                                                mb: 2
+                                            }} 
+                                        />
+                                        <Typography variant="body2" color="text.secondary" align="center" sx={{ fontWeight: 'medium' }}>
+                                            ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
+                                        </Typography>
+                                        <Typography variant="h6" color="primary" fontWeight="bold" align="center">
+                                            {currentBooking.total} ກີບ
+                                        </Typography>
+                                    </Grid>
+                                )}
                             </Grid>
                         </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleDialogClose} color="error">ຍົກເລີກ</Button>
-                            <Button onClick={handleSaveBooking} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ຊຳລະເງິນ</Button>
+                        <DialogActions sx={{ px: 3, pb: 3 }}>
+                            <Button 
+                                onClick={handleDialogClose} 
+                                variant="outlined" 
+                                color="error"
+                                startIcon={<Close />}
+                            >
+                                ຍົກເລີກ
+                            </Button>
+                            <Button 
+                                onClick={() => {
+                                    handleSaveBooking();
+                                    setOpenDialog(false);
+                                    setOpenReceiptDialog(true);
+                                }} 
+                                variant="contained"
+                                color="primary"
+                                startIcon={editMode ? <AddCircle /> : <Edit />}
+                            >
+                                {editMode ? 'ຢືນຢັນການຊຳລະ' : 'ບັນທຶກ'}
+                            </Button>
                         </DialogActions>
                     </Dialog>
+                    
+                    {/* Receipt Printer Dialog */}
+                    <ReceiptPrinter 
+                        open={openReceiptDialog}
+                        onClose={() => setOpenReceiptDialog(false)}
+                        booking={currentBooking}
+                    />
                     
                     <Snackbar
                         open={openSnackbar}
