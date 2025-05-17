@@ -12,7 +12,7 @@ import {
     ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
-import { GetAllbooking } from '../services/report.service';
+import { GetAllbooking, UpdatePayment_roompet } from '../services/report.service';
 import image from '../img/qrcode.png';
 import ReceiptPrinter from './ReceiptPrinter'; // Import the ReceiptPrinter component
 
@@ -51,17 +51,29 @@ const BookingTable = () => {
     const [bookingData, setBookingData] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [openReceiptDialog, setOpenReceiptDialog] = useState(false); // State for receipt dialog
-    const [currentBooking, setCurrentBooking] = useState({ 
-        petName: '', 
-        customerName: '', 
-        service: '', 
-        start_date: '', 
+    const [currentBooking, setCurrentBooking] = useState({
+        id: '', // add this
+        roomId: '', // add this
+        petName: '',
+        customerName: '',
+        service: '',
+        start_date: '',
         stop_date: '',
         total: ''
     });
-    
+
+
     const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
     const accessToken = Cookies.get("accessTokena");
+
+    const APIUPDATERoompet_book = async (room_id, book_id) => {
+        try {
+            const response = await UpdatePayment_roompet(room_id, book_id, accessToken);
+            console.log("Payment updated successfully", response);
+        } catch (error) {
+            console.error("Error updating payment:", error);
+        }
+    };
 
     useEffect(() => {
         const getAllbokapi = async () => {
@@ -95,6 +107,10 @@ const BookingTable = () => {
                                         id: b.cu?.cus_id,
                                         phone: b.cu?.tel,
                                         address: b.cu?.address,
+                                    },
+                                    services: {
+                                        id: b.service?.service_id,
+                                        name: b.service?.service_name
                                     }
                                 });
                             });
@@ -117,11 +133,11 @@ const BookingTable = () => {
             setCurrentBooking(booking);
             setEditMode(true);
         } else {
-            setCurrentBooking({ 
-                petName: '', 
-                customerName: '', 
-                service: '', 
-                start_date: '', 
+            setCurrentBooking({
+                petName: '',
+                customerName: '',
+                service: '',
+                start_date: '',
                 stop_date: '',
                 total: ''
             });
@@ -141,7 +157,18 @@ const BookingTable = () => {
     const handleDialogClose = () => setOpenDialog(false);
 
     const handleSaveBooking = () => {
-        if (editMode) {
+        if (editMode && currentBooking) {
+            console.log("currentBooking", currentBooking);
+            console.log("currentBooking.roomId", currentBooking.roomId);
+            console.log("currentBooking.id", currentBooking.id);
+
+            const roomId = Number(currentBooking.roomId);
+            const bookId = Number(currentBooking.id);
+            console.log("roomId", roomId);
+            console.log("bookId", bookId);
+            if (!isNaN(roomId) && !isNaN(bookId)) {
+                APIUPDATERoompet_book(roomId, bookId);
+            }
             setBookingData(prevData => prevData.map(item => item.id === currentBooking.id ? currentBooking : item));
         } else {
             setBookingData(prevData => [...prevData, { ...currentBooking, id: prevData.length + 1 }]);
@@ -366,7 +393,7 @@ const BookingTable = () => {
                                     <TableRow key={booking.id}>
                                         <TableCell>{booking.petName}</TableCell>
                                         <TableCell>{booking.customerName}</TableCell>
-                                        <TableCell>{booking.start_date}</TableCell>
+                                        <TableCell>{booking.services.name}</TableCell>
                                         <TableCell>{booking.service === 'Bath' ? 'ອາບນ້ຳ' : booking.service === 'Vaccination' ? 'ວັກຊີນ' : booking.service === 'Grooming' ? 'ຕັດຂົນ' : booking.service}</TableCell>
                                         <TableCell>{booking.start_date}</TableCell>
                                         <TableCell>{booking.stop_date}</TableCell>
@@ -452,21 +479,21 @@ const BookingTable = () => {
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                
+
                                 {/* Vertical Divider for desktop view */}
                                 {editMode && (
-                                    <Grid item xs={0} md={1} sx={{ 
-                                        display: { xs: 'none', md: 'flex' }, 
+                                    <Grid item xs={0} md={1} sx={{
+                                        display: { xs: 'none', md: 'flex' },
                                         justifyContent: 'center',
                                         position: 'relative'
                                     }}>
-                                        <Divider orientation="vertical" sx={{ 
+                                        <Divider orientation="vertical" sx={{
                                             position: 'absolute',
                                             height: '100%'
                                         }} />
                                     </Grid>
                                 )}
-                                
+
                                 {/* Horizontal Divider for mobile view */}
                                 {editMode && (
                                     <Grid item xs={12} sx={{ display: { xs: 'block', md: 'none' }, my: 1 }}>
@@ -477,31 +504,31 @@ const BookingTable = () => {
                                         </Divider>
                                     </Grid>
                                 )}
-                                
+
                                 {/* Right side - QR Code */}
                                 {editMode && (
-                                    <Grid item xs={12} md={4} sx={{ 
-                                        display: 'flex', 
-                                        flexDirection: 'column', 
-                                        justifyContent: 'center', 
+                                    <Grid item xs={12} md={4} sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
                                         alignItems: 'center'
                                     }}>
                                         <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
                                             ສະແກນເພື່ອຊຳລະເງິນ
                                         </Typography>
-                                        <Box 
-                                            component="img" 
-                                            src={image} 
-                                            alt="QR Code" 
-                                            sx={{ 
-                                                width: 180, 
-                                                height: 180, 
+                                        <Box
+                                            component="img"
+                                            src={image}
+                                            alt="QR Code"
+                                            sx={{
+                                                width: 180,
+                                                height: 180,
                                                 objectFit: 'contain',
                                                 border: '1px solid #eee',
                                                 borderRadius: 1,
                                                 p: 1,
                                                 mb: 2
-                                            }} 
+                                            }}
                                         />
                                         <Typography variant="body2" color="text.secondary" align="center" sx={{ fontWeight: 'medium' }}>
                                             ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
@@ -514,20 +541,20 @@ const BookingTable = () => {
                             </Grid>
                         </DialogContent>
                         <DialogActions sx={{ px: 3, pb: 3 }}>
-                            <Button 
-                                onClick={handleDialogClose} 
-                                variant="outlined" 
+                            <Button
+                                onClick={handleDialogClose}
+                                variant="outlined"
                                 color="error"
                                 startIcon={<Close />}
                             >
                                 ຍົກເລີກ
                             </Button>
-                            <Button 
+                            <Button
                                 onClick={() => {
                                     handleSaveBooking();
                                     setOpenDialog(false);
                                     setOpenReceiptDialog(true);
-                                }} 
+                                }}
                                 variant="contained"
                                 color="primary"
                                 startIcon={editMode ? <AddCircle /> : <Edit />}
@@ -536,14 +563,14 @@ const BookingTable = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
-                    
+
                     {/* Receipt Printer Dialog */}
-                    <ReceiptPrinter 
+                    <ReceiptPrinter
                         open={openReceiptDialog}
                         onClose={() => setOpenReceiptDialog(false)}
                         booking={currentBooking}
                     />
-                    
+
                     <Snackbar
                         open={openSnackbar}
                         autoHideDuration={3000}

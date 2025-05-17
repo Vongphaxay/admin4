@@ -21,16 +21,20 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
     minute: '2-digit'
   });
 
+  const handleDialogClose = () => {
+    window.location.reload();  // Reloads the current page without changing the URL
+  };
+
   // Generate receipt number (timestamp-based)
   const receiptNumber = `DRPVET-${currentDate.getFullYear()}${(currentDate.getMonth() + 1).toString().padStart(2, '0')}${currentDate.getDate().toString().padStart(2, '0')}-${currentDate.getTime().toString().slice(-4)}`;
 
   const handlePrint = () => {
     const printContent = document.getElementById('receipt-content');
     const originalContents = document.body.innerHTML;
-    
+
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=600,height=600');
-    
+
     // Create receipt content with styling
     const receiptContent = `
       <!DOCTYPE html>
@@ -149,6 +153,10 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
               <span>${booking.service || '-'}</span>
             </div>
             <div class="info-row">
+              <span class="info-label">ກົງທີຈອງ:</span>
+              <span>${booking.roomId || '-'}</span>
+            </div>
+            <div class="info-row">
               <span class="info-label">ວັນທີເລີ່ມ:</span>
               <span>${formatDate(booking.start_date)}</span>
             </div>
@@ -179,22 +187,24 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
       </body>
       </html>
     `;
-    
+
     // Write content to the new window and print
     printWindow.document.write(receiptContent);
     printWindow.document.close();
     printWindow.focus();
-    
+
     // Print after a short delay to ensure content is loaded
     setTimeout(() => {
       printWindow.print();
+      window.location.reload();
       // Don't close window to allow user to select printer options
     }, 500);
+    
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       maxWidth="sm"
       fullWidth
@@ -202,7 +212,7 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
       <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 'bold' }}>
         ພິມໃບບິນ
       </DialogTitle>
-      
+
       <DialogContent>
         <Box id="receipt-content" sx={{ mt: 2, p: 2, border: '1px solid #eee', borderRadius: 1 }}>
           {/* Receipt Header */}
@@ -217,15 +227,15 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
               ໂທ: 020 XXXXXXXX
             </Typography>
           </Box>
-          
+
           <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-          
+
           <Typography variant="h6" fontWeight="bold" textAlign="center" sx={{ my: 1 }}>
             ໃບບິນການຊຳລະເງິນ
           </Typography>
-          
+
           <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-          
+
           <Grid container spacing={1}>
             <Grid item xs={6}>
               <Typography variant="body2" fontWeight="bold">ເລກທີໃບບິນ:</Typography>
@@ -233,7 +243,7 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
             <Grid item xs={6}>
               <Typography variant="body2" textAlign="right">{receiptNumber}</Typography>
             </Grid>
-            
+
             <Grid item xs={6}>
               <Typography variant="body2" fontWeight="bold">ວັນທີ:</Typography>
             </Grid>
@@ -241,9 +251,9 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
               <Typography variant="body2" textAlign="right">{formattedDateTime}</Typography>
             </Grid>
           </Grid>
-          
+
           <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-          
+
           <Grid container spacing={1}>
             <Grid item xs={6}>
               <Typography variant="body2" fontWeight="bold">ຊື່ລູກຄ້າ:</Typography>
@@ -251,7 +261,7 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
             <Grid item xs={6}>
               <Typography variant="body2" textAlign="right">{booking.customerName || '-'}</Typography>
             </Grid>
-            
+
             <Grid item xs={6}>
               <Typography variant="body2" fontWeight="bold">ຊື່ສັດລ້ຽງ:</Typography>
             </Grid>
@@ -259,24 +269,31 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
               <Typography variant="body2" textAlign="right">{booking.petName || '-'}</Typography>
             </Grid>
           </Grid>
-          
+
           <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-          
+
           <Grid container spacing={1}>
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <Typography variant="body2" fontWeight="bold">ບໍລິການ:</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body2" textAlign="right">{booking.service || '-'}</Typography>
+            </Grid> */}
+
+            <Grid item xs={6}>
+              <Typography variant="body2" fontWeight="bold">ກົງທີຈອງ:</Typography>
             </Grid>
-            
+            <Grid item xs={6}>
+              <Typography variant="body2" textAlign="right">{booking.roomId || '-'}</Typography>
+            </Grid>
+
             <Grid item xs={6}>
               <Typography variant="body2" fontWeight="bold">ວັນທີເລີ່ມ:</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body2" textAlign="right">{formatDate(booking.start_date)}</Typography>
             </Grid>
-            
+
             <Grid item xs={6}>
               <Typography variant="body2" fontWeight="bold">ວັນທີສິ້ນສຸດ:</Typography>
             </Grid>
@@ -284,9 +301,9 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
               <Typography variant="body2" textAlign="right">{formatDate(booking.stop_date)}</Typography>
             </Grid>
           </Grid>
-          
+
           <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-          
+
           <Grid container spacing={1}>
             <Grid item xs={6}>
               <Typography variant="subtitle1" fontWeight="bold">ລວມເງິນ:</Typography>
@@ -297,9 +314,9 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
               </Typography>
             </Grid>
           </Grid>
-          
+
           <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-          
+
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Typography variant="body2">
               ຂອບໃຈທີ່ໃຊ້ບໍລິການ DR. P VETERINARY CLINIC
@@ -310,18 +327,18 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
           </Box>
         </Box>
       </DialogContent>
-      
+
       <DialogActions sx={{ px: 3, pb: 3 }}>
-        <Button 
-          onClick={onClose} 
-          variant="outlined" 
+        <Button
+          onClick={handleDialogClose}
+          variant="outlined"
           color="error"
           startIcon={<Close />}
         >
           ຍົກເລີກ
         </Button>
-        <Button 
-          onClick={handlePrint} 
+        <Button
+          onClick={handlePrint}
           variant="contained"
           color="primary"
           startIcon={<Print />}

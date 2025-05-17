@@ -30,6 +30,7 @@ import TreatPet from './admin/treatpet';
 import DoctorTreatPet from './doctor/treatpet'; // Import the doctor's treatpet component
 import GroomerPetBar from './groomer/petbar';
 import GroomerBathpet from './groomer/bathpet';
+import Reportall from './owner/reportall';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
 import { loginAdmin, loginGroomer, loginOwner, loginDoctor } from './services/login.service';
 import Cookies from "js-cookie";
@@ -142,7 +143,7 @@ const AdminLogin = () => {
         sameSite: "strict",
       });
 
-      navigate("/dashboard");
+      navigate("/owner/dashboard");
       window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
@@ -471,6 +472,7 @@ const App = () => {
         <Route path="/doctor/treatpet" element={<DoctorTreatPet />} />
         <Route path="/groomer/petbar" element={<GroomerPetBar />} />
         <Route path="/groomer/bathpet" element={<GroomerBathpet />} />
+        <Route path="/owner/report" element={<Reportall />} />
       </Routes>
     </Router>
   );

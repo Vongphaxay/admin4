@@ -44,6 +44,19 @@ export const GetAllbooking = async (token) => {
     return response.data;
 };
 
+export const UpdatePayment_roompet = async (room_id, book_id, token) => {
+    const response = await axios.put(
+        `${REACT_APP_API_URL}/report/update-status?room_id=${room_id}&book_id=${book_id}`,
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}
+
 export const GetAllEmp = async (token) => {
     const response = await axios.get(`${REACT_APP_API_URL}/report/get-all-employee`, {
         headers: {
