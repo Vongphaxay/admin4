@@ -6,6 +6,7 @@ import {Edit,Delete,AddCircle,Home,Person,People,CalendarMonth,Pets,Bathtub,Cont
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { GetAllbooking } from '../services/report.service';
+import image from '../img/qrcode.png'
 
 
 // Create a custom styled container for the logo
@@ -31,6 +32,7 @@ const menuItems = [
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
+
 
 const BookingTable = () => {
     const theme = useTheme();
@@ -344,6 +346,7 @@ const BookingTable = () => {
                                 <TableRow>
                                     <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
                                     <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
+                                    <TableCell>ບໍລິການ</TableCell>
                                     <TableCell>ກົງທີຈອງ</TableCell>
                                     <TableCell>ວັນທີເລີ່ມ</TableCell>
                                     <TableCell>ວັນທີສິ້ນສຸດ</TableCell>
@@ -356,19 +359,19 @@ const BookingTable = () => {
                                     <TableRow key={booking.id}>
                                         <TableCell>{booking.petName}</TableCell>
                                         <TableCell>{booking.customerName}</TableCell>
+                                        <TableCell>{booking.start_date}</TableCell>
                                         <TableCell>{booking.service === 'Bath' ? 'ອາບນ້ຳ' : booking.service === 'Vaccination' ? 'ວັກຊີນ' : booking.service === 'Grooming' ? 'ຕັດຂົນ' : booking.service}</TableCell>
                                         <TableCell>{booking.start_date}</TableCell>
                                         <TableCell>{booking.stop_date}</TableCell>
                                         <TableCell>{booking.total}</TableCell>
                                         <TableCell>
-                                            <IconButton onClick={() => handleDialogOpen(booking)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
+                                            <Button onClick={() => handleDialogOpen(booking)} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ຊຳລະເງິນ</Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
-
                     <Dialog open={openDialog} onClose={handleDialogClose}>
                         <DialogTitle>{editMode ? 'ຊຳລະເງິນ' : 'ເພີ່ມການຈອງ'}</DialogTitle>
                         <DialogContent>
