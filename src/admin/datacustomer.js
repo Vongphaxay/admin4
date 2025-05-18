@@ -422,130 +422,140 @@ const CustomerManagement = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-
-                    {/* Dialog ສຳລັບແກ້ໄຂຂໍ້ມູນລູກຄ້າ */}
-                    {/* Dialog for editing customer data */}
                     {/* Dialog for editing customer data */}
                     <Dialog
                         open={openDialog}
                         onClose={handleDialogClose}
                         maxWidth="md"
                         fullWidth
+                        PaperProps={{
+                            sx: {
+                                borderRadius: 2,
+                                boxShadow: 3
+                            }
+                        }}
                     >
-                        <DialogTitle sx={{ fontWeight: 'bold', bgcolor: theme.palette.primary.main, color: 'white' }}>
+                        <DialogTitle
+                            sx={{
+                                fontWeight: 'bold',
+                                bgcolor: theme.palette.primary.main,
+                                color: 'white',
+                                py: 2,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1
+                            }}
+                        >
+                            {editMode ? <Edit fontSize="small" /> : <AddCircle fontSize="small" />}
                             {editMode ? 'ແກ້ໄຂຂໍ້ມູນລູກຄ້າ' : 'ເພີ່ມຂໍ້ມູນລູກຄ້າໃໝ່'}
                         </DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
-                                {/* Personal Information Section */}
+
+                        <DialogContent sx={{ p: 3 }}>
+                            <Grid container spacing={3} sx={{ mt: 0 }}>
                                 <Grid item xs={12}>
-                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
-                                        ຂໍ້ມູນລູກຄ້າ
-                                    </Typography>
-                                    <Divider sx={{ mb: 2 }} />
-                                </Grid>
+                                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#f9f9f9', borderRadius: 2, mb: 1 }}>
+                                        <Grid container spacing={2}>
+                                            {/* Name */}
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ຊື່ ແລະ ນາມສະກຸນ"
+                                                    fullWidth
+                                                    value={currentCustomer.name || ''}
+                                                    onChange={(e) => setCurrentCustomer({ ...currentCustomer, name: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: <Person fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
+                                                    }}
+                                                    variant="outlined"
+                                                    size="medium"
+                                                />
+                                            </Grid>
 
-                                {/* Name and Gender (side by side) */}
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        label="ຊື່ ແລະ ນາມສະກຸນ"
-                                        fullWidth
-                                        value={currentCustomer.name || ''}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, name: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: <Person fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
-                                        }}
-                                    />
-                                </Grid>
+                                            {/* Gender */}
+                                            <Grid item xs={12} md={6}>
+                                                <FormControl fullWidth variant="outlined" size="medium">
+                                                    <InputLabel id="gender-label">ເພດ</InputLabel>
+                                                    <Select
+                                                        labelId="gender-label"
+                                                        value={currentCustomer.gender || ''}
+                                                        label="ເພດ"
+                                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, gender: e.target.value })}
+                                                    >
+                                                        <MenuItem value="ຊາຍ">ຊາຍ</MenuItem>
+                                                        <MenuItem value="ຍິງ">ຍິງ</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </Grid>
 
-                                <Grid item xs={12} md={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="gender-label">ເພດ</InputLabel>
-                                        <Select
-                                            labelId="gender-label"
-                                            value={currentCustomer.gender || ''}
-                                            label="ເພດ"
-                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, gender: e.target.value })}
-                                        >
-                                            <MenuItem value="ຊາຍ">ຊາຍ</MenuItem>
-                                            <MenuItem value="ຍິງ">ຍິງ</MenuItem>
-                                            <MenuItem value="ອື່ນໆ">ອື່ນໆ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
+                                            {/* Phone */}
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ເບີໂທລະສັບ"
+                                                    fullWidth
+                                                    value={currentCustomer.phone || ''}
+                                                    onChange={(e) => setCurrentCustomer({ ...currentCustomer, phone: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: <Phone fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
+                                                    }}
+                                                    variant="outlined"
+                                                    size="medium"
+                                                />
+                                            </Grid>
 
-                                {/* Contact Information Section */}
-                                <Grid item xs={12}>
-                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
-                                        ຂໍ້ມູນຕິດຕໍ່
-                                    </Typography>
-                                    <Divider sx={{ mb: 2 }} />
-                                </Grid>
+                                            {/* Username */}
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ຊື່ຜູ້ໃຊ້"
+                                                    fullWidth
+                                                    value={currentCustomer.username || ''}
+                                                    onChange={(e) => setCurrentCustomer({ ...currentCustomer, username: e.target.value })}
+                                                    variant="outlined"
+                                                    size="medium"
+                                                />
+                                            </Grid>
 
-                                {/* Phone and Email (side by side) */}
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        label="ເບີໂທລະສັບ"
-                                        fullWidth
-                                        value={currentCustomer.phone || ''}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, phone: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: <Phone fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
-                                        }}
-                                    />
-                                </Grid>
-                                {/* Address (full width) */}
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ທີ່ຢູ່"
-                                        fullWidth
-                                        multiline
-                                        rows={2}
-                                        value={currentCustomer.address || ''}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, address: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: <LocationOn fontSize="small" sx={{ color: 'text.secondary', mr: 1, alignSelf: 'flex-start', mt: 1 }} />
-                                        }}
-                                    />
-                                </Grid>
+                                            {/* Password (only for new customers) */}
+                                            {!editMode ? (
+                                                <Grid item xs={12} md={6}>
+                                                    <TextField
+                                                        label="ລະຫັດຜ່ານ"
+                                                        type="password"
+                                                        fullWidth
+                                                        value={currentCustomer.password || ''}
+                                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, password: e.target.value })}
+                                                        variant="outlined"
+                                                        size="medium"
+                                                    />
+                                                </Grid>
+                                            ) : null}
 
-                                {/* Account Information Section */}
-                                <Grid item xs={12}>
-                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
-                                        ຂໍ້ມູນບັນຊີ
-                                    </Typography>
-                                    <Divider sx={{ mb: 2 }} />
+                                            {/* Address - always at the end, width depends on editMode */}
+                                            <Grid item xs={12} md={!editMode ? 6 : 12}>
+                                                <TextField
+                                                    label="ທີ່ຢູ່"
+                                                    fullWidth
+                                                    multiline
+                                                    rows={2}
+                                                    value={currentCustomer.address || ''}
+                                                    onChange={(e) => setCurrentCustomer({ ...currentCustomer, address: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: <LocationOn fontSize="small" sx={{ color: 'text.secondary', mr: 1, alignSelf: 'flex-start', mt: 1 }} />
+                                                    }}
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
                                 </Grid>
-
-                                {/* Username and Password (side by side) */}
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        label="ຊື່ຜູ້ໃຊ້"
-                                        fullWidth
-                                        value={currentCustomer.username || ''}
-                                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, username: e.target.value })}
-                                    />
-                                </Grid>
-
-                                {!editMode && (
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            label="ລະຫັດຜ່ານ"
-                                            type="password"
-                                            fullWidth
-                                            value={currentCustomer.password || ''}
-                                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, password: e.target.value })}
-                                        />
-                                    </Grid>
-                                )}
                             </Grid>
                         </DialogContent>
-                        <DialogActions sx={{ px: 3, pb: 3 }}>
+
+                        <DialogActions sx={{ px: 3, py: 3, justifyContent: 'center', gap: 2 }}>
                             <Button
                                 onClick={handleDialogClose}
                                 variant="outlined"
                                 color="error"
                                 startIcon={<Close />}
+                                sx={{ borderRadius: 2, px: 3 }}
                             >
                                 ຍົກເລີກ
                             </Button>
@@ -554,6 +564,7 @@ const CustomerManagement = () => {
                                 variant="contained"
                                 color="primary"
                                 startIcon={editMode ? <Edit /> : <AddCircle />}
+                                sx={{ borderRadius: 2, px: 3 }}
                             >
                                 {editMode ? 'ແກ້ໄຂຂໍ້ມູນ' : 'ບັນທຶກຂໍ້ມູນ'}
                             </Button>
