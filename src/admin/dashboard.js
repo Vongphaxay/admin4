@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { getNormalReport } from '../services/report.service';
 import React, { useState, useEffect } from 'react';
-import { useMemo } from 'react';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -23,7 +22,6 @@ const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
 const cus_id = Cookies.get("cus_ida");
 const accessToken = Cookies.get("accessTokena");
 
-
 // Mock data from the original code
 const menuItems = [
     { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard', active: true },
@@ -36,13 +34,6 @@ const menuItems = [
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
-const recentBookings = [
-    { petName: 'ເຈສັນ', petType: 'ໝາ', service: 'ຕັດຂົນ', date: '05-05-2025', time: '10:00', status: 'ຢືນຢັນແລ້ວ' },
-    { petName: 'ຄິດຕີ້', petType: 'ແມວ', service: 'ອາບນ້ຳ', date: '05-05-2025', time: '13:30', status: 'ຢືນຢັນແລ້ວ' },
-    { petName: 'ມາກີ້', petType: 'ໝາ', service: 'ປິ່ນປົວສັດລ້ຽງ', date: '06-05-2025', time: '09:15', status: 'ລໍຖ້າ' },
-    { petName: 'ໂລກີ', petType: 'ແມວ', service: 'ອາບນ້ຳ', date: '06-05-2025', time: '15:45', status: 'ລໍຖ້າ' },
-];
-
 const services = [
     { name: 'ຝາກສັດລ້ຽງ', count: 120, target: 150, progress: 80 },
     { name: 'ອາບນ້ຳ', count: 95, target: 100, progress: 95 },
@@ -52,8 +43,6 @@ const services = [
 
 // Define the drawer width
 const drawerWidth = 240;
-
-
 
 const Dashboard = () => {
     const theme = useTheme();
