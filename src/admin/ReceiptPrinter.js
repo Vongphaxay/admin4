@@ -150,7 +150,7 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
           <div class="service-details">
             <div class="info-row">
               <span class="info-label">ບໍລິການ:</span>
-              <span>${booking.service || '-'}</span>
+              <span>${booking.services.name || '-'}</span>
             </div>
             <div class="info-row">
               <span class="info-label">ກົງທີຈອງ:</span>
