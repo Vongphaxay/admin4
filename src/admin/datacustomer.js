@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container, Chip
+    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container, Chip, DialogContentText
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { getReportallcus, DeleteCustomer } from '../services/report.service';
@@ -69,6 +69,10 @@ const CustomerManagement = () => {
     const [editMode, setEditMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [reportData, setReportData] = useState(null);
+    
+    // ເພີ່ມ state ສຳລັບ Dialog ຢືນຢັນການລົບ
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [customerToDelete, setCustomerToDelete] = useState(null);
 
     const [customerData, setCustomerData] = useState([]);
     useEffect(() => {
@@ -137,7 +141,36 @@ const CustomerManagement = () => {
         setOpenDialog(false);
     };
 
-    const handleDeleteCustomer = async (id) => {
+    // ຟັງຊັນເປີດ Dialog ຢືນຢັນການລົບ
+    const handleOpenDeleteDialog = (customer) => {
+        setCustomerToDelete(customer);
+        setDeleteDialogOpen(true);
+    };
+    
+    // ຟັງຊັນປິດ Dialog ຢືນຢັນການລົບ
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setCustomerToDelete(null);
+    };
+    
+    // ຟັງຊັນລົບຂໍ້ມູນລູກຄ້າທີ່ປັບປຸງແລ້ວ
+    const handleDeleteCustomer = async () => {
+        if (customerToDelete) {
+            try {
+                await Deletecusapi(customerToDelete.id);
+                // ປິດ Dialog ຫຼັງຈາກລົບສໍາເລັດ
+                handleCloseDeleteDialog();
+                // Reload page to show updated data
+                window.location.reload();
+            } catch (error) {
+                console.error("Error deleting customer:", error);
+                // ຖ້າຕ້ອງການຈັດການກັບຂໍ້ຜິດພາດ, ສາມາດເຮັດໄດ້ທີ່ນີ້
+            }
+        }
+    };
+    
+    // ຮາກສາໄວ້ເພື່ອຄວາມສອດຄ່ອງກັບໂຄດເກົ່າ (ຈະບໍ່ໄດ້ໃຊ້ແລ້ວ)
+    const handleDeleteCustomerOld = async (id) => {
         if (window.confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນລູກຄ້ານີ້?')) {
             await Deletecusapi(id);
             window.location.reload();
@@ -408,7 +441,11 @@ const CustomerManagement = () => {
                                             <IconButton onClick={() => handleDialogOpen(customer)} sx={{ color: '#1976d2' }}>
                                                 <Edit />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDeleteCustomer(customer.id)} color="error">
+                                            {/* ປ່ຽນຈາກການໃຊ້ window.confirm ເປັນການເປີດ Dialog */}
+                                            <IconButton 
+                                                onClick={() => handleOpenDeleteDialog(customer)} 
+                                                color="error"
+                                            >
                                                 <Delete />
                                             </IconButton>
                                         </TableCell>
@@ -567,6 +604,58 @@ const CustomerManagement = () => {
                                 sx={{ borderRadius: 2, px: 3 }}
                             >
                                 {editMode ? 'ແກ້ໄຂຂໍ້ມູນ' : 'ບັນທຶກຂໍ້ມູນ'}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                    
+                    {/* Dialog ຢືນຢັນການລົບຂໍ້ມູນລູກຄ້າ */}
+                    <Dialog
+                        open={deleteDialogOpen}
+                        onClose={handleCloseDeleteDialog}
+                        PaperProps={{
+                            sx: {
+                                borderRadius: 2,
+                                minWidth: '350px'
+                            }
+                        }}
+                    >
+                        <DialogTitle sx={{ 
+                            bgcolor: '#ffebee', 
+                            color: '#d32f2f',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            p: 2
+                        }}>
+                            <Warning color="error" />
+                            ຢືນຢັນການລົບຂໍ້ມູນ
+                        </DialogTitle>
+                        <DialogContent sx={{ pt: 3, pb: 2, px: 3 }}>
+                            <DialogContentText>
+                                ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນລູກຄ້າ:
+                                <Box component="span" sx={{ fontWeight: 'bold', display: 'block', my: 1 }}>
+                                    {customerToDelete?.name}
+                                </Box>
+                                ການກະທໍານີ້ບໍ່ສາມາດຍ້ອນກັບໄດ້!
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions sx={{ px: 3, pb: 3, justifyContent: 'center', gap: 2 }}>
+                            <Button
+                                onClick={handleCloseDeleteDialog}
+                                variant="outlined"
+                                color="inherit"
+                                sx={{ borderRadius: 2, px: 3 }}
+                            >
+                                ຍົກເລີກ
+                            </Button>
+                            <Button
+                                onClick={handleDeleteCustomer}
+                                variant="contained"
+                                color="error"
+                                startIcon={<Delete />}
+                                sx={{ borderRadius: 2, px: 3 }}
+                            >
+                                ລົບຂໍ້ມູນ
                             </Button>
                         </DialogActions>
                     </Dialog>
