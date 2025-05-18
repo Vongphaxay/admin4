@@ -407,145 +407,295 @@ const BookingTable = () => {
                         </Table>
                     </TableContainer>
 
-                    {/* Payment Dialog with QR Code on the right */}
-                    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
-                        <DialogTitle sx={{ fontWeight: 'bold', bgcolor: theme.palette.primary.main, color: 'white' }}>
-                            {editMode ? 'ຊຳລະເງິນ' : 'ເພີ່ມການຈອງ'}
+                    {/* Payment Dialog with QR Code on the right - adjusted padding/margin and larger buttons */}
+                    <Dialog
+                        open={openDialog}
+                        onClose={handleDialogClose}
+                        maxWidth="md"
+                        fullWidth
+                        PaperProps={{
+                            sx: {
+                                minHeight: { xs: 'auto', sm: '440px', md: '460px' },
+                                maxHeight: { xs: '90vh', sm: '85vh', md: '80vh' },
+                                width: { xs: '95%', sm: '90%', md: '88%' }
+                            }
+                        }}
+                    >
+                        <DialogTitle sx={{
+                            fontWeight: 'bold',
+                            bgcolor: theme.palette.primary.main,
+                            color: 'white',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            px: 3,
+                            py: 1.75
+                        }}>
+                            <Box>
+                                {editMode ? 'ຊຳລະເງິນ' : 'ເພີ່ມການຈອງ'}
+                            </Box>
+                            <IconButton onClick={handleDialogClose} sx={{ color: 'white' }}>
+                                <Close />
+                            </IconButton>
                         </DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={3} sx={{ mt: 1 }}>
-                                {/* Left side - Booking Information */}
-                                <Grid item xs={12} md={7}>
-                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
+                        <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: { xs: 'column', md: 'row' },
+                                height: { xs: 'auto', sm: '400px', md: '420px' },
+                            }}>
+                                {/* Left side - Booking Information Container - REDUCED PADDING */}
+                                <Box sx={{
+                                    flex: '1 1 68%',
+                                    p: { xs: 2, sm: 2 },
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    overflow: 'auto'
+                                }}>
+                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom sx={{ mb: 1.5 }}>
                                         ຂໍ້ມູນການຈອງ
                                     </Typography>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} sm={6}>
+
+                                    {/* Reorganized booking information with REDUCED SPACING */}
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+                                        {/* First row - Pet and Customer */}
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                    ຊື່ສັດລ້ຽງ
+                                                </Typography>
+                                                <TextField
+                                                    fullWidth
+                                                    value={currentBooking.petName}
+                                                    onChange={(e) => setCurrentBooking({ ...currentBooking, petName: e.target.value })}
+                                                    disabled={editMode}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    placeholder="ຊື່ສັດລ້ຽງ"
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <Pets fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                        )
+                                                    }}
+                                                />
+                                            </Box>
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                    ຊື່ເຈົ້າຂອງ
+                                                </Typography>
+                                                <TextField
+                                                    fullWidth
+                                                    value={currentBooking.customerName}
+                                                    onChange={(e) => setCurrentBooking({ ...currentBooking, customerName: e.target.value })}
+                                                    disabled={editMode}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    placeholder="ຊື່ເຈົ້າຂອງ"
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <Person fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                        )
+                                                    }}
+                                                />
+                                            </Box>
+                                        </Box>
+
+                                        {/* Second row - Services */}
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                    ບໍລິການ
+                                                </Typography>
+                                                <TextField
+                                                    fullWidth
+                                                    value={currentBooking.services?.name || ''}
+                                                    disabled={true}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <ContentCut fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                        )
+                                                    }}
+                                                />
+                                            </Box>
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                    ກົງທີຈອງ
+                                                </Typography>
+                                                <TextField
+                                                    fullWidth
+                                                    value={currentBooking.service || ''}
+                                                    disabled={true}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <Bathtub fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                        )
+                                                    }}
+                                                />
+                                            </Box>
+                                        </Box>
+
+                                        {/* Third row - Dates */}
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                    ວັນທີເລີ່ມ
+                                                </Typography>
+                                                <TextField
+                                                    type="date"
+                                                    fullWidth
+                                                    value={currentBooking.start_date}
+                                                    onChange={(e) => setCurrentBooking({ ...currentBooking, start_date: e.target.value })}
+                                                    InputLabelProps={{ shrink: true }}
+                                                    disabled={editMode}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <CalendarMonth fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                        )
+                                                    }}
+                                                />
+                                            </Box>
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                    ວັນທີສິ້ນສຸດ
+                                                </Typography>
+                                                <TextField
+                                                    type="date"
+                                                    fullWidth
+                                                    value={currentBooking.stop_date}
+                                                    onChange={(e) => setCurrentBooking({ ...currentBooking, stop_date: e.target.value })}
+                                                    InputLabelProps={{ shrink: true }}
+                                                    disabled={editMode}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <CalendarMonth fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                        )
+                                                    }}
+                                                />
+                                            </Box>
+                                        </Box>
+
+                                        {/* Fourth row - Price */}
+                                        <Box>
+                                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                ລາຄາ
+                                            </Typography>
                                             <TextField
-                                                label="ຊື່ສັດລ້ຽງ"
-                                                fullWidth
-                                                value={currentBooking.petName}
-                                                onChange={(e) => setCurrentBooking({ ...currentBooking, petName: e.target.value })}
-                                                disabled={editMode}
-                                                sx={{ mb: 2 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                label="ຊື່ເຈົ້າຂອງ"
-                                                fullWidth
-                                                value={currentBooking.customerName}
-                                                onChange={(e) => setCurrentBooking({ ...currentBooking, customerName: e.target.value })}
-                                                disabled={editMode}
-                                                sx={{ mb: 2 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                label="ວັນທີເລີ່ມ"
-                                                type="date"
-                                                fullWidth
-                                                value={currentBooking.start_date}
-                                                onChange={(e) => setCurrentBooking({ ...currentBooking, start_date: e.target.value })}
-                                                InputLabelProps={{ shrink: true }}
-                                                disabled={editMode}
-                                                sx={{ mb: 2 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                label="ວັນທີສິ້ນສຸດ"
-                                                type="date"
-                                                fullWidth
-                                                value={currentBooking.stop_date}
-                                                onChange={(e) => setCurrentBooking({ ...currentBooking, stop_date: e.target.value })}
-                                                InputLabelProps={{ shrink: true }}
-                                                disabled={editMode}
-                                                sx={{ mb: 2 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                label="ລາຄາ"
                                                 type="number"
                                                 fullWidth
                                                 value={currentBooking.total}
                                                 onChange={(e) => setCurrentBooking({ ...currentBooking, total: e.target.value })}
                                                 disabled={editMode}
+                                                size="small"
+                                                variant="outlined"
+                                                sx={{ maxWidth: { sm: '50%' } }}
                                                 InputProps={{
+                                                    startAdornment: (
+                                                        <Box component="span" sx={{ display: 'flex', alignItems: 'center', mr: 1, color: 'primary.main', opacity: 0.7 }}>₭</Box>
+                                                    ),
                                                     endAdornment: <Typography variant="body2" color="text.secondary">ກີບ</Typography>
                                                 }}
                                             />
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
+                                        </Box>
+                                    </Box>
+                                </Box>
 
-                                {/* Vertical Divider for desktop view */}
+                                {/* Right side - QR Code Container */}
                                 {editMode && (
-                                    <Grid item xs={0} md={1} sx={{
-                                        display: { xs: 'none', md: 'flex' },
-                                        justifyContent: 'center',
-                                        position: 'relative'
-                                    }}>
-                                        <Divider orientation="vertical" sx={{
-                                            position: 'absolute',
-                                            height: '100%'
-                                        }} />
-                                    </Grid>
-                                )}
+                                    <>
+                                        {/* Mobile Divider */}
+                                        <Box sx={{
+                                            display: { xs: 'flex', md: 'none' },
+                                            justifyContent: 'center',
+                                            width: '100%',
+                                            my: 1.5
+                                        }}>
+                                            <Divider sx={{ width: '90%' }}>
+                                                <Typography variant="subtitle2" color="primary">
+                                                    ຊຳລະເງິນ
+                                                </Typography>
+                                            </Divider>
+                                        </Box>
 
-                                {/* Horizontal Divider for mobile view */}
-                                {editMode && (
-                                    <Grid item xs={12} sx={{ display: { xs: 'block', md: 'none' }, my: 1 }}>
-                                        <Divider>
-                                            <Typography variant="subtitle2" color="primary">
-                                                ຊຳລະເງິນ
-                                            </Typography>
-                                        </Divider>
-                                    </Grid>
+                                        {/* Separate QR Code Container */}
+                                        <Box sx={{
+                                            flex: '1 1 32%',
+                                            bgcolor: '#f8faff',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            position: 'relative',
+                                            borderLeft: { xs: 'none', md: `1px solid ${theme.palette.primary.light}` },
+                                            py: { xs: 2, md: 0 }
+                                        }}>
+                                            <Paper elevation={1} sx={{
+                                                py: 2.5,
+                                                px: 2.5,
+                                                width: { xs: '85%', md: '85%' },
+                                                maxWidth: '260px',
+                                                borderRadius: 1.5,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                bgcolor: 'white',
+                                                border: `1px solid ${theme.palette.primary.light}`
+                                            }}>
+                                                <Typography variant="body1" color="primary" fontWeight="bold" gutterBottom>
+                                                    ສະແກນເພື່ອຊຳລະເງິນ
+                                                </Typography>
+                                                <Box
+                                                    component="img"
+                                                    src={image}
+                                                    alt="QR Code"
+                                                    sx={{
+                                                        width: { xs: 140, md: 140, lg: 150 },
+                                                        height: { xs: 140, md: 140, lg: 150 },
+                                                        objectFit: 'contain',
+                                                        border: '1px solid #eee',
+                                                        borderRadius: 1,
+                                                        p: 0.5,
+                                                        my: 2,
+                                                        bgcolor: 'white'
+                                                    }}
+                                                />
+                                                <Box sx={{
+                                                    width: '100%',
+                                                    bgcolor: theme.palette.primary.main,
+                                                    p: 1.25,
+                                                    borderRadius: 1,
+                                                    color: 'white'
+                                                }}>
+                                                    <Typography variant="caption" align="center" sx={{ display: 'block', mb: 0.5 }}>
+                                                        ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
+                                                    </Typography>
+                                                    <Typography variant="subtitle1" fontWeight="bold" align="center">
+                                                        {currentBooking.total} ກີບ
+                                                    </Typography>
+                                                </Box>
+                                            </Paper>
+                                        </Box>
+                                    </>
                                 )}
-
-                                {/* Right side - QR Code */}
-                                {editMode && (
-                                    <Grid item xs={12} md={4} sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
-                                            ສະແກນເພື່ອຊຳລະເງິນ
-                                        </Typography>
-                                        <Box
-                                            component="img"
-                                            src={image}
-                                            alt="QR Code"
-                                            sx={{
-                                                width: 180,
-                                                height: 180,
-                                                objectFit: 'contain',
-                                                border: '1px solid #eee',
-                                                borderRadius: 1,
-                                                p: 1,
-                                                mb: 2
-                                            }}
-                                        />
-                                        <Typography variant="body2" color="text.secondary" align="center" sx={{ fontWeight: 'medium' }}>
-                                            ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
-                                        </Typography>
-                                        <Typography variant="h6" color="primary" fontWeight="bold" align="center">
-                                            {currentBooking.total} ກີບ
-                                        </Typography>
-                                    </Grid>
-                                )}
-                            </Grid>
+                            </Box>
                         </DialogContent>
-                        <DialogActions sx={{ px: 3, pb: 3 }}>
+                        <DialogActions sx={{ px: 3, py: 2 }}>
+                            {/* BIGGER BUTTONS */}
                             <Button
                                 onClick={handleDialogClose}
                                 variant="outlined"
                                 color="error"
                                 startIcon={<Close />}
+                                size="medium" // Changed from small to medium
+                                sx={{ px: 2, py: 0.75 }} // Added more padding
                             >
                                 ຍົກເລີກ
                             </Button>
@@ -558,6 +708,8 @@ const BookingTable = () => {
                                 variant="contained"
                                 color="primary"
                                 startIcon={editMode ? <AddCircle /> : <Edit />}
+                                size="medium" // Changed from small to medium
+                                sx={{ px: 2, py: 0.75 }} // Added more padding
                             >
                                 {editMode ? 'ຢືນຢັນການຊຳລະ' : 'ບັນທຶກ'}
                             </Button>
