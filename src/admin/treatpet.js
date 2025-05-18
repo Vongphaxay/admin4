@@ -412,17 +412,10 @@ const TreatPet = () => {
                                 }}
                             />
                         </Box>
-
-                        <Button
-                            variant="contained"
-                            sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
-                            startIcon={<AddCircle />}
-                            onClick={() => handleDialogOpen()}
-                        >ເພີ່ມການປິ່ນປົວ</Button>
                     </Box>
 
                     {/* ສະຖິຕິ */}
-                    <Grid container spacing={3} sx={{ mb: 3 }}>
+                    {/* <Grid container spacing={3} sx={{ mb: 3 }}>
                         <Grid item xs={12} sm={6} md={3}>
                             <Card sx={{ bgcolor: '#e8f5e9', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
@@ -463,7 +456,7 @@ const TreatPet = () => {
                                 </CardContent>
                             </Card>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
 
                     {/* ຕາຕະລາງຂໍ້ມູນ */}
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
@@ -471,15 +464,14 @@ const TreatPet = () => {
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
                                     <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຊະນິດສັດລ້ຽງ</TableCell>
-                                    <TableCell>ເຈົ້າຂອງ</TableCell>
-                                    <TableCell>ເບີໂທລະສັບ</TableCell>
-                                    <TableCell>ວັນທີປິ່ນປົວ</TableCell>
-                                    <TableCell>ການບົ່ງມະຕິ</TableCell>
-                                    <TableCell>ສັດຕະວະແພດ</TableCell>
+                                    <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
+                                    <TableCell>ກົງທີຈອງ</TableCell>
+                                    <TableCell>ວັນທີເລີ່ມການປິ່ນປົວ</TableCell>
+                                    <TableCell>ວັນທີຮັບກັບ</TableCell>
+                                    <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell>ເພດສັດລ້ຽງ</TableCell>
                                     <TableCell>ນັດໝາຍຄັ້ງຕໍ່ໄປ</TableCell>
                                     <TableCell>ລາຄາ</TableCell>
-                                    <TableCell>ສະຖານະ</TableCell>
                                     <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -496,16 +488,6 @@ const TreatPet = () => {
                                         <TableCell>{treatment.nextAppointment}</TableCell>
                                         <TableCell>{parseInt(treatment.price).toLocaleString()} ₭</TableCell>
                                         <TableCell>
-                                            <Chip 
-                                                label={getStatusInfo(treatment.status).label}
-                                                color={getStatusInfo(treatment.status).color}
-                                                size="small"
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <IconButton onClick={() => handleDetailsOpen(treatment)} sx={{ color: '#1976d2' }}>
-                                                <Info />
-                                            </IconButton>
                                             <IconButton onClick={() => handleDialogOpen(treatment)} sx={{ color: '#1976d2' }}>
                                                 <Edit />
                                             </IconButton>

@@ -97,7 +97,7 @@ const menuItems = [
     { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
-    
+
 ];
 
 const BathPet = () => {
@@ -493,75 +493,18 @@ const BathPet = () => {
                                 }}
                             />
                         </Box>
-
-                        <Button
-                            variant="contained"
-                            sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
-                            startIcon={<AddCircle />}
-                            onClick={() => handleDialogOpen()}
-                        >ເພີ່ມການອາບນ້ຳສັດລ້ຽງ</Button>
                     </Box>
-
-                    {/* Dashboard Stats */}
-                    <Grid container spacing={3} sx={{ mb: 3 }}>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#fff3e0', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ລໍຖ້າ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {pendingCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#e1f5fe', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ກຳລັງດຳເນີນການ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {inProgressCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#c8e6c9', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ສຳເລັດແລ້ວວັນນີ້</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {completedCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#ede7f6', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ລາຍຮັບວັນນີ້</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {bathData
-                                            .filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0])
-                                            .reduce((sum, item) => sum + parseInt(item.price), 0).toLocaleString()} ₭
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    </Grid>
-
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
                                     <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຊະນິດສັດລ້ຽງ</TableCell>
-                                    <TableCell>ເຈົ້າຂອງ</TableCell>
-                                    <TableCell>ເບີໂທລະສັບ</TableCell>
-                                    <TableCell>ວັນທີ</TableCell>
-                                    <TableCell>ເວລາ</TableCell>
-                                    <TableCell>ພະນັກງານ</TableCell>
-                                    <TableCell>ລາຄາ</TableCell>
-                                    <TableCell>ສະຖານະ</TableCell>
-                                    <TableCell>ຈັດການ</TableCell>
+                                    <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
+                                    <TableCell>ກົງທີຈອງ</TableCell>
+                                    <TableCell>ວັນທີເລີ່ມຝາກ</TableCell>
+                                    <TableCell>ວັນທີຮັບກັບ</TableCell>
+                                    <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell>ເພດສັດລ້ຽງ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -574,144 +517,11 @@ const BathPet = () => {
                                         <TableCell>{bath.bathDate}</TableCell>
                                         <TableCell>{bath.timeSlot}</TableCell>
                                         <TableCell>{bath.staffAssigned}</TableCell>
-                                        <TableCell>{parseInt(bath.price).toLocaleString()} ₭</TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={getStatusInfo(bath.status).label}
-                                                color={getStatusInfo(bath.status).color}
-                                                size="small"
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <IconButton onClick={() => handleDetailsOpen(bath)} sx={{ color: '#1976d2' }}>
-                                                <Info />
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDialogOpen(bath)} sx={{ color: '#1976d2' }}>
-                                                <Edit />
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDeleteBath(bath.id)} color="error">
-                                                <Delete />
-                                            </IconButton>
-                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
-
-                    {/* Add/Edit Dialog */}
-                    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
-                        <DialogTitle>
-                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນການອາບນ້ຳສັດລ້ຽງ' : 'ເພີ່ມການອາບນ້ຳສັດລ້ຽງ'}
-                        </DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ຊື່ສັດລ້ຽງ"
-                                        fullWidth
-                                        value={currentBath.petName}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, petName: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <PetsOutlined sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ຊະນິດສັດລ້ຽງ</InputLabel>
-                                        <Select
-                                            value={currentBath.petType}
-                                            onChange={(e) => setCurrentBath({ ...currentBath, petType: e.target.value })}
-                                            label="ຊະນິດສັດລ້ຽງ"
-                                        >
-                                            <MenuItem value="ໝາ">ໝາ</MenuItem>
-                                            <MenuItem value="ແມວ">ແມວ</MenuItem>
-                                            <MenuItem value="ອື່ນໆ">ອື່ນໆ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ສາຍພັນ"
-                                        fullWidth
-                                        value={currentBath.breed}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, breed: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ນ້ຳໜັກ (kg)"
-                                        fullWidth
-                                        type="number"
-                                        value={currentBath.weight}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, weight: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ຊື່ເຈົ້າຂອງ"
-                                        fullWidth
-                                        value={currentBath.ownerName}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, ownerName: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Person sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ເບີໂທລະສັບ"
-                                        fullWidth
-                                        value={currentBath.phone}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, phone: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Phone sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ວັນທີອາບນ້ຳ"
-                                        type="date"
-                                        fullWidth
-                                        value={currentBath.bathDate}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, bathDate: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <DateRange sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ເວລາ</InputLabel>
-                                        <Select
-                                            value={currentBath.timeSlot}
-                                            onChange={(e) => setCurrentBath({ ...currentBath, timeSlot: e.target.value })}
-                                            label="ເວລາ"
-                                            startAdornment={<AccessTime sx={{ color: 'action.active', mr: 1 }} />}
-                                        >
-                                            <MenuItem value="9:00 - 10:30">9:00 - 10:30</MenuItem>
-                                            <MenuItem value="10:30 - 12:00">10:30 - 12:00</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Grid>
-                        </DialogContent>
-                        {/* <DialogActions>
-                            <Button onClick={handleClose}>ຍົກເລີກ</Button>
-                            <Button onClick={handleSave}>ບັນທຶກ</Button>
-                        </DialogActions> */}
-                    </Dialog>
                 </Container>
             </Box>
         </Box>
