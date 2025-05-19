@@ -382,6 +382,27 @@ const EmployeeManagement = () => {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
+                                    <FormControl fullWidth variant="outlined">
+                                        <InputLabel id="position-select-label">ຕຳແໜ່ງ</InputLabel>
+                                        <Select
+                                            labelId="position-select-label"
+                                            id="position-select"
+                                            value={currentEmployee.position || ''}
+                                            label="ຕຳແໜ່ງ"
+                                            onChange={(e) => setCurrentEmployee({ ...currentEmployee, position: e.target.value })}
+                                            startAdornment={
+                                                <InputAdornment position="start">
+                                                    <Work sx={{ color: 'action.active' }} />
+                                                </InputAdornment>
+                                            }
+                                            sx={{ width: '100%', height: '56px' }}
+                                        >
+                                            <MenuItem value="ຊ່າງຕັດຂົນ">ຊ່າງຕັດຂົນ</MenuItem>
+                                            <MenuItem value="ທ່ານໝໍ">ທ່ານໝໍ</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12}>
                                     <TextField
                                         label="ເພດ"
                                         fullWidth
