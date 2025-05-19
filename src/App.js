@@ -31,6 +31,13 @@ import DoctorTreatPet from './doctor/treatpet'; // Import the doctor's treatpet 
 import GroomerPetBar from './groomer/petbar';
 import GroomerBathpet from './groomer/bathpet';
 import Dashboards from './owner/dashboard';
+import BookingTables from './owner/databooking';
+import EmployeeManagements from './owner/dataemployee';
+import CustomerManagements from './owner/datacustomer';
+import PetBoardings from './owner/petboard';
+import BathPets from './owner/bathpet';
+import PetBars from './owner/petbar';
+import TreatPets from './owner/treatpet';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
 import { loginAdmin, loginGroomer, loginOwner, loginDoctor } from './services/login.service';
 import Cookies from "js-cookie";
@@ -167,27 +174,27 @@ const AdminLogin = () => {
       return;
     }
 
-      if (role === 'owner') {
-        await APILOGINOwner(); // only navigates if successful
-      } else if (role === 'admin') {
-        await APILOGINAdmin(); // only navigates if successful
-      } else if (role === 'doctor') {
-        await APILOGINDoctor(); // only navigates if successful
-      } else if (role === 'groomer') {
-        await APILOGINGroomer(); // only navigates if successful
-      }
-      
-        // Simulate loading delay
-        setTimeout(() => {
-          // setLoading(false);
-          // if (role === 'admin') {
-          //   navigate('/dashboard');
-          // } else if (role === 'doctor') {
-          //   navigate('/doctor/treatpet');
-          // } else if (role === 'groomer') {
-          //   navigate('/groomer/bathpet'); // Choose correct path here
-          // }
-        }, 800);
+    if (role === 'owner') {
+      await APILOGINOwner(); // only navigates if successful
+    } else if (role === 'admin') {
+      await APILOGINAdmin(); // only navigates if successful
+    } else if (role === 'doctor') {
+      await APILOGINDoctor(); // only navigates if successful
+    } else if (role === 'groomer') {
+      await APILOGINGroomer(); // only navigates if successful
+    }
+
+    // Simulate loading delay
+    setTimeout(() => {
+      // setLoading(false);
+      // if (role === 'admin') {
+      //   navigate('/dashboard');
+      // } else if (role === 'doctor') {
+      //   navigate('/doctor/treatpet');
+      // } else if (role === 'groomer') {
+      //   navigate('/groomer/bathpet'); // Choose correct path here
+      // }
+    }, 800);
   };
 
   const handleClickShowPassword = () => {
@@ -470,9 +477,18 @@ const App = () => {
         <Route path="/treatpet" element={<TreatPet />} />
         {/* Added route for doctor's treatpet page */}
         <Route path="/doctor/treatpet" element={<DoctorTreatPet />} />
+        {/* Added route for groomer's treatpet page */}
         <Route path="/groomer/petbar" element={<GroomerPetBar />} />
         <Route path="/groomer/bathpet" element={<GroomerBathpet />} />
+        {/* Added route for owner's treatpet page */}
         <Route path="/owner/dashboard" element={<Dashboards />} />
+        <Route path="/owner/databooking" element={<BookingTables />} />
+        <Route path="/owner/dataemployee" element={<EmployeeManagements />} />
+        <Route path="/owner/datacustomer" element={<CustomerManagements />} />
+        <Route path="/owner/petboarding" element={<PetBoardings />} />
+        <Route path="/owner/bathpet" element={<BathPets />} />
+        <Route path="/owner/petbar" element={<PetBars />} />
+        <Route path="/owner/treatpet" element={<TreatPets />} />
       </Routes>
     </Router>
   );

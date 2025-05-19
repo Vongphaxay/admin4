@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -49,7 +49,7 @@ import {
     People,
     CalendarMonth,
     Pets,
-    Bathtub, 
+    Bathtub,
     ContentCut,
     Vaccines,
     Menu,
@@ -64,11 +64,10 @@ import {
     AccessTime,
     Info,
     EventNote,
-    PetsOutlined,
-    Soap,
-    Shower,
-    CheckCircle
+    PetsOutlined
 } from '@mui/icons-material';
+import Cookies from 'js-cookie';
+import { GetAllcategory_service } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -79,20 +78,23 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
+const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const cus_id = Cookies.get("cus_ida");
+const accessToken = Cookies.get("accessTokena");
+
 // Define the drawer width
 const drawerWidth = 240;
 
 // Menu items
 const menuItems = [
-    { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard' },
-    { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
-    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
-    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true },
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet'},
-    { icon: <ReportIcon />, label: 'ລາຍງາຍ', path: '/Reportall' },
+    { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/owner/dashboard' },
+    { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/owner/dataemployee' },
+    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/owner/datacustomer' },
+    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking' },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding'},
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet', active: true  },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
 ];
 
 const BathPet = () => {
@@ -104,116 +106,94 @@ const BathPet = () => {
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [bathData, setBathData] = useState([
-        { 
-            id: 1, 
-            petName: 'ດາວດາຍ', 
-            petType: 'ໝາ', 
-            breed: 'ພັນຈັງເຊຍ', 
-            weight: '12.5',
-            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ', 
-            phone: '020 7654 3210',
-            bathDate: '2025-05-08', 
-            timeSlot: '9:00 - 10:30',
-            status: 'Pending',
-            notes: 'ໃຊ້ແຊມພູພິເສດສຳລັບຜິວແພ້ງ່າຍ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ, ຕັດເລັບ',
-            staffAssigned: 'ນ. ສະໝອນໃຈ',
-            price: '150000'
-        },
-        { 
-            id: 2, 
-            petName: 'ແມວມີ່', 
-            petType: 'ແມວ', 
-            breed: 'ພັນແມວໄທ', 
-            weight: '4.2',
-            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ', 
-            phone: '020 8765 4321',
-            bathDate: '2025-05-08', 
-            timeSlot: '10:30 - 12:00',
-            status: 'InProgress',
-            notes: 'ຫຼີກລ້ຽງບໍລິເວນຫູ ເນື່ອງຈາກມີການຕິດເຊື້ອ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ແປງຂົນ',
-            staffAssigned: 'ທ. ສຸລິຍາ',
-            price: '120000'
-        },
-        { 
-            id: 3, 
-            petName: 'ໂຕໂຕ້', 
-            petType: 'ໝາ', 
-            breed: 'ພັນຈີນິກເຊີ', 
-            weight: '3.8',
-            ownerName: 'ທ. ປະເສີດ ດວງຈັນ', 
-            phone: '020 9876 5432',
-            bathDate: '2025-05-07', 
-            timeSlot: '14:00 - 15:30',
-            status: 'Completed',
-            notes: 'ແມງຕະນູໜ້ອຍ, ໃຊ້ຜະລິດຕະພັນກຳຈັດແມງຕະນູ.',
-            services: 'ອາບນ້ຳພິເສດ, ເປົ່າຂົນ, ຕັດເລັບ, ລ້າງຫູ',
-            staffAssigned: 'ນ. ສະໝອນໃຈ',
-            price: '180000'
-        },
-        { 
-            id: 4, 
-            petName: 'ໝີເຊີ', 
-            petType: 'ໝາ', 
-            breed: 'ພັນພູເດີ້ນ', 
-            weight: '22.0',
-            ownerName: 'ນ. ມະນີຈັນ ແສງສະຫວ່າງ', 
-            phone: '020 5566 7788',
-            bathDate: '2025-05-08', 
-            timeSlot: '13:00 - 14:30',
-            status: 'Canceled',
-            notes: 'ລູກຄ້າຍົກເລີກເນື່ອງຈາກເຈັບປ່ວຍ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ',
-            staffAssigned: '-',
-            price: '150000'
-        },
-    ]);
-    const [currentBath, setCurrentBath] = useState({ 
-        petName: '', 
-        petType: '', 
-        breed: '', 
-        weight: '',
-        ownerName: '', 
+    const [boardingData, setBoardingData] = useState([]);
+
+    useEffect(() => {
+        const getAllCategoryServices = async () => {
+            const response = await GetAllcategory_service(2, accessToken);
+
+            if (response && response.report) {
+                const flatBoardingData = [];
+
+                response.report.forEach(service => {
+                    service.tb_bookings.forEach(booking => {
+                        flatBoardingData.push({
+                            id: booking.book_id,
+                            serviceId: booking.service_id,
+                            serviceName: service.service_name,
+                            startDate: booking.start_date,
+                            endDate: booking.stop_date,
+                            total: booking.total,
+                            cage: booking.room_id,
+
+                            customer: {
+                                id: booking.cu?.cus_id,
+                                name: booking.cu?.cus_name,
+                                phone: booking.cu?.tel,
+                                address: booking.cu?.address,
+                            },
+
+                            pet: {
+                                id: booking.pet?.pet_id,
+                                name: booking.pet?.pet_name,
+                                type: booking.pet?.pet_type,
+                                gender: booking.pet?.gender,
+                                size: booking.pet?.size,
+                                color: booking.pet?.color,
+                                age: booking.pet?.age
+                            }
+                        });
+                    });
+                });
+
+                setBoardingData(flatBoardingData);
+                console.log("flatBoardingData", flatBoardingData);
+            }
+        };
+
+        getAllCategoryServices();
+    }, [accessToken]);
+
+    const [currentBoarding, setCurrentBoarding] = useState({
+        petName: '',
+        petType: '',
+        breed: '',
+        ownerName: '',
         phone: '',
-        bathDate: '', 
-        timeSlot: '', 
+        startDate: '',
+        endDate: '',
         status: '',
         notes: '',
-        services: '',
-        staffAssigned: '',
-        price: ''
+        cage: '',
+        specialRequirements: ''
     });
-    const [selectedBath, setSelectedBath] = useState(null);
+    const [selectedBoarding, setSelectedBoarding] = useState(null);
 
-    const handleDialogOpen = (bath = null) => {
-        if (bath) {
-            setCurrentBath(bath);
+    const handleDialogOpen = (boarding = null) => {
+        if (boarding) {
+            setCurrentBoarding(boarding);
             setEditMode(true);
         } else {
-            setCurrentBath({ 
-                petName: '', 
-                petType: '', 
-                breed: '', 
-                weight: '',
-                ownerName: '', 
+            setCurrentBoarding({
+                petName: '',
+                petType: '',
+                breed: '',
+                ownerName: '',
                 phone: '',
-                bathDate: new Date().toISOString().split('T')[0], 
-                timeSlot: '', 
-                status: 'Pending',
+                startDate: '',
+                endDate: '',
+                status: 'Active',
                 notes: '',
-                services: '',
-                staffAssigned: '',
-                price: ''
+                cage: '',
+                specialRequirements: ''
             });
             setEditMode(false);
         }
         setOpenDialog(true);
     };
 
-    const handleDetailsOpen = (bath) => {
-        setSelectedBath(bath);
+    const handleDetailsOpen = (boarding) => {
+        setSelectedBoarding(boarding);
         setOpenDetailsDialog(true);
     };
 
@@ -231,47 +211,28 @@ const BathPet = () => {
 
     const handleDialogClose = () => setOpenDialog(false);
 
-    const handleSaveBath = () => {
+    const handleSaveBoarding = () => {
         if (editMode) {
-            setBathData(prevData => prevData.map(item => item.id === currentBath.id ? currentBath : item));
+            setBoardingData(prevData => prevData.map(item => item.id === currentBoarding.id ? currentBoarding : item));
         } else {
-            setBathData(prevData => [...prevData, { ...currentBath, id: prevData.length + 1 }]);
+            setBoardingData(prevData => [...prevData, { ...currentBoarding, id: prevData.length + 1 }]);
         }
         setOpenDialog(false);
     };
 
-    const handleDeleteBath = (id) => setBathData(prevData => prevData.filter(item => item.id !== id));
+    const handleDeleteBoarding = (id) => setBoardingData(prevData => prevData.filter(item => item.id !== id));
 
     const handleLogout = () => {
         navigate('/');
     };
 
-    const filteredData = bathData.filter(bath => 
-        bath.petName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        bath.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        bath.phone.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredData = boardingData.filter(boarding =>
+        boarding.pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Get status counts for dashboard stats
-    const pendingCount = bathData.filter(item => item.status === 'Pending').length;
-    const inProgressCount = bathData.filter(item => item.status === 'InProgress').length;
-    const completedCount = bathData.filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0]).length;
 
-    // Get status color and label
-    const getStatusInfo = (status) => {
-        switch(status) {
-            case 'Pending':
-                return { color: 'warning', label: 'ລໍຖ້າ' };
-            case 'InProgress':
-                return { color: 'info', label: 'ກຳລັງດຳເນີນການ' };
-            case 'Completed':
-                return { color: 'success', label: 'ສຳເລັດແລ້ວ' };
-            case 'Canceled':
-                return { color: 'error', label: 'ຍົກເລີກ' };
-            default:
-                return { color: 'default', label: status };
-        }
-    };
 
     const drawerContent = (
         <>
@@ -368,8 +329,12 @@ const BathPet = () => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        DR. P VETERINARY
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
+                    >
+                        Owner: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
@@ -479,229 +444,40 @@ const BathPet = () => {
                                 }}
                             />
                         </Box>
-
-                        <Button
-                            variant="contained"
-                            sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
-                            startIcon={<AddCircle />}
-                            onClick={() => handleDialogOpen()}
-                        >ເພີ່ມການອາບນ້ຳສັດລ້ຽງ</Button>
                     </Box>
-
-                    {/* Dashboard Stats */}
-                    <Grid container spacing={3} sx={{ mb: 3 }}>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#fff3e0', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ລໍຖ້າ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {pendingCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#e1f5fe', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ກຳລັງດຳເນີນການ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {inProgressCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#c8e6c9', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ສຳເລັດແລ້ວວັນນີ້</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {completedCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#ede7f6', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ລາຍຮັບວັນນີ້</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {bathData
-                                            .filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0])
-                                            .reduce((sum, item) => sum + parseInt(item.price), 0).toLocaleString()} ₭
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    </Grid>
-
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
                                     <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຊະນິດສັດລ້ຽງ</TableCell>
-                                    <TableCell>ເຈົ້າຂອງ</TableCell>
-                                    <TableCell>ເບີໂທລະສັບ</TableCell>
-                                    <TableCell>ວັນທີ</TableCell>
-                                    <TableCell>ເວລາ</TableCell>
-                                    <TableCell>ພະນັກງານ</TableCell>
-                                    <TableCell>ລາຄາ</TableCell>
-                                    <TableCell>ສະຖານະ</TableCell>
-                                    <TableCell>ຈັດການ</TableCell>
+                                    <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
+                                    <TableCell>ກົງທີຈອງ</TableCell>
+                                    <TableCell>ວັນທີເລີ່ມຝາກ</TableCell>
+                                    <TableCell>ວັນທີຮັບກັບ</TableCell>
+                                    <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell>ເພດສັດລ້ຽງ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredData.map((bath) => (
-                                    <TableRow key={bath.id}>
-                                        <TableCell>{bath.petName}</TableCell>
-                                        <TableCell>{bath.petType}</TableCell>
-                                        <TableCell>{bath.ownerName}</TableCell>
-                                        <TableCell>{bath.phone}</TableCell>
-                                        <TableCell>{bath.bathDate}</TableCell>
-                                        <TableCell>{bath.timeSlot}</TableCell>
-                                        <TableCell>{bath.staffAssigned}</TableCell>
-                                        <TableCell>{parseInt(bath.price).toLocaleString()} ₭</TableCell>
-                                        <TableCell>
-                                            <Chip 
-                                                label={getStatusInfo(bath.status).label}
-                                                color={getStatusInfo(bath.status).color}
-                                                size="small"
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <IconButton onClick={() => handleDetailsOpen(bath)} sx={{ color: '#1976d2' }}>
-                                                <Info />
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDialogOpen(bath)} sx={{ color: '#1976d2' }}>
-                                                <Edit />
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDeleteBath(bath.id)} color="error">
-                                                <Delete />
-                                            </IconButton>
-                                        </TableCell>
+                                {filteredData.map((boarding) => (
+                                    <TableRow key={boarding.id}>
+                                        <TableCell>{boarding.pet.name}</TableCell>
+                                        <TableCell>{boarding.customer.name}</TableCell>
+                                        <TableCell>{boarding.cage}</TableCell>
+                                        <TableCell>{boarding.startDate}</TableCell>
+                                        <TableCell>{boarding.endDate}</TableCell>
+                                        <TableCell>{boarding.pet.type}</TableCell>
+                                        <TableCell>{boarding.pet.gender}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
+
                         </Table>
                     </TableContainer>
-
-                    {/* Add/Edit Dialog */}
-                    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
-                        <DialogTitle>
-                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນການອາບນ້ຳສັດລ້ຽງ' : 'ເພີ່ມການອາບນ້ຳສັດລ້ຽງ'}
-                        </DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ຊື່ສັດລ້ຽງ"
-                                        fullWidth
-                                        value={currentBath.petName}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, petName: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <PetsOutlined sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ຊະນິດສັດລ້ຽງ</InputLabel>
-                                        <Select
-                                            value={currentBath.petType}
-                                            onChange={(e) => setCurrentBath({ ...currentBath, petType: e.target.value })}
-                                            label="ຊະນິດສັດລ້ຽງ"
-                                        >
-                                            <MenuItem value="ໝາ">ໝາ</MenuItem>
-                                            <MenuItem value="ແມວ">ແມວ</MenuItem>
-                                            <MenuItem value="ອື່ນໆ">ອື່ນໆ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ສາຍພັນ"
-                                        fullWidth
-                                        value={currentBath.breed}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, breed: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ນ້ຳໜັກ (kg)"
-                                        fullWidth
-                                        type="number"
-                                        value={currentBath.weight}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, weight: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ຊື່ເຈົ້າຂອງ"
-                                        fullWidth
-                                        value={currentBath.ownerName}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, ownerName: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Person sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ເບີໂທລະສັບ"
-                                        fullWidth
-                                        value={currentBath.phone}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, phone: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Phone sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ວັນທີອາບນ້ຳ"
-                                        type="date"
-                                        fullWidth
-                                        value={currentBath.bathDate}
-                                        onChange={(e) => setCurrentBath({ ...currentBath, bathDate: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <DateRange sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ເວລາ</InputLabel>
-                                        <Select
-                                            value={currentBath.timeSlot}
-                                            onChange={(e) => setCurrentBath({ ...currentBath, timeSlot: e.target.value })}
-                                            label="ເວລາ"
-                                            startAdornment={<AccessTime sx={{ color: 'action.active', mr: 1 }} />}
-                                        >
-                                            <MenuItem value="9:00 - 10:30">9:00 - 10:30</MenuItem>
-                                            <MenuItem value="10:30 - 12:00">10:30 - 12:00</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Grid>
-                        </DialogContent>
-                        {/* <DialogActions>
-                            <Button onClick={handleClose}>ຍົກເລີກ</Button>
-                            <Button onClick={handleSave}>ບັນທຶກ</Button>
-                        </DialogActions> */}
-                    </Dialog>
                 </Container>
             </Box>
         </Box>
     );
-}
+};
 
 export default BathPet;

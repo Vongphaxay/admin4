@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -49,7 +49,7 @@ import {
     People,
     CalendarMonth,
     Pets,
-    Bathtub, 
+    Bathtub,
     ContentCut,
     Vaccines,
     Menu,
@@ -66,6 +66,8 @@ import {
     EventNote,
     PetsOutlined
 } from '@mui/icons-material';
+import Cookies from 'js-cookie';
+import { GetAllcategory_service } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -76,19 +78,23 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
+const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const cus_id = Cookies.get("cus_ida");
+const accessToken = Cookies.get("accessTokena");
+
 // Define the drawer width
 const drawerWidth = 240;
 
 // Menu items
 const menuItems = [
-    { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard' },
-    { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
-    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
-    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding', active: true },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet'},
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar'},
-    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet'},
+    { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/owner/dashboard' },
+    { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/owner/dataemployee' },
+    { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/owner/datacustomer' },
+    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking' },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding', active: true },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet'  },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
+    { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
 ];
 
 const PetBoarding = () => {
@@ -100,58 +106,62 @@ const PetBoarding = () => {
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [boardingData, setBoardingData] = useState([
-        { 
-            id: 1, 
-            petName: 'ດາວດາຍ', 
-            petType: 'ໝາ', 
-            breed: 'ພັນຈັງເຊຍ', 
-            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ', 
-            phone: '020 7654 3210',
-            startDate: '2025-05-07', 
-            endDate: '2025-05-10', 
-            status: 'Active',
-            notes: 'ອາຫານ: ອາຫານແຫ້ງພິເສດ 2 ຄັ້ງຕໍ່ມື້. ຢາ: ໃຫ້ຢາຕອນເຊົ້າ ແລະ ແລງ.',
-            cage: 'B2',
-            specialRequirements: 'ຕ້ອງການພາຍ່າງທຸກມື້ຕອນແລງ. ຕ້ອງການຫຼິ້ນກັບໝາຕົວອື່ນ.'
-        },
-        { 
-            id: 2, 
-            petName: 'ແມວມີ່', 
-            petType: 'ແມວ', 
-            breed: 'ພັນແມວໄທ', 
-            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ', 
-            phone: '020 8765 4321',
-            startDate: '2025-05-06', 
-            endDate: '2025-05-12', 
-            status: 'Active',
-            notes: 'ອາຫານ: ອາຫານກະປ໋ອງ 3 ຄັ້ງຕໍ່ມື້. ຕ້ອງການຊາຍແມວພິເສດ.',
-            cage: 'C3',
-            specialRequirements: 'ບໍ່ມັກສຽງດັງ. ຕ້ອງການຂອງຫຼິ້ນພິເສດ.'
-        },
-        { 
-            id: 3, 
-            petName: 'ໂຕໂຕ້', 
-            petType: 'ໝາ', 
-            breed: 'ພັນຈີນິກເຊີ', 
-            ownerName: 'ທ. ປະເສີດ ດວງຈັນ', 
-            phone: '020 9876 5432',
-            startDate: '2025-05-05', 
-            endDate: '2025-05-08', 
-            status: 'Completed',
-            notes: 'ອາຫານ: ອາຫານແຫ້ງ ແລະ ອາຫານປຽກ. ຈຳກັດນ້ຳໜັກອາຫານ.',
-            cage: 'A1',
-            specialRequirements: 'ຕ້ອງການຜ້າຫົ່ມພິເສດ. ກັງວົນເລື່ອງສຽງ.'
-        },
-    ]);
-    const [currentBoarding, setCurrentBoarding] = useState({ 
-        petName: '', 
-        petType: '', 
-        breed: '', 
-        ownerName: '', 
+    const [boardingData, setBoardingData] = useState([]);
+
+    useEffect(() => {
+        const getAllCategoryServices = async () => {
+            const response = await GetAllcategory_service(1, accessToken);
+
+            if (response && response.report) {
+                const flatBoardingData = [];
+
+                response.report.forEach(service => {
+                    service.tb_bookings.forEach(booking => {
+                        flatBoardingData.push({
+                            id: booking.book_id,
+                            serviceId: booking.service_id,
+                            serviceName: service.service_name,
+                            startDate: booking.start_date,
+                            endDate: booking.stop_date,
+                            total: booking.total,
+                            cage: booking.room_id,
+
+                            customer: {
+                                id: booking.cu?.cus_id,
+                                name: booking.cu?.cus_name,
+                                phone: booking.cu?.tel,
+                                address: booking.cu?.address,
+                            },
+
+                            pet: {
+                                id: booking.pet?.pet_id,
+                                name: booking.pet?.pet_name,
+                                type: booking.pet?.pet_type,
+                                gender: booking.pet?.gender,
+                                size: booking.pet?.size,
+                                color: booking.pet?.color,
+                                age: booking.pet?.age
+                            }
+                        });
+                    });
+                });
+
+                setBoardingData(flatBoardingData);
+                console.log("flatBoardingData", flatBoardingData);
+            }
+        };
+
+        getAllCategoryServices();
+    }, [accessToken]);
+
+    const [currentBoarding, setCurrentBoarding] = useState({
+        petName: '',
+        petType: '',
+        breed: '',
+        ownerName: '',
         phone: '',
-        startDate: '', 
-        endDate: '', 
+        startDate: '',
+        endDate: '',
         status: '',
         notes: '',
         cage: '',
@@ -164,14 +174,14 @@ const PetBoarding = () => {
             setCurrentBoarding(boarding);
             setEditMode(true);
         } else {
-            setCurrentBoarding({ 
-                petName: '', 
-                petType: '', 
-                breed: '', 
-                ownerName: '', 
+            setCurrentBoarding({
+                petName: '',
+                petType: '',
+                breed: '',
+                ownerName: '',
                 phone: '',
-                startDate: '', 
-                endDate: '', 
+                startDate: '',
+                endDate: '',
                 status: 'Active',
                 notes: '',
                 cage: '',
@@ -216,11 +226,13 @@ const PetBoarding = () => {
         navigate('/');
     };
 
-    const filteredData = boardingData.filter(boarding => 
-        boarding.petName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        boarding.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        boarding.phone.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredData = boardingData.filter(boarding =>
+        boarding.pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+
 
     const drawerContent = (
         <>
@@ -317,8 +329,12 @@ const PetBoarding = () => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        DR. P VETERINARY
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
+                    >
+                        Owner: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
@@ -428,385 +444,36 @@ const PetBoarding = () => {
                                 }}
                             />
                         </Box>
-
-                        <Button
-                            variant="contained"
-                            sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
-                            startIcon={<AddCircle />}
-                            onClick={() => handleDialogOpen()}
-                        >ເພີ່ມການຝາກສັດລ້ຽງ</Button>
                     </Box>
-
-                    {/* Dashboard Stats */}
-                    <Grid container spacing={3} sx={{ mb: 3 }}>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Card sx={{ bgcolor: '#bbdefb', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ສັດລ້ຽງທີ່ກຳລັງຝາກ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {boardingData.filter(item => item.status === 'Active').length}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Card sx={{ bgcolor: '#c8e6c9', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ຝາກສຳເລັດແລ້ວວັນນີ້</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {boardingData.filter(item => item.status === 'Completed' && item.endDate === '2025-05-07').length}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Card sx={{ bgcolor: '#ffecb3', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ຄອກວ່າງ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">12</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    </Grid>
-
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
                                     <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຊະນິດສັດລ້ຽງ</TableCell>
-                                    <TableCell>ເຈົ້າຂອງ</TableCell>
-                                    <TableCell>ເບີໂທລະສັບ</TableCell>
+                                    <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
+                                    <TableCell>ກົງທີຈອງ</TableCell>
                                     <TableCell>ວັນທີເລີ່ມຝາກ</TableCell>
                                     <TableCell>ວັນທີຮັບກັບ</TableCell>
-                                    <TableCell>ຄອກ</TableCell>
-                                    <TableCell>ສະຖານະ</TableCell>
-                                    <TableCell>ຈັດການ</TableCell>
+                                    <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell>ເພດສັດລ້ຽງ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {filteredData.map((boarding) => (
                                     <TableRow key={boarding.id}>
-                                        <TableCell>{boarding.petName}</TableCell>
-                                        <TableCell>{boarding.petType}</TableCell>
-                                        <TableCell>{boarding.ownerName}</TableCell>
-                                        <TableCell>{boarding.phone}</TableCell>
+                                        <TableCell>{boarding.pet.name}</TableCell>
+                                        <TableCell>{boarding.customer.name}</TableCell>
+                                        <TableCell>{boarding.cage}</TableCell>
                                         <TableCell>{boarding.startDate}</TableCell>
                                         <TableCell>{boarding.endDate}</TableCell>
-                                        <TableCell>{boarding.cage}</TableCell>
-                                        <TableCell>
-                                            <Chip 
-                                                label={boarding.status === 'Active' ? 'ກຳລັງຝາກ' : boarding.status === 'Completed' ? 'ຮັບກັບແລ້ວ' : boarding.status} 
-                                                color={boarding.status === 'Active' ? 'primary' : boarding.status === 'Completed' ? 'success' : 'default'}
-                                                size="small"
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <IconButton onClick={() => handleDetailsOpen(boarding)} sx={{ color: '#1976d2' }}>
-                                                <Info />
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDialogOpen(boarding)} sx={{ color: '#1976d2' }}>
-                                                <Edit />
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDeleteBoarding(boarding.id)} color="error">
-                                                <Delete />
-                                            </IconButton>
-                                        </TableCell>
+                                        <TableCell>{boarding.pet.type}</TableCell>
+                                        <TableCell>{boarding.pet.gender}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
+
                         </Table>
                     </TableContainer>
-
-                    {/* Add/Edit Dialog */}
-                    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
-                        <DialogTitle>
-                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນການຝາກສັດລ້ຽງ' : 'ເພີ່ມການຝາກສັດລ້ຽງ'}
-                        </DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ຊື່ສັດລ້ຽງ"
-                                        fullWidth
-                                        value={currentBoarding.petName}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, petName: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <PetsOutlined sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ຊະນິດສັດລ້ຽງ</InputLabel>
-                                        <Select
-                                            value={currentBoarding.petType}
-                                            onChange={(e) => setCurrentBoarding({ ...currentBoarding, petType: e.target.value })}
-                                            label="ຊະນິດສັດລ້ຽງ"
-                                        >
-                                            <MenuItem value="ໝາ">ໝາ</MenuItem>
-                                            <MenuItem value="ແມວ">ແມວ</MenuItem>
-                                            <MenuItem value="ນົກ">ນົກ</MenuItem>
-                                            <MenuItem value="ກະຕ່າຍ">ກະຕ່າຍ</MenuItem>
-                                            <MenuItem value="ອື່ນໆ">ອື່ນໆ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ສາຍພັນ"
-                                        fullWidth
-                                        value={currentBoarding.breed}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, breed: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ຊື່ເຈົ້າຂອງ"
-                                        fullWidth
-                                        value={currentBoarding.ownerName}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, ownerName: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Person sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ເບີໂທລະສັບ"
-                                        fullWidth
-                                        value={currentBoarding.phone}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, phone: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Phone sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ຄອກ</InputLabel>
-                                        <Select
-                                            value={currentBoarding.cage}
-                                            onChange={(e) => setCurrentBoarding({ ...currentBoarding, cage: e.target.value })}
-                                            label="ຄອກ"
-                                        >
-                                            <MenuItem value="A1">A1 (ຂະໜາດໃຫຍ່)</MenuItem>
-                                            <MenuItem value="A2">A2 (ຂະໜາດໃຫຍ່)</MenuItem>
-                                            <MenuItem value="A3">A3 (ຂະໜາດໃຫຍ່)</MenuItem>
-                                            <MenuItem value="B1">B1 (ຂະໜາດກາງ)</MenuItem>
-                                            <MenuItem value="B2">B2 (ຂະໜາດກາງ)</MenuItem>
-                                            <MenuItem value="B3">B3 (ຂະໜາດກາງ)</MenuItem>
-                                            <MenuItem value="C1">C1 (ຂະໜາດນ້ອຍ)</MenuItem>
-                                            <MenuItem value="C2">C2 (ຂະໜາດນ້ອຍ)</MenuItem>
-                                            <MenuItem value="C3">C3 (ຂະໜາດນ້ອຍ)</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ວັນທີເລີ່ມຝາກ"
-                                        type="date"
-                                        fullWidth
-                                        value={currentBoarding.startDate}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, startDate: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <DateRange sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        label="ວັນທີຮັບກັບ"
-                                        type="date"
-                                        fullWidth
-                                        value={currentBoarding.endDate}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, endDate: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <DateRange sx={{ color: 'action.active', mr: 1 }} />
-                                            ),
-                                        }}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ບັນທຶກລາຍລະອຽດ (ອາຫານ, ຢາ, ການເບິ່ງແຍງ)"
-                                        fullWidth
-                                        multiline
-                                        rows={3}
-                                        value={currentBoarding.notes}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, notes: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <EventNote sx={{ color: 'action.active', mr: 1, alignSelf: 'flex-start', mt: 1 }} />
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ຄວາມຕ້ອງການພິເສດ"
-                                        fullWidth
-                                        multiline
-                                        rows={2}
-                                        value={currentBoarding.specialRequirements}
-                                        onChange={(e) => setCurrentBoarding({ ...currentBoarding, specialRequirements: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>ສະຖານະ</InputLabel>
-                                        <Select
-                                            value={currentBoarding.status}
-                                            onChange={(e) => setCurrentBoarding({ ...currentBoarding, status: e.target.value })}
-                                            label="ສະຖານະ"
-                                        >
-                                            <MenuItem value="Active">ກຳລັງຝາກ</MenuItem>
-                                            <MenuItem value="Completed">ຮັບກັບແລ້ວ</MenuItem>
-                                            <MenuItem value="Canceled">ຍົກເລີກ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Grid>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleDialogClose} color="error">ຍົກເລີກ</Button>
-                            <Button onClick={handleSaveBoarding} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ບັນທຶກ</Button>
-                        </DialogActions>
-                    </Dialog>
-
-                    {/* Details Dialog */}
-                    <Dialog open={openDetailsDialog} onClose={handleDetailsClose} maxWidth="md" fullWidth>
-                        {selectedBoarding && (
-                            <>
-                                <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Pets sx={{ mr: 1 }} /> 
-                                    ລາຍລະອຽດການຝາກສັດລ້ຽງ
-                                </DialogTitle>
-                                <DialogContent>
-                                    <Grid container spacing={3} sx={{ mt: 1 }}>
-                                        {/* Pet Info Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ຂໍ້ມູນສັດລ້ຽງ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຊື່ສັດລ້ຽງ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.petName}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຊະນິດສັດລ້ຽງ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.petType}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ສາຍພັນ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.breed}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຄອກ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.cage}</Typography>
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-
-                                        {/* Owner Info Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ຂໍ້ມູນເຈົ້າຂອງ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຊື່ເຈົ້າຂອງ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.ownerName}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ເບີໂທລະສັບ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.phone}</Typography>
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-
-                                        {/* Boarding Period Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ໄລຍະເວລາການຝາກ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ວັນທີເລີ່ມຝາກ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.startDate}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ວັນທີຮັບກັບ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.endDate}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ສະຖານະ:</Typography>
-                                                        <Chip 
-                                                            label={selectedBoarding.status === 'Active' ? 'ກຳລັງຝາກ' : selectedBoarding.status === 'Completed' ? 'ຮັບກັບແລ້ວ' : selectedBoarding.status === 'Canceled' ? 'ຍົກເລີກ' : selectedBoarding.status} 
-                                                            color={selectedBoarding.status === 'Active' ? 'primary' : selectedBoarding.status === 'Completed' ? 'success' : selectedBoarding.status === 'Canceled' ? 'error' : 'default'}
-                                                            size="small"
-                                                        />
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-
-                                        {/* Special Requirements Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ລາຍລະອຽດການເບິ່ງແຍງ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ບັນທຶກລາຍລະອຽດ (ອາຫານ, ຢາ, ການເບິ່ງແຍງ):</Typography>
-                                                        <Typography variant="body1" gutterBottom sx={{ whiteSpace: 'pre-line' }}>
-                                                            {selectedBoarding.notes || '-'}
-                                                        </Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຄວາມຕ້ອງການພິເສດ:</Typography>
-                                                        <Typography variant="body1" gutterBottom sx={{ whiteSpace: 'pre-line' }}>
-                                                            {selectedBoarding.specialRequirements || '-'}
-                                                        </Typography>
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-                                    </Grid>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={() => handleDialogOpen(selectedBoarding)} color="primary">
-                                        ແກ້ໄຂ
-                                    </Button>
-                                    <Button onClick={handleDetailsClose} color="primary">
-                                        ປິດ
-                                    </Button>
-                                </DialogActions>
-                            </>
-                        )}
-                    </Dialog>
                 </Container>
             </Box>
         </Box>
