@@ -499,41 +499,30 @@ const TreatPet = () => {
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
-                                    <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
-                                    <TableCell>ກົງທີຈອງ</TableCell>
-                                    <TableCell>ວັນທີເລີ່ມຝາກ</TableCell>
-                                    <TableCell>ວັນທີຮັບກັບ</TableCell>
-                                    <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
-                                    <TableCell>ເພດສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຈັດການ</TableCell>
+                                    <TableCell align="center">ຊື່ສັດລ້ຽງ</TableCell>
+                                    <TableCell align="center">ຊື່ເຈົ້າຂອງ</TableCell>
+                                    <TableCell align="center">ກົງທີຈອງ</TableCell>
+                                    <TableCell align="center">ວັນທີເລີ່ມຝາກ</TableCell>
+                                    <TableCell align="center">ວັນທີຮັບກັບ</TableCell>
+                                    <TableCell align="center">ປະເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell align="center">ເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell align="center">ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {filteredData.map((boarding) => (
                                     <TableRow key={boarding.id}>
-                                        <TableCell>{boarding.pet.name}</TableCell>
-                                        <TableCell>{boarding.customer.name}</TableCell>
-                                        <TableCell>{boarding.cage}</TableCell>
-                                        <TableCell>{boarding.startDate}</TableCell>
-                                        <TableCell>{boarding.endDate}</TableCell>
-                                        <TableCell>{boarding.pet.type}</TableCell>
-                                        <TableCell>{boarding.pet.gender}</TableCell>
+                                        <TableCell align="center">{boarding.pet.name}</TableCell>
+                                        <TableCell align="center">{boarding.customer.name}</TableCell>
+                                        <TableCell align="center">{boarding.cage}</TableCell>
+                                        <TableCell align="center">{boarding.startDate}</TableCell>
+                                        <TableCell align="center">{boarding.endDate}</TableCell>
+                                        <TableCell align="center">{boarding.pet.type}</TableCell>
+                                        <TableCell align="center">{boarding.pet.gender}</TableCell>
                                         <TableCell align="center">
                                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                                                 <Button
                                                     // onClick={() => handleOpenCancelDialog(booking)}
-                                                    sx={{
-                                                        bgcolor: 'error.main',
-                                                        color: 'white',
-                                                        '&:hover': { bgcolor: 'error.dark' },
-                                                        px: 2
-                                                    }}
-                                                >
-                                                    ຍົກເລີກ
-                                                </Button>
-                                                <Button
-                                                    // onClick={() => handleDialogOpen(booking)}
                                                     sx={{
                                                         bgcolor: '#1976d2',
                                                         color: 'white',
@@ -541,14 +530,24 @@ const TreatPet = () => {
                                                         px: 2
                                                     }}
                                                 >
-                                                    ຊຳລະເງິນ
+                                                    ຮັບ
+                                                </Button>
+                                                <Button
+                                                    // onClick={() => handleDialogOpen(booking)}
+                                                    sx={{
+                                                        bgcolor: '#2e7d32',  // Material UI green[800] color
+                                                        color: 'white',
+                                                        '&:hover': { bgcolor: '#1b5e20' },  // Material UI green[900] for darker hover
+                                                        px: 2
+                                                    }}
+                                                >
+                                                    ເພີ່ມເຕີມ
                                                 </Button>
                                             </Box>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
-
                         </Table>
                     </TableContainer>
                 </Container>
