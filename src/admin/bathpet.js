@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -64,12 +64,10 @@ import {
     AccessTime,
     Info,
     EventNote,
-    PetsOutlined,
-    Soap,
-    Shower,
-    CheckCircle
+    PetsOutlined
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+import { GetAllcategory_service } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -93,11 +91,10 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding'},
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet', active: true  },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
-
 ];
 
 const BathPet = () => {
@@ -109,116 +106,94 @@ const BathPet = () => {
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [bathData, setBathData] = useState([
-        {
-            id: 1,
-            petName: 'ດາວດາຍ',
-            petType: 'ໝາ',
-            breed: 'ພັນຈັງເຊຍ',
-            weight: '12.5',
-            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ',
-            phone: '020 7654 3210',
-            bathDate: '2025-05-08',
-            timeSlot: '9:00 - 10:30',
-            status: 'Pending',
-            notes: 'ໃຊ້ແຊມພູພິເສດສຳລັບຜິວແພ້ງ່າຍ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ, ຕັດເລັບ',
-            staffAssigned: 'ນ. ສະໝອນໃຈ',
-            price: '150000'
-        },
-        {
-            id: 2,
-            petName: 'ແມວມີ່',
-            petType: 'ແມວ',
-            breed: 'ພັນແມວໄທ',
-            weight: '4.2',
-            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ',
-            phone: '020 8765 4321',
-            bathDate: '2025-05-08',
-            timeSlot: '10:30 - 12:00',
-            status: 'InProgress',
-            notes: 'ຫຼີກລ້ຽງບໍລິເວນຫູ ເນື່ອງຈາກມີການຕິດເຊື້ອ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ແປງຂົນ',
-            staffAssigned: 'ທ. ສຸລິຍາ',
-            price: '120000'
-        },
-        {
-            id: 3,
-            petName: 'ໂຕໂຕ້',
-            petType: 'ໝາ',
-            breed: 'ພັນຈີນິກເຊີ',
-            weight: '3.8',
-            ownerName: 'ທ. ປະເສີດ ດວງຈັນ',
-            phone: '020 9876 5432',
-            bathDate: '2025-05-07',
-            timeSlot: '14:00 - 15:30',
-            status: 'Completed',
-            notes: 'ແມງຕະນູໜ້ອຍ, ໃຊ້ຜະລິດຕະພັນກຳຈັດແມງຕະນູ.',
-            services: 'ອາບນ້ຳພິເສດ, ເປົ່າຂົນ, ຕັດເລັບ, ລ້າງຫູ',
-            staffAssigned: 'ນ. ສະໝອນໃຈ',
-            price: '180000'
-        },
-        {
-            id: 4,
-            petName: 'ໝີເຊີ',
-            petType: 'ໝາ',
-            breed: 'ພັນພູເດີ້ນ',
-            weight: '22.0',
-            ownerName: 'ນ. ມະນີຈັນ ແສງສະຫວ່າງ',
-            phone: '020 5566 7788',
-            bathDate: '2025-05-08',
-            timeSlot: '13:00 - 14:30',
-            status: 'Canceled',
-            notes: 'ລູກຄ້າຍົກເລີກເນື່ອງຈາກເຈັບປ່ວຍ.',
-            services: 'ອາບນ້ຳມາດຕະຖານ, ເປົ່າຂົນ',
-            staffAssigned: '-',
-            price: '150000'
-        },
-    ]);
-    const [currentBath, setCurrentBath] = useState({
+    const [boardingData, setBoardingData] = useState([]);
+
+    useEffect(() => {
+        const getAllCategoryServices = async () => {
+            const response = await GetAllcategory_service(2, accessToken);
+
+            if (response && response.report) {
+                const flatBoardingData = [];
+
+                response.report.forEach(service => {
+                    service.tb_bookings.forEach(booking => {
+                        flatBoardingData.push({
+                            id: booking.book_id,
+                            serviceId: booking.service_id,
+                            serviceName: service.service_name,
+                            startDate: booking.start_date,
+                            endDate: booking.stop_date,
+                            total: booking.total,
+                            cage: booking.room_id,
+
+                            customer: {
+                                id: booking.cu?.cus_id,
+                                name: booking.cu?.cus_name,
+                                phone: booking.cu?.tel,
+                                address: booking.cu?.address,
+                            },
+
+                            pet: {
+                                id: booking.pet?.pet_id,
+                                name: booking.pet?.pet_name,
+                                type: booking.pet?.pet_type,
+                                gender: booking.pet?.gender,
+                                size: booking.pet?.size,
+                                color: booking.pet?.color,
+                                age: booking.pet?.age
+                            }
+                        });
+                    });
+                });
+
+                setBoardingData(flatBoardingData);
+                console.log("flatBoardingData", flatBoardingData);
+            }
+        };
+
+        getAllCategoryServices();
+    }, [accessToken]);
+
+    const [currentBoarding, setCurrentBoarding] = useState({
         petName: '',
         petType: '',
         breed: '',
-        weight: '',
         ownerName: '',
         phone: '',
-        bathDate: '',
-        timeSlot: '',
+        startDate: '',
+        endDate: '',
         status: '',
         notes: '',
-        services: '',
-        staffAssigned: '',
-        price: ''
+        cage: '',
+        specialRequirements: ''
     });
-    const [selectedBath, setSelectedBath] = useState(null);
+    const [selectedBoarding, setSelectedBoarding] = useState(null);
 
-    const handleDialogOpen = (bath = null) => {
-        if (bath) {
-            setCurrentBath(bath);
+    const handleDialogOpen = (boarding = null) => {
+        if (boarding) {
+            setCurrentBoarding(boarding);
             setEditMode(true);
         } else {
-            setCurrentBath({
+            setCurrentBoarding({
                 petName: '',
                 petType: '',
                 breed: '',
-                weight: '',
                 ownerName: '',
                 phone: '',
-                bathDate: new Date().toISOString().split('T')[0],
-                timeSlot: '',
-                status: 'Pending',
+                startDate: '',
+                endDate: '',
+                status: 'Active',
                 notes: '',
-                services: '',
-                staffAssigned: '',
-                price: ''
+                cage: '',
+                specialRequirements: ''
             });
             setEditMode(false);
         }
         setOpenDialog(true);
     };
 
-    const handleDetailsOpen = (bath) => {
-        setSelectedBath(bath);
+    const handleDetailsOpen = (boarding) => {
+        setSelectedBoarding(boarding);
         setOpenDetailsDialog(true);
     };
 
@@ -236,52 +211,28 @@ const BathPet = () => {
 
     const handleDialogClose = () => setOpenDialog(false);
 
-    const handleSaveBath = () => {
+    const handleSaveBoarding = () => {
         if (editMode) {
-            setBathData(prevData => prevData.map(item => item.id === currentBath.id ? currentBath : item));
+            setBoardingData(prevData => prevData.map(item => item.id === currentBoarding.id ? currentBoarding : item));
         } else {
-            setBathData(prevData => [...prevData, { ...currentBath, id: prevData.length + 1 }]);
+            setBoardingData(prevData => [...prevData, { ...currentBoarding, id: prevData.length + 1 }]);
         }
         setOpenDialog(false);
     };
 
-    const handleDeleteBath = (id) => setBathData(prevData => prevData.filter(item => item.id !== id));
+    const handleDeleteBoarding = (id) => setBoardingData(prevData => prevData.filter(item => item.id !== id));
 
     const handleLogout = () => {
-        Cookies.remove("name_admin");
-        Cookies.remove("cus_ida");
-        Cookies.remove("accessTokena");
-        Cookies.remove("rolea");
         navigate('/');
-        window.location.reload(); // Force reload
     };
 
-    const filteredData = bathData.filter(bath =>
-        bath.petName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        bath.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        bath.phone.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredData = boardingData.filter(boarding =>
+        boarding.pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Get status counts for dashboard stats
-    const pendingCount = bathData.filter(item => item.status === 'Pending').length;
-    const inProgressCount = bathData.filter(item => item.status === 'InProgress').length;
-    const completedCount = bathData.filter(item => item.status === 'Completed' && item.bathDate === new Date().toISOString().split('T')[0]).length;
 
-    // Get status color and label
-    const getStatusInfo = (status) => {
-        switch (status) {
-            case 'Pending':
-                return { color: 'warning', label: 'ລໍຖ້າ' };
-            case 'InProgress':
-                return { color: 'info', label: 'ກຳລັງດຳເນີນການ' };
-            case 'Completed':
-                return { color: 'success', label: 'ສຳເລັດແລ້ວ' };
-            case 'Canceled':
-                return { color: 'error', label: 'ຍົກເລີກ' };
-            default:
-                return { color: 'default', label: status };
-        }
-    };
 
     const drawerContent = (
         <>
@@ -508,24 +459,25 @@ const BathPet = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredData.map((bath) => (
-                                    <TableRow key={bath.id}>
-                                        <TableCell>{bath.petName}</TableCell>
-                                        <TableCell>{bath.petType}</TableCell>
-                                        <TableCell>{bath.ownerName}</TableCell>
-                                        <TableCell>{bath.phone}</TableCell>
-                                        <TableCell>{bath.bathDate}</TableCell>
-                                        <TableCell>{bath.timeSlot}</TableCell>
-                                        <TableCell>{bath.staffAssigned}</TableCell>
+                                {filteredData.map((boarding) => (
+                                    <TableRow key={boarding.id}>
+                                        <TableCell>{boarding.pet.name}</TableCell>
+                                        <TableCell>{boarding.customer.name}</TableCell>
+                                        <TableCell>{boarding.cage}</TableCell>
+                                        <TableCell>{boarding.startDate}</TableCell>
+                                        <TableCell>{boarding.endDate}</TableCell>
+                                        <TableCell>{boarding.pet.type}</TableCell>
+                                        <TableCell>{boarding.pet.gender}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
+
                         </Table>
                     </TableContainer>
                 </Container>
             </Box>
         </Box>
     );
-}
+};
 
 export default BathPet;

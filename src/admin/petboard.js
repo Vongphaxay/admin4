@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -67,6 +67,7 @@ import {
     PetsOutlined
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+import { GetAllcategory_service } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -105,50 +106,54 @@ const PetBoarding = () => {
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [boardingData, setBoardingData] = useState([
-        {
-            id: 1,
-            petName: 'ດາວດາຍ',
-            petType: 'ໝາ',
-            breed: 'ພັນຈັງເຊຍ',
-            ownerName: 'ທ. ວິໄລສັກ ວັນນະລາດ',
-            phone: '020 7654 3210',
-            startDate: '2025-05-07',
-            endDate: '2025-05-10',
-            status: 'Active',
-            notes: 'ອາຫານ: ອາຫານແຫ້ງພິເສດ 2 ຄັ້ງຕໍ່ມື້. ຢາ: ໃຫ້ຢາຕອນເຊົ້າ ແລະ ແລງ.',
-            cage: 'B2',
-            specialRequirements: 'ຕ້ອງການພາຍ່າງທຸກມື້ຕອນແລງ. ຕ້ອງການຫຼິ້ນກັບໝາຕົວອື່ນ.'
-        },
-        {
-            id: 2,
-            petName: 'ແມວມີ່',
-            petType: 'ແມວ',
-            breed: 'ພັນແມວໄທ',
-            ownerName: 'ນ. ສຸພາພອນ ສີບຸນມີ',
-            phone: '020 8765 4321',
-            startDate: '2025-05-06',
-            endDate: '2025-05-12',
-            status: 'Active',
-            notes: 'ອາຫານ: ອາຫານກະປ໋ອງ 3 ຄັ້ງຕໍ່ມື້. ຕ້ອງການຊາຍແມວພິເສດ.',
-            cage: 'C3',
-            specialRequirements: 'ບໍ່ມັກສຽງດັງ. ຕ້ອງການຂອງຫຼິ້ນພິເສດ.'
-        },
-        {
-            id: 3,
-            petName: 'ໂຕໂຕ້',
-            petType: 'ໝາ',
-            breed: 'ພັນຈີນິກເຊີ',
-            ownerName: 'ທ. ປະເສີດ ດວງຈັນ',
-            phone: '020 9876 5432',
-            startDate: '2025-05-05',
-            endDate: '2025-05-08',
-            status: 'Completed',
-            notes: 'ອາຫານ: ອາຫານແຫ້ງ ແລະ ອາຫານປຽກ. ຈຳກັດນ້ຳໜັກອາຫານ.',
-            cage: 'A1',
-            specialRequirements: 'ຕ້ອງການຜ້າຫົ່ມພິເສດ. ກັງວົນເລື່ອງສຽງ.'
-        },
-    ]);
+    const [boardingData, setBoardingData] = useState([]);
+
+    useEffect(() => {
+        const getAllCategoryServices = async () => {
+            const response = await GetAllcategory_service(1, accessToken);
+
+            if (response && response.report) {
+                const flatBoardingData = [];
+
+                response.report.forEach(service => {
+                    service.tb_bookings.forEach(booking => {
+                        flatBoardingData.push({
+                            id: booking.book_id,
+                            serviceId: booking.service_id,
+                            serviceName: service.service_name,
+                            startDate: booking.start_date,
+                            endDate: booking.stop_date,
+                            total: booking.total,
+                            cage: booking.room_id,
+
+                            customer: {
+                                id: booking.cu?.cus_id,
+                                name: booking.cu?.cus_name,
+                                phone: booking.cu?.tel,
+                                address: booking.cu?.address,
+                            },
+
+                            pet: {
+                                id: booking.pet?.pet_id,
+                                name: booking.pet?.pet_name,
+                                type: booking.pet?.pet_type,
+                                gender: booking.pet?.gender,
+                                size: booking.pet?.size,
+                                color: booking.pet?.color,
+                                age: booking.pet?.age
+                            }
+                        });
+                    });
+                });
+
+                setBoardingData(flatBoardingData);
+                console.log("flatBoardingData", flatBoardingData);
+            }
+        };
+
+        getAllCategoryServices();
+    }, [accessToken]);
+
     const [currentBoarding, setCurrentBoarding] = useState({
         petName: '',
         petType: '',
@@ -222,10 +227,12 @@ const PetBoarding = () => {
     };
 
     const filteredData = boardingData.filter(boarding =>
-        boarding.petName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        boarding.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        boarding.phone.toLowerCase().includes(searchTerm.toLowerCase())
+        boarding.pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        boarding.customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+
 
     const drawerContent = (
         <>
@@ -454,140 +461,19 @@ const PetBoarding = () => {
                             <TableBody>
                                 {filteredData.map((boarding) => (
                                     <TableRow key={boarding.id}>
-                                        <TableCell>{boarding.petName}</TableCell>
-                                        <TableCell>{boarding.petType}</TableCell>
-                                        <TableCell>{boarding.ownerName}</TableCell>
-                                        <TableCell>{boarding.phone}</TableCell>
+                                        <TableCell>{boarding.pet.name}</TableCell>
+                                        <TableCell>{boarding.customer.name}</TableCell>
+                                        <TableCell>{boarding.cage}</TableCell>
                                         <TableCell>{boarding.startDate}</TableCell>
                                         <TableCell>{boarding.endDate}</TableCell>
-                                        <TableCell>{boarding.cage}</TableCell>
+                                        <TableCell>{boarding.pet.type}</TableCell>
+                                        <TableCell>{boarding.pet.gender}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
+
                         </Table>
                     </TableContainer>
-                    {/* Details Dialog */}
-                    <Dialog open={openDetailsDialog} onClose={handleDetailsClose} maxWidth="md" fullWidth>
-                        {selectedBoarding && (
-                            <>
-                                <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Pets sx={{ mr: 1 }} />
-                                    ລາຍລະອຽດການຝາກສັດລ້ຽງ
-                                </DialogTitle>
-                                <DialogContent>
-                                    <Grid container spacing={3} sx={{ mt: 1 }}>
-                                        {/* Pet Info Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ຂໍ້ມູນສັດລ້ຽງ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຊື່ສັດລ້ຽງ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.petName}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຊະນິດສັດລ້ຽງ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.petType}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ສາຍພັນ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.breed}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຄອກ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.cage}</Typography>
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-
-                                        {/* Owner Info Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ຂໍ້ມູນເຈົ້າຂອງ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຊື່ເຈົ້າຂອງ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.ownerName}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ເບີໂທລະສັບ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.phone}</Typography>
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-
-                                        {/* Boarding Period Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ໄລຍະເວລາການຝາກ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ວັນທີເລີ່ມຝາກ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.startDate}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ວັນທີຮັບກັບ:</Typography>
-                                                        <Typography variant="body1" gutterBottom>{selectedBoarding.endDate}</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ສະຖານະ:</Typography>
-                                                        <Chip
-                                                            label={selectedBoarding.status === 'Active' ? 'ກຳລັງຝາກ' : selectedBoarding.status === 'Completed' ? 'ຮັບກັບແລ້ວ' : selectedBoarding.status === 'Canceled' ? 'ຍົກເລີກ' : selectedBoarding.status}
-                                                            color={selectedBoarding.status === 'Active' ? 'primary' : selectedBoarding.status === 'Completed' ? 'success' : selectedBoarding.status === 'Canceled' ? 'error' : 'default'}
-                                                            size="small"
-                                                        />
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-
-                                        {/* Special Requirements Section */}
-                                        <Grid item xs={12}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f9f9f9' }}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    ລາຍລະອຽດການເບິ່ງແຍງ
-                                                </Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={12}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ບັນທຶກລາຍລະອຽດ (ອາຫານ, ຢາ, ການເບິ່ງແຍງ):</Typography>
-                                                        <Typography variant="body1" gutterBottom sx={{ whiteSpace: 'pre-line' }}>
-                                                            {selectedBoarding.notes || '-'}
-                                                        </Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <Typography variant="subtitle2" color="text.secondary">ຄວາມຕ້ອງການພິເສດ:</Typography>
-                                                        <Typography variant="body1" gutterBottom sx={{ whiteSpace: 'pre-line' }}>
-                                                            {selectedBoarding.specialRequirements || '-'}
-                                                        </Typography>
-                                                    </Grid>
-                                                </Grid>
-                                            </Paper>
-                                        </Grid>
-                                    </Grid>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={() => handleDialogOpen(selectedBoarding)} color="primary">
-                                        ແກ້ໄຂ
-                                    </Button>
-                                    <Button onClick={handleDetailsClose} color="primary">
-                                        ປິດ
-                                    </Button>
-                                </DialogActions>
-                            </>
-                        )}
-                    </Dialog>
                 </Container>
             </Box>
         </Box>

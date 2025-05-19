@@ -65,3 +65,12 @@ export const GetAllEmp = async (token) => {
     });
     return response.data;
 };
+
+export const GetAllcategory_service = async (cat_id, token) => {
+    const response = await axios.get(`${REACT_APP_API_URL}/report/get-all-category-service?cat_id=${cat_id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+}

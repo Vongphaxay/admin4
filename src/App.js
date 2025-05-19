@@ -30,7 +30,7 @@ import TreatPet from './admin/treatpet';
 import DoctorTreatPet from './doctor/treatpet'; // Import the doctor's treatpet component
 import GroomerPetBar from './groomer/petbar';
 import GroomerBathpet from './groomer/bathpet';
-import Reportall from './owner/reportall';
+import Dashboards from './owner/dashboard';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
 import { loginAdmin, loginGroomer, loginOwner, loginDoctor } from './services/login.service';
 import Cookies from "js-cookie";
@@ -472,7 +472,7 @@ const App = () => {
         <Route path="/doctor/treatpet" element={<DoctorTreatPet />} />
         <Route path="/groomer/petbar" element={<GroomerPetBar />} />
         <Route path="/groomer/bathpet" element={<GroomerBathpet />} />
-        <Route path="/owner/report" element={<Reportall />} />
+        <Route path="/owner/dashboard" element={<Dashboards />} />
       </Routes>
     </Router>
   );

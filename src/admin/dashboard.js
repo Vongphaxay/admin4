@@ -88,6 +88,10 @@ const Dashboard = () => {
         Cookies.remove("cus_ida");
         Cookies.remove("accessTokena");
         Cookies.remove("rolea");
+
+        Cookies.remove("accessToken");
+        Cookies.remove("cus_id");
+        Cookies.remove("name");
         navigate('/');
         window.location.reload(); // Force reload
     };
