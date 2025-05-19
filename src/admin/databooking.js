@@ -5,8 +5,9 @@ import {
     ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar,
     Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, TextField, useTheme, styled, Container,
-    Snackbar, Alert
+    Snackbar, Alert 
 } from '@mui/material';
+import { CheckCircle } from '@mui/icons-material';
 import {
     Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub,
     ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print
@@ -50,6 +51,9 @@ const BookingTable = () => {
     const [reportData, setReportData] = useState(null);
     const [bookingData, setBookingData] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openCancelDialog, setOpenCancelDialog] = useState(false);
+    const [bookingToCancel, setBookingToCancel] = useState(null);
+    const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
     const [openReceiptDialog, setOpenReceiptDialog] = useState(false); // State for receipt dialog
     const [currentBooking, setCurrentBooking] = useState({
         id: '', // add this
@@ -152,6 +156,29 @@ const BookingTable = () => {
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
+    };
+
+    // Add this function to handle opening the cancel dialog
+    const handleOpenCancelDialog = (booking) => {
+        setBookingToCancel(booking);
+        setOpenCancelDialog(true);
+    };
+
+    // Update the confirm cancel function to show success dialog
+    const handleConfirmCancel = () => {
+        if (bookingToCancel) {
+            handleDeleteBooking(bookingToCancel.id);
+            // You can add your API call to cancel the booking here
+            // Example: cancelBookingAPI(bookingToCancel.id);
+        }
+        setOpenCancelDialog(false);
+        setOpenSuccessDialog(true); // Show success dialog instead of snackbar
+        setBookingToCancel(null);
+    };
+
+    // Add this function to close the success dialog
+    const handleCloseSuccessDialog = () => {
+        setOpenSuccessDialog(false);
     };
 
     const handleDialogClose = () => setOpenDialog(false);
@@ -378,34 +405,178 @@ const BookingTable = () => {
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
-                                    <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
-                                    <TableCell>ບໍລິການ</TableCell>
-                                    <TableCell>ກົງທີຈອງ</TableCell>
-                                    <TableCell>ວັນທີເລີ່ມ</TableCell>
-                                    <TableCell>ວັນທີສິ້ນສຸດ</TableCell>
-                                    <TableCell>ລາຄາ</TableCell>
-                                    <TableCell>ຈັດການ</TableCell>
+                                    <TableCell align="center">ຊື່ສັດລ້ຽງ</TableCell>
+                                    <TableCell align="center">ຊື່ເຈົ້າຂອງ</TableCell>
+                                    <TableCell align="center">ບໍລິການ</TableCell>
+                                    <TableCell align="center">ກົງທີຈອງ</TableCell>
+                                    <TableCell align="center">ວັນທີເລີ່ມ</TableCell>
+                                    <TableCell align="center">ວັນທີສິ້ນສຸດ</TableCell>
+                                    <TableCell align="center">ລາຄາ</TableCell>
+                                    <TableCell align="center">ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {bookingData.map((booking) => (
                                     <TableRow key={booking.id}>
-                                        <TableCell>{booking.petName}</TableCell>
-                                        <TableCell>{booking.customerName}</TableCell>
-                                        <TableCell>{booking.services.name}</TableCell>
-                                        <TableCell>{booking.service === 'Bath' ? 'ອາບນ້ຳ' : booking.service === 'Vaccination' ? 'ວັກຊີນ' : booking.service === 'Grooming' ? 'ຕັດຂົນ' : booking.service}</TableCell>
-                                        <TableCell>{booking.start_date}</TableCell>
-                                        <TableCell>{booking.stop_date}</TableCell>
-                                        <TableCell>{booking.total}</TableCell>
-                                        <TableCell>
-                                            <Button onClick={() => handleDialogOpen(booking)} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ຊຳລະເງິນ</Button>
+                                        <TableCell align="center">{booking.petName}</TableCell>
+                                        <TableCell align="center">{booking.customerName}</TableCell>
+                                        <TableCell align="center">{booking.services.name}</TableCell>
+                                        <TableCell align="center">{booking.service === 'Bath' ? 'ອາບນ້ຳ' : booking.service === 'Vaccination' ? 'ວັກຊີນ' : booking.service === 'Grooming' ? 'ຕັດຂົນ' : booking.service}</TableCell>
+                                        <TableCell align="center">{booking.start_date}</TableCell>
+                                        <TableCell align="center">{booking.stop_date}</TableCell>
+                                        <TableCell align="center">{booking.total}</TableCell>
+                                        <TableCell align="center">
+                                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                                <Button
+                                                    onClick={() => handleOpenCancelDialog(booking)}
+                                                    sx={{
+                                                        bgcolor: 'error.main',
+                                                        color: 'white',
+                                                        '&:hover': { bgcolor: 'error.dark' },
+                                                        px: 2
+                                                    }}
+                                                >
+                                                    ຍົກເລີກ
+                                                </Button>
+                                                <Button
+                                                    onClick={() => handleDialogOpen(booking)}
+                                                    sx={{
+                                                        bgcolor: '#1976d2',
+                                                        color: 'white',
+                                                        '&:hover': { bgcolor: '#1565c0' },
+                                                        px: 2
+                                                    }}
+                                                >
+                                                    ຊຳລະເງິນ
+                                                </Button>
+                                            </Box>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
+
+                    {/* Cancel Confirmation Dialog */}
+                    <Dialog
+                        open={openCancelDialog}
+                        onClose={() => setOpenCancelDialog(false)}
+                        aria-labelledby="cancel-dialog-title"
+                        PaperProps={{
+                            sx: {
+                                width: { xs: '95%', sm: '400px' },
+                                borderRadius: 2
+                            }
+                        }}
+                    >
+                        <DialogTitle
+                            id="cancel-dialog-title"
+                            sx={{
+                                fontWeight: 'bold',
+                                bgcolor: theme.palette.error.main,
+                                color: 'white',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                px: 3,
+                                py: 1.75
+                            }}
+                        >
+                            <Box>ຢືນຢັນການຍົກເລີກ</Box>
+                            <IconButton onClick={() => setOpenCancelDialog(false)} sx={{ color: 'white' }}>
+                                <Close />
+                            </IconButton>
+                        </DialogTitle>
+                        <DialogContent sx={{ pt: 3, px: 3 }}>
+                            <Typography variant="subtitle1" align="center">
+                                ທ່ານຕ້ອງການຍົກເລີກແທ້ ຫຼື ບໍ່?
+                            </Typography>
+                            {bookingToCancel && (
+                                <Box sx={{ mt: 2, bgcolor: '#f5f5f5', p: 2, borderRadius: 1 }}>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>
+                                        <b>ຊື່ສັດລ້ຽງ:</b> {bookingToCancel.petName}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>
+                                        <b>ຊື່ເຈົ້າຂອງ:</b> {bookingToCancel.customerName}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        <b>ບໍລິການ:</b> {bookingToCancel.services?.name || ''}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </DialogContent>
+                        <DialogActions sx={{ px: 3, py: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                            <Button
+                                onClick={() => setOpenCancelDialog(false)}
+                                variant="outlined"
+                                sx={{ width: '120px' }}
+                            >
+                                ຍົກເລີກ
+                            </Button>
+                            <Button
+                                onClick={handleConfirmCancel}
+                                variant="contained"
+                                color="error"
+                                sx={{ width: '120px' }}
+                            >
+                                ຕົກລົງ
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <Dialog
+                        open={openSuccessDialog}
+                        onClose={handleCloseSuccessDialog}
+                        aria-labelledby="success-dialog-title"
+                        PaperProps={{
+                            sx: {
+                                width: { xs: '95%', sm: '360px' },
+                                borderRadius: 2,
+                                overflow: 'hidden'
+                            }
+                        }}
+                    >
+                        <Box sx={{ p: 3, textAlign: 'center' }}>
+                            <Box
+                                sx={{
+                                    width: 70,
+                                    height: 70,
+                                    borderRadius: '50%',
+                                    bgcolor: '#e8f5e9',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto 16px'
+                                }}
+                            >
+                                <CheckCircle
+                                    sx={{
+                                        fontSize: 48,
+                                        color: '#4caf50'
+                                    }}
+                                />
+                            </Box>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
+                                ຍົກເລີກສຳເລັດ
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                                ການຍົກເລີກການຈອງໄດ້ດຳເນີນການສຳເລັດແລ້ວ
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleCloseSuccessDialog}
+                                sx={{
+                                    minWidth: 120,
+                                    borderRadius: 2,
+                                    textTransform: 'none',
+                                    py: 1
+                                }}
+                            >
+                                ຕົກລົງ
+                            </Button>
+                        </Box>
+                    </Dialog>
 
                     {/* Payment Dialog with QR Code on the right - adjusted padding/margin and larger buttons */}
                     <Dialog

@@ -119,8 +119,8 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
         <div class="receipt">
           <div class="header">
             <div class="logo">DR. P VETERINARY CLINIC</div>
-            <div class="contact">ທີ່ຢູ່: ຕາດຂາວ, ສີສັດຕະນາກ, ນະຄອນຫຼວງວຽງຈັນ</div>
-            <div class="contact">ໂທ: 020 XXXXXXXX</div>
+            <div class="contact">ທີ່ຢູ່: ບ້ານ ດົງປ່າແຫຼບ, ເມືອງ ຈັນທະບູລີ, ນະຄອນຫຼວງວຽງຈັນ</div>
+            <div class="contact">ໂທ: 020 55667788</div>
           </div>
           
           <div class="title">ໃບບິນການຊຳລະເງິນ</div>
@@ -181,7 +181,7 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
           </div>
           
           <div class="qr-message">
-            ຫາກມີຂໍ້ສະງົນໃດໆ ສາມາດສະແກນ QR ໄດ້ທີ່ໜ້າຮ້ານ ຫຼື ໂທ: 020 XXXXXXXX
+            ຫາກມີຂໍ້ສະງົນໃດໆ ສາມາດສະແກນ QR ໄດ້ທີ່ໜ້າຮ້ານ ຫຼື ໂທ: 020 55667788
           </div>
         </div>
       </body>

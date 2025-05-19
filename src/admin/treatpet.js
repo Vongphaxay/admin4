@@ -187,8 +187,6 @@ const TreatPet = () => {
         return isCompleted;
     }).length;
 
-
-
     const inProgressCount = boardingData.filter(item => item.status === 'InProgress').length;
 
     const [currentBoarding, setCurrentBoarding] = useState({
@@ -482,7 +480,7 @@ const TreatPet = () => {
                             />
                         </Box>
                     </Box>
-                    <Grid container spacing={3} sx={{ mb: 3 }}>
+                    {/* <Grid container spacing={3} sx={{ mb: 3 }}>
                         <Grid item xs={12} sm={6} md={3}>
                             <Card sx={{ bgcolor: '#e8f5e9', boxShadow: 2 }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
@@ -503,7 +501,7 @@ const TreatPet = () => {
                                 </CardContent>
                             </Card>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>

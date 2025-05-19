@@ -11,6 +11,18 @@ export const getNormalReport = async (token) => {
     return response.data;
 };
 
+export const getallcate_servicereport = async (token) => {
+    const response = await axios.get(
+        `${REACT_APP_API_URL}/report/get-all-cate-service`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}
+
 export const getReportallcus = async (token) => {
     const response = await axios.get(
         `${REACT_APP_API_URL}/report/get-all-customer`,

@@ -6,7 +6,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { getNormalReport } from '../services/report.service';
+import { getNormalReport, getallcate_servicereport } from '../services/report.service';
 import React, { useState, useEffect } from 'react';
 
 // Create a custom styled container for the logo
@@ -34,13 +34,6 @@ const menuItems = [
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
-const services = [
-    { name: 'ຝາກສັດລ້ຽງ', count: 120, target: 150, progress: 80 },
-    { name: 'ອາບນ້ຳ', count: 95, target: 100, progress: 95 },
-    { name: 'ຕັດຂົນ', count: 68, target: 80, progress: 85 },
-    { name: 'ປິ່ນປົວສັດລ້ຽງ', count: 45, target: 60, progress: 75 },
-];
-
 // Define the drawer width
 const drawerWidth = 240;
 
@@ -49,6 +42,8 @@ const Dashboard = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [reportData, setReportData] = useState(null);
+    const [categoryData, setCategoryData] = useState([]); // use [] not null
+
 
     // Count the number of 'ໝາ' and 'ແມວ' pets
     const pets = reportData?.report?.report_pet ?? [];
@@ -63,7 +58,6 @@ const Dashboard = () => {
     const catPercentage = totalPets ? (catCount / totalPets) * 100 : 0;
 
 
-
     useEffect(() => {
         const getNormalReportapi = async () => {
             const response = await getNormalReport(accessToken);
@@ -72,6 +66,45 @@ const Dashboard = () => {
         };
         getNormalReportapi();
     }, []);
+
+    useEffect(() => {
+        const getallcate_servicereportapi = async () => {
+            const response = await getallcate_servicereport(accessToken);
+            console.log("response", response);
+            if (response?.report) {
+                const { cat_service, category_service } = response.report;
+
+                const categoryWithCounts = cat_service.map((cat) => {
+                    // Filter services that match current category ID
+                    const services = category_service.filter(
+                        (s) => s.cat_id === cat.cat_id
+                    );
+
+                    // Sum all bookings for this category
+                    const totalBookings = services.reduce(
+                        (sum, service) => sum + (service.tb_bookings?.length || 0),
+                        0
+                    );
+
+                    const target = 12; // You can customize this
+                    const progress = (totalBookings / target) * 100;
+
+                    return {
+                        name: cat.cat_name,
+                        count: totalBookings,
+                        target,
+                        progress,
+                    };
+                });
+
+                setCategoryData(categoryWithCounts);
+            } else {
+                setCategoryData([]); // fallback
+            }
+
+        };
+        getallcate_servicereportapi();
+    }, [accessToken]);
 
     // Toggle sidebar for desktop
     const toggleSidebar = () => {
@@ -412,7 +445,7 @@ const Dashboard = () => {
                                 </Box>
 
                                 <Stack spacing={3}>
-                                    {services.map((service, index) => (
+                                    {categoryData.map((service, index) => (
                                         <Box key={index}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                                 <Typography variant="body2" fontWeight="medium">{service.name}</Typography>
