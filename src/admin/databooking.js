@@ -5,7 +5,7 @@ import {
     ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar,
     Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, TextField, useTheme, styled, Container,
-    Snackbar, Alert 
+    Snackbar, Alert
 } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
 import {
@@ -115,13 +115,20 @@ const BookingTable = () => {
                                     services: {
                                         id: b.service?.service_id,
                                         name: b.service?.service_name
-                                    }
+                                    },
+                                    tb_service_infos: (b.tb_service_infos || []).map(info => ({
+                                        id: info.info_id,
+                                        description: info.description,
+                                        price: info.price,
+                                        docId: info.doc_id,
+                                        bookId: info.book_id
+                                    }))
                                 });
                             });
                         }
                     });
                 }
-
+                console.log("flatBookings", flatBookings);
                 setBookingData(flatBookings);
                 setReportData(response); // raw backup
             } catch (error) {

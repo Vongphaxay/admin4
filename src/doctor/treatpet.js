@@ -71,7 +71,7 @@ import {
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { GetAllcategory_service } from '../services/report.service';
-import { CreateService_info,UpdateService_info } from '../services/updatedoctor.service';
+import { CreateService_info, UpdateService_info } from '../services/updatedoctor.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -233,6 +233,21 @@ const TreatPet = () => {
         }
     };
 
+    const APIUPDATESERVICE_INFO = async (booking) => {
+        try {
+            // use data info_id, dataservice_info{ description, price }, accessToken
+            const info_id = booking.tb_service_infos?.[0]?.id; // ✅ CORRECT
+            const dataservice_info = {
+                description: additionalInfo.description,
+                price: additionalInfo.price,
+            };
+            const response = await UpdateService_info(info_id, dataservice_info, accessToken);
+            console.log("Service info updated successfully", response);
+        } catch (error) {
+            console.error("Error in APIUPDATESERVICE_INFO:", error);
+        }
+    }
+
 
     // Handle marking a pet as received
     const handleReceivePet = (booking) => {
@@ -251,7 +266,7 @@ const TreatPet = () => {
         setOpenSuccessDialog(true);
 
         setTimeout(() => {
-            setOpenSuccessDialog(false); 
+            setOpenSuccessDialog(false);
             window.location.reload();
         }, 1500);
     };
@@ -275,20 +290,24 @@ const TreatPet = () => {
 
     // Handle saving the additional info
     const handleSaveAdditionalInfo = () => {
-        // Here you would typically make an API call to save the additional info
         console.log("Saving additional info for booking:", selectedBooking);
         console.log("Additional info:", additionalInfo);
 
-        // Update the local state if needed
+        // ✅ FIXED: Pass the selected booking to the API function
+        APIUPDATESERVICE_INFO(selectedBooking);
+
+        // Update local boarding data
         const updatedBoardingData = boardingData.map(item => {
             if (item.id === selectedBooking.id) {
-                // Add the new info to tb_service_infos array
-                const updatedServiceInfos = [...item.tb_service_infos, {
-                    id: Date.now(), // Temporary ID until server response
-                    description: additionalInfo.description,
-                    price: parseFloat(additionalInfo.price),
-                    docId: cus_id // Current doctor ID
-                }];
+                const updatedServiceInfos = [
+                    ...item.tb_service_infos,
+                    {
+                        id: Date.now(), // Temporary placeholder ID
+                        description: additionalInfo.description,
+                        price: parseFloat(additionalInfo.price),
+                        docId: cus_id // Be sure `cus_id` is correctly defined elsewhere
+                    }
+                ];
 
                 return {
                     ...item,
@@ -301,15 +320,16 @@ const TreatPet = () => {
         setBoardingData(updatedBoardingData);
         handleAdditionalInfoClose();
 
-        // Show success dialog with 'save' action
+        // Show success dialog
         setSuccessAction('save');
         setOpenSuccessDialog(true);
 
-        // Automatically close success dialog after 2 seconds
         setTimeout(() => {
             setOpenSuccessDialog(false);
+            // window.location.reload();
         }, 2000);
     };
+
 
     const handleDialogOpen = (boarding = null) => {
         if (boarding) {

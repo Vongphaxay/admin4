@@ -390,8 +390,8 @@ const EmployeeManagement = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {employeeData.map((employee) => (
-                                    <TableRow key={employee.id}>
+                                {employeeData.map((employee, index) => (
+                                    <TableRow key={employee.id || `${employee.username}-${index}`}>
                                         <TableCell>{employee.docname || employee.empname}</TableCell>
                                         <TableCell>{employee.gender}</TableCell>
                                         <TableCell>{employee.address}</TableCell>
