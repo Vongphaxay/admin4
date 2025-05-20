@@ -71,6 +71,7 @@ import {
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { GetAllcategory_service } from '../services/report.service';
+import { CreateService_info,UpdateService_info } from '../services/updatedoctor.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -81,7 +82,7 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
-const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const admin_name = decodeURIComponent(Cookies.get("name_doctor") || "");
 const cus_id = Cookies.get("cus_ida");
 const accessToken = Cookies.get("accessTokena");
 
@@ -103,7 +104,7 @@ const TreatPet = () => {
     const [editMode, setEditMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [boardingData, setBoardingData] = useState([]);
-    
+
     // State for additional info dialog
     const [openAdditionalInfoDialog, setOpenAdditionalInfoDialog] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
@@ -111,13 +112,14 @@ const TreatPet = () => {
         description: '',
         price: ''
     });
-    
+
     // Success dialog state
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
     const [successAction, setSuccessAction] = useState(''); // 'receive' or 'save'
-    
+
     // Track which pets have been received
-    const [receivedPets, setReceivedPets] = useState({});
+    const [receivedPets, setReceivedPets] = useState({}); // <-- Remove this
+
 
     useEffect(() => {
         const getAllCategoryServices = async () => {
@@ -211,28 +213,49 @@ const TreatPet = () => {
         cage: '',
         specialRequirements: ''
     });
-    
+
+    const APICREATESERVICE_INFO = async (booking) => {
+        try {
+            const getdocid = Number(Cookies.get('cus_ida'));
+            console.log("getdocid", getdocid);
+            const dataservice_info = {
+                doc_id: getdocid,  // Adjust based on your data
+                book_id: booking.id
+            };
+
+            // Make the actual API call
+            const response = await CreateService_info(dataservice_info, accessToken);
+            console.log("Service info created successfully", response);
+            console.log(dataservice_info);
+
+        } catch (error) {
+            console.error("Error in APICREATESERVICE_INFO:", error);
+        }
+    };
+
+
     // Handle marking a pet as received
     const handleReceivePet = (booking) => {
-        // Update the received pets state
+        // Optional: update local state
         setReceivedPets(prev => ({
             ...prev,
             [booking.id]: true
         }));
-        
-        // Here you would typically make an API call to update the pet's status
-        console.log("Marking pet as received:", booking);
-        
-        // Show success dialog with 'receive' action
+
+        // Call API to create service info with current booking
+        APICREATESERVICE_INFO(booking);
+
+        // Set dialog and success UI
         setSelectedBooking(booking);
         setSuccessAction('receive');
         setOpenSuccessDialog(true);
-        
-        // Automatically close success dialog after 1.5 seconds
+
         setTimeout(() => {
-            setOpenSuccessDialog(false);
+            setOpenSuccessDialog(false); 
+            window.location.reload();
         }, 1500);
     };
+
 
     // Handle opening the additional info dialog
     const handleAdditionalInfoOpen = (booking) => {
@@ -255,7 +278,7 @@ const TreatPet = () => {
         // Here you would typically make an API call to save the additional info
         console.log("Saving additional info for booking:", selectedBooking);
         console.log("Additional info:", additionalInfo);
-        
+
         // Update the local state if needed
         const updatedBoardingData = boardingData.map(item => {
             if (item.id === selectedBooking.id) {
@@ -266,7 +289,7 @@ const TreatPet = () => {
                     price: parseFloat(additionalInfo.price),
                     docId: cus_id // Current doctor ID
                 }];
-                
+
                 return {
                     ...item,
                     tb_service_infos: updatedServiceInfos
@@ -274,14 +297,14 @@ const TreatPet = () => {
             }
             return item;
         });
-        
+
         setBoardingData(updatedBoardingData);
         handleAdditionalInfoClose();
-        
+
         // Show success dialog with 'save' action
         setSuccessAction('save');
         setOpenSuccessDialog(true);
-        
+
         // Automatically close success dialog after 2 seconds
         setTimeout(() => {
             setOpenSuccessDialog(false);
@@ -564,7 +587,7 @@ const TreatPet = () => {
                             />
                         </Box>
                     </Box>
-                    
+
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
@@ -591,7 +614,7 @@ const TreatPet = () => {
                                         <TableCell align="center">{boarding.pet.gender}</TableCell>
                                         <TableCell align="center">
                                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                                                {receivedPets[boarding.id] ? (
+                                                {boarding.tb_service_infos && boarding.tb_service_infos.length > 0 ? (
                                                     <Button
                                                         disabled
                                                         sx={{
@@ -615,13 +638,20 @@ const TreatPet = () => {
                                                         ຮັບ
                                                     </Button>
                                                 )}
+
                                                 <Button
                                                     onClick={() => handleAdditionalInfoOpen(boarding)}
-                                                    disabled={!receivedPets[boarding.id]}
+                                                    disabled={!boarding.tb_service_infos || boarding.tb_service_infos.length === 0}
                                                     sx={{
-                                                        bgcolor: receivedPets[boarding.id] ? '#2e7d32' : '#9e9e9e',
+                                                        bgcolor:
+                                                            boarding.tb_service_infos && boarding.tb_service_infos.length > 0
+                                                                ? '#2e7d32'
+                                                                : '#9e9e9e',
                                                         color: 'white',
-                                                        '&:hover': receivedPets[boarding.id] ? { bgcolor: '#1b5e20' } : {},
+                                                        '&:hover':
+                                                            boarding.tb_service_infos && boarding.tb_service_infos.length > 0
+                                                                ? { bgcolor: '#1b5e20' }
+                                                                : {},
                                                         px: 2
                                                     }}
                                                 >
@@ -638,8 +668,8 @@ const TreatPet = () => {
             </Box>
 
             {/* Additional Info Dialog */}
-            <Dialog 
-                open={openAdditionalInfoDialog} 
+            <Dialog
+                open={openAdditionalInfoDialog}
                 onClose={handleAdditionalInfoClose}
                 maxWidth="sm"
                 fullWidth
@@ -665,13 +695,13 @@ const TreatPet = () => {
                                     ເຈົ້າຂອງສັດລ້ຽງ: <strong>{selectedBooking.customer.name}</strong>
                                 </Typography>
                             </Box>
-                            
+
                             <Divider sx={{ my: 2 }} />
-                            
+
                             <Typography variant="subtitle1" fontWeight="bold" color="primary" gutterBottom>
                                 ບັນທຶກຂໍ້ມູນເພີ່ມເຕີມ
                             </Typography>
-                            
+
                             <TextField
                                 label="ຂໍ້ມູນເພີ່ມເຕີມ"
                                 fullWidth
@@ -680,10 +710,10 @@ const TreatPet = () => {
                                 variant="outlined"
                                 margin="normal"
                                 value={additionalInfo.description}
-                                onChange={(e) => setAdditionalInfo({...additionalInfo, description: e.target.value})}
+                                onChange={(e) => setAdditionalInfo({ ...additionalInfo, description: e.target.value })}
                                 placeholder="ກະລຸນາປ້ອນລາຍລະອຽດການປິ່ນປົວ..."
                             />
-                            
+
                             <TextField
                                 label="ລາຄາ"
                                 fullWidth
@@ -691,7 +721,7 @@ const TreatPet = () => {
                                 margin="normal"
                                 type="number"
                                 value={additionalInfo.price}
-                                onChange={(e) => setAdditionalInfo({...additionalInfo, price: e.target.value})}
+                                onChange={(e) => setAdditionalInfo({ ...additionalInfo, price: e.target.value })}
                                 placeholder="ກະລຸນາປ້ອນລາຄາ..."
                                 InputProps={{
                                     endAdornment: <Typography variant="body2" color="textSecondary">ກີບ</Typography>,
@@ -701,14 +731,14 @@ const TreatPet = () => {
                     )}
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>
-                    <Button 
+                    <Button
                         onClick={handleAdditionalInfoClose}
                         variant="outlined"
                         startIcon={<Close />}
                     >
                         ຍົກເລີກ
                     </Button>
-                    <Button 
+                    <Button
                         onClick={handleSaveAdditionalInfo}
                         variant="contained"
                         color="primary"
@@ -734,26 +764,26 @@ const TreatPet = () => {
                     }
                 }}
             >
-                <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center', 
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     padding: 3
                 }}>
-                    <CheckCircleOutline sx={{ 
-                        fontSize: 80, 
+                    <CheckCircleOutline sx={{
+                        fontSize: 80,
                         color: '#4caf50',
                         mb: 2
                     }} />
-                    <Typography 
-                        variant="h6" 
-                        align="center" 
+                    <Typography
+                        variant="h6"
+                        align="center"
                         id="success-dialog-title"
                         sx={{ fontWeight: 'bold' }}
                     >
-                        {successAction === 'receive' ? 
-                            'ຮັບສັດລ້ຽງສຳເລັດແລ້ວ' : 
+                        {successAction === 'receive' ?
+                            'ຮັບສັດລ້ຽງສຳເລັດແລ້ວ' :
                             'ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ'
                         }
                     </Typography>

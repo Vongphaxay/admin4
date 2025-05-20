@@ -87,7 +87,7 @@ const AdminLogin = () => {
       console.log(response);
 
       // ✅ Set cookies
-      Cookies.set("name_admin", response.name);
+      Cookies.set("name_doctor", response.name);
       Cookies.set("cus_ida", response.cus_id);
       Cookies.set("rolea", response.role);
       Cookies.set("accessTokena", response.accessToken, {
@@ -115,7 +115,7 @@ const AdminLogin = () => {
       console.log(response);
 
       // ✅ Set cookies
-      Cookies.set("name_admin", response.name);
+      Cookies.set("name_groomer", response.name);
       Cookies.set("cus_ida", response.cus_id);
       Cookies.set("rolea", response.role);
       Cookies.set("accessTokena", response.accessToken, {
@@ -143,7 +143,7 @@ const AdminLogin = () => {
       console.log(response);
 
       // ✅ Set cookies
-      Cookies.set("name_admin", response.name);
+      Cookies.set("name_owner", response.name);
       Cookies.set("cus_ida", response.cus_id);
       Cookies.set("rolea", response.role);
       Cookies.set("accessTokena", response.accessToken, {

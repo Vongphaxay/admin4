@@ -54,9 +54,8 @@ import { useNavigate } from 'react-router-dom';
 const LogoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 2),
-  height: 64,
-  backgroundColor: theme.palette.primary.dark
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.primary.dark,
 }));
 
 const drawerWidth = 240;
