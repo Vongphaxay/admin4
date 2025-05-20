@@ -55,6 +55,8 @@ import {
     Menu,
     ChevronRight,
     Notifications,
+    Menu as MenuIcon,
+    Assessment as AssessmentIcon,
     Close,
     Logout,
     Phone,
@@ -91,10 +93,11 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/owner/dataemployee' },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/owner/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding'},
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet', active: true  },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding' },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet', active: true },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
+    { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
 ];
 
 const BathPet = () => {

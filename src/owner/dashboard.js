@@ -2,7 +2,8 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, LinearProgress, Chip, Stack, Container, useTheme, styled
 } from '@mui/material';
 import {
-    ChevronRight, Home, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, TrendingUp, CheckCircle, AttachMoney, Notifications, Close
+    ChevronRight, Home, People, CalendarMonth, Pets,  Menu as MenuIcon,
+  Assessment as AssessmentIcon, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, TrendingUp, CheckCircle, AttachMoney, Notifications, Close
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -32,7 +33,7 @@ const menuItems = [
     { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet'  },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
-    { icon: <Vaccines />, label: 'ລາຍງານ', path: '/owner/report' },
+    { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
 ];
 
 const services = [

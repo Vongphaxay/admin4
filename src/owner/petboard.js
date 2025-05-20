@@ -61,7 +61,8 @@ import {
     Email,
     Search,
     DateRange,
-    AccessTime,
+    AccessTime, Menu as MenuIcon,
+    Assessment as AssessmentIcon,
     Info,
     EventNote,
     PetsOutlined
@@ -92,9 +93,10 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/owner/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking' },
     { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding', active: true },
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet'  },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet' },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
+    { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
 ];
 
 const PetBoarding = () => {

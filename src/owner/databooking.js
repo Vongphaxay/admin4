@@ -8,7 +8,8 @@ import {
     Snackbar, Alert
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub,
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, Menu as MenuIcon,
+    Assessment as AssessmentIcon,
     ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
@@ -33,11 +34,12 @@ const menuItems = [
     { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/owner/dashboard' },
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/owner/dataemployee' },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/owner/datacustomer' },
-    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking', active: true  },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding'},
+    { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking', active: true },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding' },
     { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet' },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
+    { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
 ];
 
 const BookingTable = () => {
