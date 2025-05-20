@@ -537,19 +537,73 @@ const EmployeeManagement = () => {
                     <Dialog
                         open={deleteDialogOpen}
                         onClose={handleCancelDelete}
+                        PaperProps={{
+                            sx: {
+                                borderRadius: 2,
+                                boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                                minWidth: '400px'
+                            }
+                        }}
                     >
-                        <DialogTitle>ຢືນຢັນການລົບຂໍ້ມູນ</DialogTitle>
-                        <DialogContent>
-                            <Typography>
-                                ທ່ານຕ້ອງການລົບຂໍ້ມູນຂອງ {employeeToDelete ? (employeeToDelete.docname || employeeToDelete.empname) : ''} ແທ້ ຫຼື ບໍ່?
+                        <DialogTitle sx={{
+                            bgcolor: '#d32f2f',
+                            color: 'white',
+                            px: 3,
+                            py: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1
+                        }}>
+                            <Delete fontSize="medium" />
+                            ຢືນຢັນການລົບຂໍ້ມູນພະນັກງານ
+                        </DialogTitle>
+                        <DialogContent sx={{ p: 3, mt: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                <Avatar sx={{ bgcolor: '#ffebee', color: '#d32f2f', mr: 2 }}>
+                                    <Person fontSize="medium" />
+                                </Avatar>
+                                <Typography variant="h6">
+                                    {employeeToDelete ? (employeeToDelete.docname || employeeToDelete.empname) : ''}
+                                </Typography>
+                            </Box>
+                            <Typography sx={{ color: 'text.secondary', mb: 1 }}>
+                                ທ່ານກຳລັງຈະລົບຂໍ້ມູນພະນັກງານນີ້ອອກຈາກລະບົບ
+                            </Typography>
+                            <Typography sx={{
+                                bgcolor: '#fffde7',
+                                p: 2,
+                                borderRadius: 1,
+                                color: '#ff6d00',
+                                borderLeft: '4px solid #ff6d00',
+                                fontSize: '0.9rem'
+                            }}>
+                                <b>ໝາຍເຫດ:</b> ການດຳເນີນການນີ້ບໍ່ສາມາດຍົກເລີກໄດ້ ແລະ ຂໍ້ມູນທັງໝົດຂອງພະນັກງານຄົນນີ້ຈະຖືກລົບອອກຈາກລະບົບຖາວອນ
                             </Typography>
                         </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCancelDelete} color="primary">
+                        <DialogActions sx={{ p: 2, bgcolor: '#f5f5f5' }}>
+                            <Button
+                                onClick={handleCancelDelete}
+                                sx={{
+                                    bgcolor: '#e0e0e0',
+                                    color: 'text.primary',
+                                    px: 3,
+                                    '&:hover': { bgcolor: '#bdbdbd' }
+                                }}
+                            >
                                 ຍົກເລີກ
                             </Button>
-                            <Button onClick={handleConfirmDelete} color="error" variant="contained">
-                                ຕົກລົງ
+                            <Button
+                                onClick={handleConfirmDelete}
+                                variant="contained"
+                                color="error"
+                                startIcon={<Delete />}
+                                sx={{
+                                    px: 3,
+                                    bgcolor: '#d32f2f',
+                                    '&:hover': { bgcolor: '#b71c1c' }
+                                }}
+                            >
+                                ຢືນຢັນການລົບ
                             </Button>
                         </DialogActions>
                     </Dialog>
