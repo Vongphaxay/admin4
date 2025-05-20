@@ -56,6 +56,12 @@ const EmployeeManagement = () => {
     const [employeeData, setEmployeeData] = useState([]);
     const [currentEmployee, setCurrentEmployee] = useState({});
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("ບັນທຶກສຳເລັດ");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+    // Add state for delete confirmation dialog
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
     useEffect(() => {
         const getReportAllempapi = async () => {
@@ -79,7 +85,6 @@ const EmployeeManagement = () => {
         getReportAllempapi();
     }, [accessToken]);
     const fieldKey = currentEmployee.docname !== undefined ? 'docname' : 'empname';
-
 
     const handleSnackbarClose = (event, reason) => {
         if (reason === 'clickaway') return;
@@ -123,11 +128,51 @@ const EmployeeManagement = () => {
         } else {
             setEmployeeData(prevData => [...prevData, { ...currentEmployee, id: prevData.length + 1 }]);
         }
+        setSnackbarMessage("ບັນທຶກສຳເລັດ");
+        setSnackbarSeverity("success");
         setOpenSnackbar(true);
         setOpenDialog(false);
     };
 
-    const handleDeleteEmployee = (id) => setEmployeeData(prevData => prevData.filter(item => item.id !== id));
+    // Updated delete handling functions
+    const handleDeleteConfirmation = (employee) => {
+        setEmployeeToDelete(employee);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteDialogOpen(false);
+        setEmployeeToDelete(null);
+    };
+
+    const handleConfirmDelete = () => {
+        if (employeeToDelete) {
+            const nameToDelete = employeeToDelete.docname || employeeToDelete.empname;
+
+            if (nameToDelete) {
+                console.log("Deleting person with name:", nameToDelete);
+
+                setEmployeeData(prevData =>
+                    prevData.filter(item =>
+                        (item.docname || item.empname) !== nameToDelete
+                    )
+                );
+
+                setSnackbarMessage("ລຶບຂໍ້ມູນສຳເລັດ");
+                setSnackbarSeverity("success");
+                setOpenSnackbar(true);
+            } else {
+                console.warn("No valid name to delete:", employeeToDelete);
+            }
+        } else {
+            console.warn("employeeToDelete is null");
+        }
+
+        setDeleteDialogOpen(false);
+        setEmployeeToDelete(null);
+    };
+
+
 
     const handleLogout = () => {
         navigate('/');
@@ -354,7 +399,7 @@ const EmployeeManagement = () => {
                                         <TableCell>{employee.username}</TableCell>
                                         <TableCell>
                                             <IconButton onClick={() => handleDialogOpen(employee)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
-                                            <IconButton onClick={() => handleDeleteEmployee(employee.id)} color="error"><Delete /></IconButton>
+                                            <IconButton onClick={() => handleDeleteConfirmation(employee)} color="error"><Delete /></IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -362,6 +407,7 @@ const EmployeeManagement = () => {
                         </Table>
                     </TableContainer>
 
+                    {/* Employee Add/Edit Dialog */}
                     <Dialog open={openDialog} onClose={handleDialogClose}>
                         <DialogTitle>{editMode ? 'ແກ້ໄຂຂໍ້ມູນພະນັກງານ' : 'ເພີ່ມພະນັກງານ'}</DialogTitle>
                         <DialogContent>
@@ -487,7 +533,28 @@ const EmployeeManagement = () => {
                         </DialogActions>
                     </Dialog>
 
-                    {/* Snackbar for success notification */}
+                    {/* Delete Confirmation Dialog */}
+                    <Dialog
+                        open={deleteDialogOpen}
+                        onClose={handleCancelDelete}
+                    >
+                        <DialogTitle>ຢືນຢັນການລົບຂໍ້ມູນ</DialogTitle>
+                        <DialogContent>
+                            <Typography>
+                                ທ່ານຕ້ອງການລົບຂໍ້ມູນຂອງ {employeeToDelete ? (employeeToDelete.docname || employeeToDelete.empname) : ''} ແທ້ ຫຼື ບໍ່?
+                            </Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleCancelDelete} color="primary">
+                                ຍົກເລີກ
+                            </Button>
+                            <Button onClick={handleConfirmDelete} color="error" variant="contained">
+                                ຕົກລົງ
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    {/* Snackbar for notifications */}
                     <Snackbar
                         open={openSnackbar}
                         autoHideDuration={3000}
@@ -496,12 +563,12 @@ const EmployeeManagement = () => {
                     >
                         <MuiAlert
                             onClose={handleSnackbarClose}
-                            severity="success"
+                            severity={snackbarSeverity}
                             sx={{ width: '100%' }}
                             elevation={6}
                             variant="filled"
                         >
-                            ບັນທຶກສຳເລັດ
+                            {snackbarMessage}
                         </MuiAlert>
                     </Snackbar>
                 </Container>
