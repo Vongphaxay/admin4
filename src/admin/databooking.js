@@ -662,6 +662,7 @@ const BookingTable = () => {
                     </Dialog>
 
                     {/* Payment Dialog with QR Code on the right - adjusted padding/margin and larger buttons */}
+                    {/* Payment Dialog with QR Code on the right - compact layout without scrolling */}
                     <Dialog
                         open={openDialog}
                         onClose={handleDialogClose}
@@ -669,21 +670,12 @@ const BookingTable = () => {
                         fullWidth
                         PaperProps={{
                             sx: {
-                                minHeight: {
-                                    xs: 'auto',
-                                    sm: isTreatmentService(currentBooking) ? '500px' : '400px',
-                                    md: isTreatmentService(currentBooking) ? '550px' : '390px'
-                                },
-                                maxHeight: {
-                                    xs: '95vh',
-                                    sm: isTreatmentService(currentBooking) ? '700px' : '500px',
-                                    md: isTreatmentService(currentBooking) ? '700px' : '500px'
-                                },
                                 width: {
                                     xs: '98%',
                                     sm: isTreatmentService(currentBooking) ? '95%' : '80%',
-                                    md: isTreatmentService(currentBooking) ? '90%' : '70%'
+                                    md: isTreatmentService(currentBooking) ? '90%' : '75%'
                                 },
+                                borderRadius: 1,
                                 overflow: 'hidden'
                             }
                         }}
@@ -695,8 +687,8 @@ const BookingTable = () => {
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            px: 3,
-                            py: 1.75
+                            px: 2.5,
+                            py: 1.5
                         }}>
                             <Box>
                                 {editMode ? 'ຊຳລະເງິນ' : 'ເພີ່ມການຈອງ'}
@@ -705,24 +697,14 @@ const BookingTable = () => {
                                 <Close />
                             </IconButton>
                         </DialogTitle>
-                        <DialogContent sx={{ p: 0 }}>
+                        <DialogContent sx={{ p: 2 }}>
                             <Box sx={{
                                 display: 'flex',
                                 flexDirection: { xs: 'column', md: 'row' },
-                                height: '100%',
-                                maxHeight: '100%'
+                                gap: 2
                             }}>
                                 {/* Left side - Booking Information Container */}
-                                <Box sx={{
-                                    flex: '1 1 68%',
-                                    p: { xs: 1.5, sm: 2 },
-                                    overflowY: 'auto',
-                                    maxHeight: {
-                                        xs: '60vh',
-                                        sm: isTreatmentService(currentBooking) ? '60vh' : '50vh',
-                                        md: isTreatmentService(currentBooking) ? '500px' : '400px'
-                                    }
-                                }}>
+                                <Box sx={{ flex: '1 1 68%' }}>
                                     <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom sx={{ mb: 1 }}>
                                         ຂໍ້ມູນການຈອງ
                                     </Typography>
@@ -731,18 +713,13 @@ const BookingTable = () => {
                                     <Box sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: 1.25,
-                                        width: {
-                                            xs: '100%',
-                                            sm: isTreatmentService(currentBooking) ? '100%' : '70%',
-                                            md: isTreatmentService(currentBooking) ? '100%' : '60%'
-                                        },
-                                        mx: 'auto'
+                                        gap: 1.5,
+                                        width: '100%',
                                     }}>
                                         {/* First row - Pet and Customer */}
-                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.3 }}>
                                                     ຊື່ສັດລ້ຽງ
                                                 </Typography>
                                                 <TextField
@@ -761,7 +738,7 @@ const BookingTable = () => {
                                                 />
                                             </Box>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.3 }}>
                                                     ຊື່ເຈົ້າຂອງ
                                                 </Typography>
                                                 <TextField
@@ -782,9 +759,9 @@ const BookingTable = () => {
                                         </Box>
 
                                         {/* Second row - Services */}
-                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.3 }}>
                                                     ບໍລິການ
                                                 </Typography>
                                                 <TextField
@@ -801,7 +778,7 @@ const BookingTable = () => {
                                                 />
                                             </Box>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.3 }}>
                                                     ກົງທີຈອງ
                                                 </Typography>
                                                 <TextField
@@ -820,9 +797,9 @@ const BookingTable = () => {
                                         </Box>
 
                                         {/* Third row - Dates */}
-                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.3 }}>
                                                     ວັນທີເລີ່ມ
                                                 </Typography>
                                                 <TextField
@@ -842,7 +819,7 @@ const BookingTable = () => {
                                                 />
                                             </Box>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.3 }}>
                                                     ວັນທີສິ້ນສຸດ
                                                 </Typography>
                                                 <TextField
@@ -863,14 +840,14 @@ const BookingTable = () => {
                                             </Box>
                                         </Box>
 
-                                        {/* Fourth row - Price and Treatment Info Side by Side */}
-                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1, mt: 0.5 }}>
+                                        {/* Fourth row - Price and Treatment Info */}
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
                                             {/* Price Information - Different sizing based on service type */}
                                             <Box sx={{
                                                 flex: isTreatmentService(currentBooking) ? 1 : '0 0 auto',
-                                                width: isTreatmentService(currentBooking) ? '100%' : { xs: '100%', sm: '50%', md: '40%' }
+                                                width: isTreatmentService(currentBooking) ? '100%' : { xs: '100%', sm: '50%', md: '50%' }
                                             }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.3 }}>
                                                     ລາຄາພື້ນຖານ
                                                 </Typography>
                                                 <TextField
@@ -892,11 +869,11 @@ const BookingTable = () => {
                                                 {/* Total price calculation - Show calculated total if there's treatment */}
                                                 {hasTreatmentInfo(currentBooking) && (
                                                     <Box sx={{
-                                                        mt: 1.5,
-                                                        p: 1.5,
+                                                        mt: 1,
+                                                        p: 1,
                                                         borderRadius: 1,
-                                                        bgcolor: '#e8f5e9',
-                                                        border: '1px solid #a5d6a7'
+                                                        bgcolor: '#f5f5f5',
+                                                        border: '1px solid #e0e0e0'
                                                     }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                             <Typography variant="subtitle2" color="primary.dark">
@@ -914,7 +891,7 @@ const BookingTable = () => {
                                                                     display: 'flex',
                                                                     justifyContent: 'space-between',
                                                                     alignItems: 'center',
-                                                                    mt: 0.75
+                                                                    mt: 0.5
                                                                 }}
                                                             >
                                                                 <Typography variant="subtitle2" color="primary.dark">
@@ -926,7 +903,7 @@ const BookingTable = () => {
                                                             </Box>
                                                         ))}
 
-                                                        <Divider sx={{ my: 1 }} />
+                                                        <Divider sx={{ my: 0.75 }} />
 
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                             <Typography variant="subtitle1" fontWeight="bold" color="primary.dark">
@@ -940,7 +917,7 @@ const BookingTable = () => {
                                                 )}
                                             </Box>
 
-                                            {/* Treatment Information Side-by-side with price (instead of accordion) */}
+                                            {/* Treatment Information - Keep unchanged as requested */}
                                             {isTreatmentService(currentBooking) && (
                                                 <Box sx={{ flex: 1 }}>
                                                     <Box sx={{
@@ -965,22 +942,22 @@ const BookingTable = () => {
                                                         </Box>
 
                                                         {currentBooking.tb_service_infos && currentBooking.tb_service_infos.length > 0 ? (
-                                                            <Box sx={{ flex: 1, overflow: 'auto' }}>
+                                                            <Box sx={{ flex: 1 }}>
                                                                 {currentBooking.tb_service_infos.map((info, index) => (
                                                                     <Box
                                                                         key={index}
                                                                         sx={{
-                                                                            mb: 1.5,
-                                                                            p: 1.5,
+                                                                            mb: 1,
+                                                                            p: 1,
                                                                             borderRadius: 1,
                                                                             bgcolor: 'background.paper',
                                                                             border: '1px solid #e0e0e0'
                                                                         }}
                                                                     >
-                                                                        <Typography variant="body1" fontWeight="medium" sx={{ mb: 0.75 }}>
+                                                                        <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.5 }}>
                                                                             ລາຍລະອຽດການປິ່ນປົວ:
                                                                         </Typography>
-                                                                        <Typography variant="body2" sx={{ mb: 1.5 }}>
+                                                                        <Typography variant="body2" sx={{ mb: 1 }}>
                                                                             {info.description || "ບໍ່ມີລາຍລະອຽດ"}
                                                                         </Typography>
 
@@ -988,7 +965,7 @@ const BookingTable = () => {
                                                                             <Typography variant="body2" color="text.secondary">
                                                                                 ຄ່າປິ່ນປົວ:
                                                                             </Typography>
-                                                                            <Typography variant="body1" fontWeight="bold" color="primary.dark">
+                                                                            <Typography variant="body2" fontWeight="bold" color="primary.dark">
                                                                                 {parseInt(info.price).toLocaleString()} ກີບ
                                                                             </Typography>
                                                                         </Box>
@@ -996,7 +973,7 @@ const BookingTable = () => {
                                                                 ))}
                                                             </Box>
                                                         ) : (
-                                                            <Box sx={{ textAlign: 'center', py: 1.5, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <Box sx={{ textAlign: 'center', py: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                                 <Typography variant="body2" color="text.secondary">
                                                                     ບໍ່ມີຂໍ້ມູນການປິ່ນປົວເພີ່ມເຕີມ
                                                                 </Typography>
@@ -1017,84 +994,66 @@ const BookingTable = () => {
                                             display: { xs: 'flex', md: 'none' },
                                             justifyContent: 'center',
                                             width: '100%',
-                                            my: 1.5
+                                            my: 0.5
                                         }}>
-                                            <Divider sx={{ width: '90%' }}>
-                                                <Typography variant="subtitle2" color="primary">
-                                                    ຊຳລະເງິນ
-                                                </Typography>
-                                            </Divider>
+                                            <Divider sx={{ width: '100%' }} />
                                         </Box>
 
                                         {/* QR Code Container */}
                                         <Box sx={{
                                             flex: '1 1 32%',
-                                            bgcolor: '#f8faff',
                                             display: 'flex',
                                             flexDirection: 'column',
                                             justifyContent: 'center',
                                             alignItems: 'center',
-                                            borderLeft: { xs: 'none', md: `1px solid ${theme.palette.primary.light}` },
-                                            py: { xs: 2, md: 0 }
+                                            borderLeft: { xs: 'none', md: '1px solid #e0e0e0' },
+                                            pl: { md: 2 },
+                                            pt: { xs: 1, md: 0 }
                                         }}>
-                                            <Paper elevation={1} sx={{
-                                                py: 2.5,
-                                                px: 2.5,
-                                                width: { xs: '85%', md: '85%' },
-                                                maxWidth: '260px',
-                                                borderRadius: 1.5,
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                bgcolor: 'white',
-                                                border: `1px solid ${theme.palette.primary.light}`
-                                            }}>
-                                                <Typography variant="body1" color="primary" fontWeight="bold" gutterBottom>
-                                                    ສະແກນເພື່ອຊຳລະເງິນ
-                                                </Typography>
-                                                <Box
-                                                    component="img"
-                                                    src={image}
-                                                    alt="QR Code"
-                                                    sx={{
-                                                        width: { xs: 140, md: 140, lg: 150 },
-                                                        height: { xs: 140, md: 140, lg: 150 },
-                                                        objectFit: 'contain',
-                                                        border: '1px solid #eee',
-                                                        borderRadius: 1,
-                                                        p: 0.5,
-                                                        my: 2,
-                                                        bgcolor: 'white'
-                                                    }}
-                                                />
-                                                <Box sx={{
-                                                    width: '100%',
-                                                    bgcolor: theme.palette.primary.main,
-                                                    p: 1.25,
+                                            <Typography variant="body1" color="primary" fontWeight="bold" gutterBottom align="center">
+                                                ສະແກນເພື່ອຊຳລະເງິນ
+                                            </Typography>
+                                            <Box
+                                                component="img"
+                                                src={image}
+                                                alt="QR Code"
+                                                sx={{
+                                                    width: { xs: 140, sm: 150, md: 160 },
+                                                    height: { xs: 140, sm: 150, md: 160 },
+                                                    objectFit: 'contain',
+                                                    border: '1px solid #eee',
                                                     borderRadius: 1,
-                                                    color: 'white'
-                                                }}>
-                                                    <Typography variant="caption" align="center" sx={{ display: 'block', mb: 0.5 }}>
-                                                        ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
-                                                    </Typography>
-                                                    <Typography variant="subtitle1" fontWeight="bold" align="center">
-                                                        {calculateTotalPrice(currentBooking).toLocaleString()} ກີບ
-                                                    </Typography>
-                                                </Box>
-                                            </Paper>
+                                                    my: 1,
+                                                    bgcolor: 'white'
+                                                }}
+                                            />
+                                            <Box sx={{
+                                                width: '100%',
+                                                bgcolor: theme.palette.primary.main,
+                                                p: 1,
+                                                borderRadius: 1,
+                                                color: 'white',
+                                                textAlign: 'center'
+                                            }}>
+                                                <Typography variant="caption" align="center" sx={{ display: 'block', mb: 0.25 }}>
+                                                    ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
+                                                </Typography>
+                                                <Typography variant="h6" fontWeight="bold" align="center">
+                                                    {calculateTotalPrice(currentBooking).toLocaleString()} ກີບ
+                                                </Typography>
+                                            </Box>
                                         </Box>
                                     </>
                                 )}
                             </Box>
                         </DialogContent>
-                        <DialogActions sx={{ px: 3, py: 2 }}>
+                        <DialogActions sx={{ px: 2, py: 1, borderTop: '1px solid #e0e0e0' }}>
                             <Button
                                 onClick={handleDialogClose}
                                 variant="outlined"
                                 color="error"
                                 startIcon={<Close />}
                                 size="medium"
-                                sx={{ px: 2, py: 0.75 }}
                             >
                                 ຍົກເລີກ
                             </Button>
@@ -1108,7 +1067,6 @@ const BookingTable = () => {
                                 color="primary"
                                 startIcon={editMode ? <AddCircle /> : <Edit />}
                                 size="medium"
-                                sx={{ px: 2, py: 0.75 }}
                             >
                                 {editMode ? 'ຢືນຢັນການຊຳລະ' : 'ບັນທຶກ'}
                             </Button>
