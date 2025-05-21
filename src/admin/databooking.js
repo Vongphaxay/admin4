@@ -665,14 +665,14 @@ const BookingTable = () => {
                     <Dialog
                         open={openDialog}
                         onClose={handleDialogClose}
-                        maxWidth="lg" /* Changed from 'md' to 'lg' for wider dialog */
+                        maxWidth="lg"
                         fullWidth
                         PaperProps={{
                             sx: {
-                                minHeight: { xs: 'auto', sm: '500px', md: '550px' }, /* Increased height */
-                                maxHeight: { xs: '95vh', sm: '90vh', md: '90vh' }, /* Increased max height */
-                                width: { xs: '98%', sm: '95%', md: '95%' }, /* Increased width percentages */
-                                overflowY: 'visible' /* Helps with accordion expansion */
+                                minHeight: { xs: 'auto', sm: '500px', md: '550px' },
+                                maxHeight: { xs: '95vh', sm: '700px', md: '700px' },
+                                width: { xs: '98%', sm: '95%', md: '90%' },
+                                overflow: 'hidden'
                             }
                         }}
                     >
@@ -693,31 +693,30 @@ const BookingTable = () => {
                                 <Close />
                             </IconButton>
                         </DialogTitle>
-                        <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
+                        <DialogContent sx={{ p: 0 }}>
                             <Box sx={{
                                 display: 'flex',
                                 flexDirection: { xs: 'column', md: 'row' },
-                                height: { xs: 'auto', sm: '400px', md: '420px' },
+                                height: '100%',
+                                maxHeight: '100%'
                             }}>
-                                {/* Left side - Booking Information Container - REDUCED PADDING */}
+                                {/* Left side - Booking Information Container */}
                                 <Box sx={{
                                     flex: '1 1 68%',
-                                    p: { xs: 2, sm: 2 },
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    overflow: 'auto'
+                                    p: { xs: 1.5, sm: 2 },
+                                    overflowY: 'auto',
+                                    maxHeight: { xs: '60vh', sm: '60vh', md: '500px' }
                                 }}>
-                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom sx={{ mb: 1.5 }}>
+                                    <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom sx={{ mb: 1 }}>
                                         ຂໍ້ມູນການຈອງ
                                     </Typography>
 
-                                    {/* Reorganized booking information with REDUCED SPACING */}
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+                                    {/* Booking information with optimized layout */}
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
                                         {/* First row - Pet and Customer */}
-                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
                                                     ຊື່ສັດລ້ຽງ
                                                 </Typography>
                                                 <TextField
@@ -730,13 +729,13 @@ const BookingTable = () => {
                                                     placeholder="ຊື່ສັດລ້ຽງ"
                                                     InputProps={{
                                                         startAdornment: (
-                                                            <Pets fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                            <Pets fontSize="small" color="primary" sx={{ mr: 0.75, opacity: 0.7 }} />
                                                         )
                                                     }}
                                                 />
                                             </Box>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
                                                     ຊື່ເຈົ້າຂອງ
                                                 </Typography>
                                                 <TextField
@@ -749,7 +748,7 @@ const BookingTable = () => {
                                                     placeholder="ຊື່ເຈົ້າຂອງ"
                                                     InputProps={{
                                                         startAdornment: (
-                                                            <Person fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                            <Person fontSize="small" color="primary" sx={{ mr: 0.75, opacity: 0.7 }} />
                                                         )
                                                     }}
                                                 />
@@ -757,9 +756,9 @@ const BookingTable = () => {
                                         </Box>
 
                                         {/* Second row - Services */}
-                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
                                                     ບໍລິການ
                                                 </Typography>
                                                 <TextField
@@ -770,13 +769,13 @@ const BookingTable = () => {
                                                     variant="outlined"
                                                     InputProps={{
                                                         startAdornment: (
-                                                            <ContentCut fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                            <ContentCut fontSize="small" color="primary" sx={{ mr: 0.75, opacity: 0.7 }} />
                                                         )
                                                     }}
                                                 />
                                             </Box>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
                                                     ກົງທີຈອງ
                                                 </Typography>
                                                 <TextField
@@ -787,7 +786,7 @@ const BookingTable = () => {
                                                     variant="outlined"
                                                     InputProps={{
                                                         startAdornment: (
-                                                            <Bathtub fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                            <Bathtub fontSize="small" color="primary" sx={{ mr: 0.75, opacity: 0.7 }} />
                                                         )
                                                     }}
                                                 />
@@ -795,9 +794,9 @@ const BookingTable = () => {
                                         </Box>
 
                                         {/* Third row - Dates */}
-                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
                                                     ວັນທີເລີ່ມ
                                                 </Typography>
                                                 <TextField
@@ -811,13 +810,13 @@ const BookingTable = () => {
                                                     variant="outlined"
                                                     InputProps={{
                                                         startAdornment: (
-                                                            <CalendarMonth fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                            <CalendarMonth fontSize="small" color="primary" sx={{ mr: 0.75, opacity: 0.7 }} />
                                                         )
                                                     }}
                                                 />
                                             </Box>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
                                                     ວັນທີສິ້ນສຸດ
                                                 </Typography>
                                                 <TextField
@@ -831,86 +830,129 @@ const BookingTable = () => {
                                                     variant="outlined"
                                                     InputProps={{
                                                         startAdornment: (
-                                                            <CalendarMonth fontSize="small" color="primary" sx={{ mr: 1, opacity: 0.7 }} />
+                                                            <CalendarMonth fontSize="small" color="primary" sx={{ mr: 0.75, opacity: 0.7 }} />
                                                         )
                                                     }}
                                                 />
                                             </Box>
                                         </Box>
 
-                                        {/* Fourth row - Base Price */}
-                                        <Box>
-                                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
-                                                ລາຄາພື້ນຖານ
-                                            </Typography>
-                                            <TextField
-                                                type="number"
-                                                fullWidth
-                                                value={currentBooking.total}
-                                                onChange={(e) => setCurrentBooking({ ...currentBooking, total: e.target.value })}
-                                                disabled={editMode}
-                                                size="small"
-                                                variant="outlined"
-                                                sx={{ maxWidth: { sm: '50%' } }}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <Box component="span" sx={{ display: 'flex', alignItems: 'center', mr: 1, color: 'primary.main', opacity: 0.7 }}>₭</Box>
-                                                    ),
-                                                    endAdornment: <Typography variant="body2" color="text.secondary">ກີບ</Typography>
-                                                }}
-                                            />
-                                        </Box>
-
-                                        {/* Treatment Information Section - Only show for treatment service */}
-                                        {isTreatmentService(currentBooking) && (
-                                            <Box sx={{ mt: 2, mb: 1 }}>
-                                                <Accordion
-                                                    elevation={0}
-                                                    defaultExpanded={hasTreatmentInfo(currentBooking)}
-                                                    sx={{
-                                                        '&:before': { display: 'none' },
-                                                        bgcolor: hasTreatmentInfo(currentBooking) ? '#f0f7ff' : 'transparent',
-                                                        border: hasTreatmentInfo(currentBooking) ? '1px solid #90caf9' : 'none'
+                                        {/* Fourth row - Price and Treatment Info Side by Side */}
+                                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1, mt: 0.5 }}>
+                                            {/* Price Information - Always full width for non-treatment services */}
+                                            <Box sx={{ flex: 1, width: '100%' }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                                    ລາຄາພື້ນຖານ
+                                                </Typography>
+                                                <TextField
+                                                    type="number"
+                                                    fullWidth
+                                                    value={currentBooking.total}
+                                                    onChange={(e) => setCurrentBooking({ ...currentBooking, total: e.target.value })}
+                                                    disabled={editMode}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    sx={{ width: '100%' }}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <Box component="span" sx={{ display: 'flex', alignItems: 'center', mr: 1, color: 'primary.main', opacity: 0.7 }}>₭</Box>
+                                                        ),
+                                                        endAdornment: <Typography variant="body2" color="text.secondary">ກີບ</Typography>
                                                     }}
-                                                >
-                                                    <AccordionSummary
-                                                        expandIcon={<ExpandMore />}
-                                                        sx={{
-                                                            borderRadius: 1,
-                                                            bgcolor: hasTreatmentInfo(currentBooking) ? '#e3f2fd' : '#f5f5f5',
-                                                            '&:hover': { bgcolor: hasTreatmentInfo(currentBooking) ? '#bbdefb' : '#e0e0e0' }
-                                                        }}
-                                                    >
-                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                            <LocalHospital sx={{ mr: 1, color: theme.palette.primary.main }} />
+                                                />
+
+                                                {/* Total price calculation - Show calculated total if there's treatment */}
+                                                {hasTreatmentInfo(currentBooking) && (
+                                                    <Box sx={{
+                                                        mt: 1.5,
+                                                        p: 1.5,
+                                                        borderRadius: 1,
+                                                        bgcolor: '#e8f5e9',
+                                                        border: '1px solid #a5d6a7'
+                                                    }}>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <Typography variant="subtitle2" color="primary.dark">
+                                                                ລາຄາພື້ນຖານ:
+                                                            </Typography>
+                                                            <Typography variant="body2">
+                                                                {parseInt(currentBooking.total).toLocaleString()} ກີບ
+                                                            </Typography>
+                                                        </Box>
+
+                                                        {currentBooking.tb_service_infos && currentBooking.tb_service_infos.map((info, index) => (
+                                                            <Box
+                                                                key={index}
+                                                                sx={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'space-between',
+                                                                    alignItems: 'center',
+                                                                    mt: 0.75
+                                                                }}
+                                                            >
+                                                                <Typography variant="subtitle2" color="primary.dark">
+                                                                    ຄ່າປິ່ນປົວ:
+                                                                </Typography>
+                                                                <Typography variant="body2">
+                                                                    {parseInt(info.price).toLocaleString()} ກີບ
+                                                                </Typography>
+                                                            </Box>
+                                                        ))}
+
+                                                        <Divider sx={{ my: 1 }} />
+
+                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <Typography variant="subtitle1" fontWeight="bold" color="primary.dark">
+                                                                ລວມທັງໝົດ:
+                                                            </Typography>
+                                                            <Typography variant="subtitle1" fontWeight="bold" color="primary.dark">
+                                                                {calculateTotalPrice(currentBooking).toLocaleString()} ກີບ
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                )}
+                                            </Box>
+
+                                            {/* Treatment Information Side-by-side with price (instead of accordion) */}
+                                            {isTreatmentService(currentBooking) && (
+                                                <Box sx={{ flex: 1 }}>
+                                                    <Box sx={{
+                                                        p: 1.5,
+                                                        borderRadius: 1,
+                                                        bgcolor: hasTreatmentInfo(currentBooking) ? '#f0f7ff' : '#f5f5f5',
+                                                        border: hasTreatmentInfo(currentBooking) ? '1px solid #90caf9' : '1px solid #e0e0e0',
+                                                        height: '100%',
+                                                        display: 'flex',
+                                                        flexDirection: 'column'
+                                                    }}>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                                            <LocalHospital sx={{ mr: 0.75, color: theme.palette.primary.main }} />
                                                             <Typography variant="subtitle2" color="primary.main" fontWeight="bold">
                                                                 ຂໍ້ມູນການປິ່ນປົວສັດລ້ຽງ
                                                                 {hasTreatmentInfo(currentBooking) && (
-                                                                    <Box component="span" sx={{ ml: 1, color: 'success.main', fontSize: '0.8rem' }}>
+                                                                    <Box component="span" sx={{ ml: 0.75, color: 'success.main', fontSize: '0.8rem' }}>
                                                                         (ມີຂໍ້ມູນ)
                                                                     </Box>
                                                                 )}
                                                             </Typography>
                                                         </Box>
-                                                    </AccordionSummary>
-                                                    <AccordionDetails sx={{ pt: 2 }}>
+
                                                         {currentBooking.tb_service_infos && currentBooking.tb_service_infos.length > 0 ? (
-                                                            <Box>
+                                                            <Box sx={{ flex: 1, overflow: 'auto' }}>
                                                                 {currentBooking.tb_service_infos.map((info, index) => (
                                                                     <Box
                                                                         key={index}
                                                                         sx={{
-                                                                            mb: 2,
-                                                                            p: 2,
+                                                                            mb: 1.5,
+                                                                            p: 1.5,
                                                                             borderRadius: 1,
                                                                             bgcolor: 'background.paper',
                                                                             border: '1px solid #e0e0e0'
                                                                         }}
                                                                     >
-                                                                        <Typography variant="body1" fontWeight="medium" sx={{ mb: 1 }}>
+                                                                        <Typography variant="body1" fontWeight="medium" sx={{ mb: 0.75 }}>
                                                                             ລາຍລະອຽດການປິ່ນປົວ:
                                                                         </Typography>
-                                                                        <Typography variant="body2" sx={{ mb: 2 }}>
+                                                                        <Typography variant="body2" sx={{ mb: 1.5 }}>
                                                                             {info.description || "ບໍ່ມີລາຍລະອຽດ"}
                                                                         </Typography>
 
@@ -926,66 +968,16 @@ const BookingTable = () => {
                                                                 ))}
                                                             </Box>
                                                         ) : (
-                                                            <Box sx={{ textAlign: 'center', py: 2 }}>
+                                                            <Box sx={{ textAlign: 'center', py: 1.5, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                                 <Typography variant="body2" color="text.secondary">
                                                                     ບໍ່ມີຂໍ້ມູນການປິ່ນປົວເພີ່ມເຕີມ
                                                                 </Typography>
                                                             </Box>
                                                         )}
-                                                    </AccordionDetails>
-                                                </Accordion>
-                                            </Box>
-                                        )}
-
-                                        {/* Total price row - Show calculated total if there's treatment */}
-                                        {hasTreatmentInfo(currentBooking) && (
-                                            <Box sx={{
-                                                mt: 1,
-                                                p: 2,
-                                                borderRadius: 1,
-                                                bgcolor: '#e8f5e9',
-                                                border: '1px solid #a5d6a7'
-                                            }}>
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <Typography variant="subtitle2" color="primary.dark">
-                                                        ລາຄາພື້ນຖານ:
-                                                    </Typography>
-                                                    <Typography variant="body2">
-                                                        {parseInt(currentBooking.total).toLocaleString()} ກີບ
-                                                    </Typography>
-                                                </Box>
-
-                                                {currentBooking.tb_service_infos && currentBooking.tb_service_infos.map((info, index) => (
-                                                    <Box
-                                                        key={index}
-                                                        sx={{
-                                                            display: 'flex',
-                                                            justifyContent: 'space-between',
-                                                            alignItems: 'center',
-                                                            mt: 1
-                                                        }}
-                                                    >
-                                                        <Typography variant="subtitle2" color="primary.dark">
-                                                            ຄ່າປິ່ນປົວ:
-                                                        </Typography>
-                                                        <Typography variant="body2">
-                                                            {parseInt(info.price).toLocaleString()} ກີບ
-                                                        </Typography>
                                                     </Box>
-                                                ))}
-
-                                                <Divider sx={{ my: 1.5 }} />
-
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <Typography variant="subtitle1" fontWeight="bold" color="primary.dark">
-                                                        ລວມທັງໝົດ:
-                                                    </Typography>
-                                                    <Typography variant="subtitle1" fontWeight="bold" color="primary.dark">
-                                                        {calculateTotalPrice(currentBooking).toLocaleString()} ກີບ
-                                                    </Typography>
                                                 </Box>
-                                            </Box>
-                                        )}
+                                            )}
+                                        </Box>
                                     </Box>
                                 </Box>
 
@@ -1006,7 +998,7 @@ const BookingTable = () => {
                                             </Divider>
                                         </Box>
 
-                                        {/* Separate QR Code Container */}
+                                        {/* QR Code Container */}
                                         <Box sx={{
                                             flex: '1 1 32%',
                                             bgcolor: '#f8faff',
@@ -1014,7 +1006,6 @@ const BookingTable = () => {
                                             flexDirection: 'column',
                                             justifyContent: 'center',
                                             alignItems: 'center',
-                                            position: 'relative',
                                             borderLeft: { xs: 'none', md: `1px solid ${theme.palette.primary.light}` },
                                             py: { xs: 2, md: 0 }
                                         }}>
@@ -1059,7 +1050,6 @@ const BookingTable = () => {
                                                         ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
                                                     </Typography>
                                                     <Typography variant="subtitle1" fontWeight="bold" align="center">
-                                                        {/* Show calculated total including treatment if available */}
                                                         {calculateTotalPrice(currentBooking).toLocaleString()} ກີບ
                                                     </Typography>
                                                 </Box>
@@ -1070,14 +1060,13 @@ const BookingTable = () => {
                             </Box>
                         </DialogContent>
                         <DialogActions sx={{ px: 3, py: 2 }}>
-                            {/* BIGGER BUTTONS */}
                             <Button
                                 onClick={handleDialogClose}
                                 variant="outlined"
                                 color="error"
                                 startIcon={<Close />}
-                                size="medium" // Changed from small to medium
-                                sx={{ px: 2, py: 0.75 }} // Added more padding
+                                size="medium"
+                                sx={{ px: 2, py: 0.75 }}
                             >
                                 ຍົກເລີກ
                             </Button>
@@ -1090,8 +1079,8 @@ const BookingTable = () => {
                                 variant="contained"
                                 color="primary"
                                 startIcon={editMode ? <AddCircle /> : <Edit />}
-                                size="medium" // Changed from small to medium
-                                sx={{ px: 2, py: 0.75 }} // Added more padding
+                                size="medium"
+                                sx={{ px: 2, py: 0.75 }}
                             >
                                 {editMode ? 'ຢືນຢັນການຊຳລະ' : 'ບັນທຶກ'}
                             </Button>
