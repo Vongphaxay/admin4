@@ -118,6 +118,20 @@ const PetBar = () => {
 
                 response.report.forEach(service => {
                     service.tb_bookings.forEach(booking => {
+                        // Extract service info with groomer details, similar to doctor in treatpet.js
+                        const serviceInfos = (booking.tb_service_infos || []).map(info => ({
+                            id: info.info_id,
+                            description: info.description,
+                            price: info.price,
+                            groomerId: info.doc_id,
+                            groomer: {
+                                id: info.doc?.doc_id,
+                                name: info.doc?.doc_name,
+                                phone: info.doc?.tel,
+                                address: info.doc?.address,
+                            }
+                        }));
+
                         flatBoardingData.push({
                             id: booking.book_id,
                             serviceId: booking.service_id,
@@ -142,7 +156,10 @@ const PetBar = () => {
                                 size: booking.pet?.size,
                                 color: booking.pet?.color,
                                 age: booking.pet?.age
-                            }
+                            },
+                            
+                            // Add the service info array
+                            tb_service_infos: serviceInfos
                         });
                     });
                 });
@@ -425,7 +442,7 @@ const PetBar = () => {
                     {/* Page Header */}
                     <Box sx={{ mb: 4 }}>
                         <Typography variant="h4" fontWeight="bold" color="primary">
-                            <Hotel sx={{ mr: 1, verticalAlign: 'middle' }} />
+                            <ContentCut sx={{ mr: 1, verticalAlign: 'middle' }} />
                             ຕັດຂົນສັດລ້ຽງ
                         </Typography>
                     </Box>
@@ -457,6 +474,7 @@ const PetBar = () => {
                                     <TableCell>ວັນທີຮັບກັບ</TableCell>
                                     <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
                                     <TableCell>ເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell>ຊ່າງຕັດຂົນສັດລ້ຽງ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -469,6 +487,7 @@ const PetBar = () => {
                                         <TableCell>{boarding.endDate}</TableCell>
                                         <TableCell>{boarding.pet.type}</TableCell>
                                         <TableCell>{boarding.pet.gender}</TableCell>
+                                        <TableCell>{boarding.tb_service_infos && boarding.tb_service_infos[0]?.groomer?.name || '-'}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
