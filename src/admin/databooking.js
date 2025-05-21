@@ -665,13 +665,25 @@ const BookingTable = () => {
                     <Dialog
                         open={openDialog}
                         onClose={handleDialogClose}
-                        maxWidth="lg"
+                        maxWidth={isTreatmentService(currentBooking) ? "lg" : "md"}
                         fullWidth
                         PaperProps={{
                             sx: {
-                                minHeight: { xs: 'auto', sm: '500px', md: '550px' },
-                                maxHeight: { xs: '95vh', sm: '700px', md: '700px' },
-                                width: { xs: '98%', sm: '95%', md: '90%' },
+                                minHeight: {
+                                    xs: 'auto',
+                                    sm: isTreatmentService(currentBooking) ? '500px' : '400px',
+                                    md: isTreatmentService(currentBooking) ? '550px' : '390px'
+                                },
+                                maxHeight: {
+                                    xs: '95vh',
+                                    sm: isTreatmentService(currentBooking) ? '700px' : '500px',
+                                    md: isTreatmentService(currentBooking) ? '700px' : '500px'
+                                },
+                                width: {
+                                    xs: '98%',
+                                    sm: isTreatmentService(currentBooking) ? '95%' : '80%',
+                                    md: isTreatmentService(currentBooking) ? '90%' : '70%'
+                                },
                                 overflow: 'hidden'
                             }
                         }}
@@ -705,14 +717,28 @@ const BookingTable = () => {
                                     flex: '1 1 68%',
                                     p: { xs: 1.5, sm: 2 },
                                     overflowY: 'auto',
-                                    maxHeight: { xs: '60vh', sm: '60vh', md: '500px' }
+                                    maxHeight: {
+                                        xs: '60vh',
+                                        sm: isTreatmentService(currentBooking) ? '60vh' : '50vh',
+                                        md: isTreatmentService(currentBooking) ? '500px' : '400px'
+                                    }
                                 }}>
                                     <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom sx={{ mb: 1 }}>
                                         ຂໍ້ມູນການຈອງ
                                     </Typography>
 
-                                    {/* Booking information with optimized layout */}
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                                    {/* Container with conditional width based on service type */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 1.25,
+                                        width: {
+                                            xs: '100%',
+                                            sm: isTreatmentService(currentBooking) ? '100%' : '70%',
+                                            md: isTreatmentService(currentBooking) ? '100%' : '60%'
+                                        },
+                                        mx: 'auto'
+                                    }}>
                                         {/* First row - Pet and Customer */}
                                         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
                                             <Box sx={{ flex: 1 }}>
@@ -839,9 +865,12 @@ const BookingTable = () => {
 
                                         {/* Fourth row - Price and Treatment Info Side by Side */}
                                         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1, mt: 0.5 }}>
-                                            {/* Price Information - Always full width for non-treatment services */}
-                                            <Box sx={{ flex: 1, width: '100%' }}>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                            {/* Price Information - Different sizing based on service type */}
+                                            <Box sx={{
+                                                flex: isTreatmentService(currentBooking) ? 1 : '0 0 auto',
+                                                width: isTreatmentService(currentBooking) ? '100%' : { xs: '100%', sm: '50%', md: '40%' }
+                                            }}>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25 }}>
                                                     ລາຄາພື້ນຖານ
                                                 </Typography>
                                                 <TextField
@@ -852,10 +881,9 @@ const BookingTable = () => {
                                                     disabled={editMode}
                                                     size="small"
                                                     variant="outlined"
-                                                    sx={{ width: '100%' }}
                                                     InputProps={{
                                                         startAdornment: (
-                                                            <Box component="span" sx={{ display: 'flex', alignItems: 'center', mr: 1, color: 'primary.main', opacity: 0.7 }}>₭</Box>
+                                                            <Box component="span" sx={{ display: 'flex', alignItems: 'center', mr: 0.75, color: 'primary.main', opacity: 0.7 }}>₭</Box>
                                                         ),
                                                         endAdornment: <Typography variant="body2" color="text.secondary">ກີບ</Typography>
                                                     }}
