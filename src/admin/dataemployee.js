@@ -5,6 +5,7 @@ import WcIcon from '@mui/icons-material/Wc';
 import HomeIcon from '@mui/icons-material/Home';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -58,6 +59,7 @@ const EmployeeManagement = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("ບັນທຶກສຳເລັດ");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+    const [showPassword, setShowPassword] = useState(false);
 
     // Add state for delete confirmation dialog
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -171,8 +173,6 @@ const EmployeeManagement = () => {
         setDeleteDialogOpen(false);
         setEmployeeToDelete(null);
     };
-
-
 
     const handleLogout = () => {
         navigate('/');
@@ -407,129 +407,214 @@ const EmployeeManagement = () => {
                         </Table>
                     </TableContainer>
 
-                    {/* Employee Add/Edit Dialog */}
-                    <Dialog open={openDialog} onClose={handleDialogClose}>
-                        <DialogTitle>{editMode ? 'ແກ້ໄຂຂໍ້ມູນພະນັກງານ' : 'ເພີ່ມພະນັກງານ'}</DialogTitle>
-                        <DialogContent>
-                            <Grid container spacing={2} sx={{ mt: 1 }}>
+                    {/* Employee Add/Edit Dialog - ປັບປຸງໃໝ່ */}
+                    <Dialog 
+                        open={openDialog} 
+                        onClose={handleDialogClose}
+                        maxWidth="md"
+                        PaperProps={{
+                            sx: {
+                                borderRadius: 2,
+                                boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                                overflow: 'hidden'
+                            }
+                        }}
+                    >
+                        <DialogTitle 
+                            sx={{
+                                bgcolor: theme.palette.primary.main,
+                                color: 'white',
+                                px: 3,
+                                py: 2,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            {editMode ? <Edit fontSize="small" /> : <AddCircle fontSize="small" />}
+                            {editMode ? 'ແກ້ໄຂຂໍ້ມູນພະນັກງານ' : 'ເພີ່ມພະນັກງານ'}
+                        </DialogTitle>
+                        
+                        <DialogContent sx={{ p: 3, mt: 1 }}>
+                            <Grid container spacing={3}>
+                                {/* ຂໍ້ມູນສ່ວນຕົວ */}
                                 <Grid item xs={12}>
-                                    <TextField
-                                        label="ຊື່ ແລະ ນາມສະກຸນ"
-                                        fullWidth
-                                        value={currentEmployee.docname || currentEmployee.empname || ''}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, [fieldKey]: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <PersonIcon sx={{ color: 'action.active' }} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
+                                    <Typography variant="subtitle1" fontWeight="bold" color="primary" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Person fontSize="small" /> ຂໍ້ມູນສ່ວນຕົວ
+                                    </Typography>
+                                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ຊື່ ແລະ ນາມສະກຸນ"
+                                                    fullWidth
+                                                    value={currentEmployee.docname || currentEmployee.empname || ''}
+                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, [fieldKey]: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <PersonIcon sx={{ color: 'action.active' }} />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ເພດ"
+                                                    fullWidth
+                                                    value={currentEmployee.gender || ''}
+                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, gender: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <WcIcon sx={{ color: 'action.active' }} />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    select
+                                                    variant="outlined"
+                                                >
+                                                    <MenuItem value="ຊາຍ">ຊາຍ</MenuItem>
+                                                    <MenuItem value="ຍິງ">ຍິງ</MenuItem>
+                                                </TextField>
+                                            </Grid>
+                                            {!editMode && (
+                                                <Grid item xs={12} md={6}>
+                                                    <FormControl fullWidth variant="outlined">
+                                                        <InputLabel id="position-select-label">ຕຳແໜ່ງ</InputLabel>
+                                                        <Select
+                                                            labelId="position-select-label"
+                                                            id="position-select"
+                                                            value={currentEmployee.position || ''}
+                                                            label="ຕຳແໜ່ງ"
+                                                            onChange={(e) => setCurrentEmployee({ ...currentEmployee, position: e.target.value })}
+                                                            startAdornment={
+                                                                <InputAdornment position="start">
+                                                                    <Work sx={{ color: 'action.active' }} />
+                                                                </InputAdornment>
+                                                            }
+                                                        >
+                                                            <MenuItem value="ຊ່າງຕັດຂົນ">ຊ່າງຕັດຂົນ</MenuItem>
+                                                            <MenuItem value="ທ່ານໝໍ">ທ່ານໝໍ</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                            )}
+                                            <Grid item xs={12} md={editMode ? 6 : 12}>
+                                                <TextField
+                                                    label="ທີ່ຢູ່"
+                                                    fullWidth
+                                                    value={currentEmployee.address || ''}
+                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, address: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <HomeIcon sx={{ color: 'action.active' }} />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ເບີໂທລະສັບ"
+                                                    type="tel"
+                                                    fullWidth
+                                                    value={currentEmployee.tel || ''}
+                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, tel: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <PhoneIcon sx={{ color: 'action.active' }} />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
                                 </Grid>
+
+                                {/* ຂໍ້ມູນບັນຊີ */}
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth variant="outlined">
-                                        <InputLabel id="position-select-label">ຕຳແໜ່ງ</InputLabel>
-                                        <Select
-                                            labelId="position-select-label"
-                                            id="position-select"
-                                            value={currentEmployee.position || ''}
-                                            label="ຕຳແໜ່ງ"
-                                            onChange={(e) => setCurrentEmployee({ ...currentEmployee, position: e.target.value })}
-                                            startAdornment={
-                                                <InputAdornment position="start">
-                                                    <Work sx={{ color: 'action.active' }} />
-                                                </InputAdornment>
-                                            }
-                                            sx={{ width: '100%', height: '56px' }}
-                                        >
-                                            <MenuItem value="ຊ່າງຕັດຂົນ">ຊ່າງຕັດຂົນ</MenuItem>
-                                            <MenuItem value="ທ່ານໝໍ">ທ່ານໝໍ</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ເພດ"
-                                        fullWidth
-                                        value={currentEmployee.gender}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, gender: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <WcIcon sx={{ color: 'action.active' }} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ທີ່ຢູ່"
-                                        fullWidth
-                                        value={currentEmployee.address}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, address: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <HomeIcon sx={{ color: 'action.active' }} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ເບີໂທລະສັບ"
-                                        type="tel"
-                                        fullWidth
-                                        value={currentEmployee.tel}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, tel: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <PhoneIcon sx={{ color: 'action.active' }} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ຊື່ຜູ້ໃຊ້"
-                                        fullWidth
-                                        value={currentEmployee.username}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, username: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <AccountCircleIcon sx={{ color: 'action.active' }} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="ລະຫັດຜ່ານ"
-                                        type="password"
-                                        fullWidth
-                                        value={currentEmployee.password}
-                                        onChange={(e) => setCurrentEmployee({ ...currentEmployee, password: e.target.value })}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <LockIcon sx={{ color: 'action.active' }} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
+                                    <Typography variant="subtitle1" fontWeight="bold" color="primary" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <AccountCircleIcon fontSize="small" /> ຂໍ້ມູນບັນຊີຜູ້ໃຊ້
+                                    </Typography>
+                                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ຊື່ຜູ້ໃຊ້"
+                                                    fullWidth
+                                                    value={currentEmployee.username || ''}
+                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, username: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <AccountCircleIcon sx={{ color: 'action.active' }} />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    label="ລະຫັດຜ່ານ"
+                                                    type={showPassword ? "text" : "password"}
+                                                    fullWidth
+                                                    value={currentEmployee.password || ''}
+                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, password: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <LockIcon sx={{ color: 'action.active' }} />
+                                                            </InputAdornment>
+                                                        ),
+                                                        endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton
+                                                                    onClick={() => setShowPassword(!showPassword)}
+                                                                    edge="end"
+                                                                >
+                                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
                                 </Grid>
                             </Grid>
                         </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleDialogClose} color="error">ຍົກເລີກ</Button>
-                            <Button onClick={handleSaveEmployee} sx={{ bgcolor: '#1976d2', color: 'white', '&:hover': { bgcolor: '#1565c0' } }}>ບັນທຶກ</Button>
+                        
+                        <DialogActions sx={{ px: 3, py: 2, bgcolor: '#f5f5f5', borderTop: '1px solid #e0e0e0' }}>
+                            <Button 
+                                onClick={handleDialogClose} 
+                                variant="outlined"
+                                color="inherit"
+                                startIcon={<Close />}
+                                sx={{ borderRadius: 2, px: 2 }}
+                            >
+                                ຍົກເລີກ
+                            </Button>
+                            <Button 
+                                onClick={handleSaveEmployee} 
+                                variant="contained" 
+                                color="primary"
+                                startIcon={editMode ? <Edit /> : <AddCircle />}
+                                sx={{ borderRadius: 2, px: 2 }}
+                            >
+                                {editMode ? 'ບັນທຶກການແກ້ໄຂ' : 'ບັນທຶກ'}
+                            </Button>
                         </DialogActions>
                     </Dialog>
 
