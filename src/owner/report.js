@@ -61,7 +61,7 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 const drawerWidth = 240;
 
 // Get admin data from cookies
-const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const admin_name = decodeURIComponent(Cookies.get("name_owner") || "");
 const cus_id = Cookies.get("cus_ida");
 const accessToken = Cookies.get("accessTokena");
 
@@ -377,17 +377,6 @@ const ReportPage = () => {
               </Grid>
               <Grid item xs={12} md={3}>
                 <Stack direction="row" spacing={1} justifyContent="flex-end">
-                  <Button
-                    variant="outlined"
-                    startIcon={<FilterAltIcon />}
-                    disabled={isLoading}
-                    sx={{
-                      minWidth: '100px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    ກຣອງ
-                  </Button>
                   <Button
                     variant="contained"
                     onClick={generateReport}

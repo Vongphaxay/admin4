@@ -65,7 +65,7 @@ const BookingTable = () => {
     });
 
 
-    const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+    const admin_name = decodeURIComponent(Cookies.get("name_owner") || "");
     const accessToken = Cookies.get("accessTokena");
 
     const APIUPDATERoompet_book = async (room_id, book_id) => {

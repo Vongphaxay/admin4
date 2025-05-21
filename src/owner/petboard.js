@@ -79,7 +79,7 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
-const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const admin_name = decodeURIComponent(Cookies.get("name_owner") || "");
 const cus_id = Cookies.get("cus_ida");
 const accessToken = Cookies.get("accessTokena");
 
