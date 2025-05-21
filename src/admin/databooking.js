@@ -5,12 +5,13 @@ import {
     ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar,
     Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, TextField, useTheme, styled, Container,
-    Snackbar, Alert
+    Snackbar, Alert, Accordion, AccordionSummary, AccordionDetails
 } from '@mui/material';
-import { CheckCircle } from '@mui/icons-material';
+import { CheckCircle, ExpandMore } from '@mui/icons-material';
 import {
     Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub,
-    ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print
+    ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print,
+    LocalHospital, MedicalServices
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { GetAllbooking, UpdatePayment_roompet } from '../services/report.service';
@@ -61,14 +62,36 @@ const BookingTable = () => {
         petName: '',
         customerName: '',
         service: '',
+        services: {
+            id: '',
+            name: ''
+        },
         start_date: '',
         stop_date: '',
-        total: ''
+        total: '',
+        // Add tb_service_infos to store treatment info
+        tb_service_infos: []
     });
 
 
     const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
     const accessToken = Cookies.get("accessTokena");
+
+    // Calculate total price including treatment
+    const calculateTotalPrice = (booking) => {
+        let basePrice = parseFloat(booking.total) || 0;
+
+        // If there are treatment services, add their prices
+        if (booking.tb_service_infos && booking.tb_service_infos.length > 0) {
+            booking.tb_service_infos.forEach(info => {
+                if (info.price) {
+                    basePrice += parseFloat(info.price);
+                }
+            });
+        }
+
+        return basePrice;
+    };
 
     const APIUPDATERoompet_book = async (room_id, book_id) => {
         try {
@@ -141,6 +164,7 @@ const BookingTable = () => {
 
     const handleDialogOpen = (booking = null) => {
         if (booking) {
+            // Set current booking with all details
             setCurrentBooking(booking);
             setEditMode(true);
         } else {
@@ -148,9 +172,11 @@ const BookingTable = () => {
                 petName: '',
                 customerName: '',
                 service: '',
+                services: { id: '', name: '' },
                 start_date: '',
                 stop_date: '',
-                total: ''
+                total: '',
+                tb_service_infos: []
             });
             setEditMode(false);
         }
@@ -215,6 +241,18 @@ const BookingTable = () => {
 
     const handleLogout = () => {
         navigate('/');
+    };
+
+    // Check if the service is for treatment (ປິ່ນປົວສັດລ້ຽງ)
+    const isTreatmentService = (booking) => {
+        return booking.services && booking.services.name === 'ປິ່ນປົວສັດລ້ຽງ';
+    };
+
+    // Filter bookings to find treatment services that have additional info
+    const hasTreatmentInfo = (booking) => {
+        return isTreatmentService(booking) &&
+            booking.tb_service_infos &&
+            booking.tb_service_infos.length > 0;
     };
 
     const drawerContent = (
@@ -427,11 +465,49 @@ const BookingTable = () => {
                                     <TableRow key={booking.id}>
                                         <TableCell align="center">{booking.petName}</TableCell>
                                         <TableCell align="center">{booking.customerName}</TableCell>
-                                        <TableCell align="center">{booking.services.name}</TableCell>
+                                        <TableCell align="center">
+                                            {booking.services.name}
+                                            {/* Show indicator if there's treatment info */}
+                                            {hasTreatmentInfo(booking) && (
+                                                <Box
+                                                    component="span"
+                                                    sx={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        ml: 1,
+                                                        bgcolor: '#e8f5e9',
+                                                        color: '#2e7d32',
+                                                        borderRadius: '4px',
+                                                        px: 0.75,
+                                                        py: 0.25,
+                                                        fontSize: '0.75rem'
+                                                    }}
+                                                >
+                                                    <MedicalServices fontSize="small" sx={{ mr: 0.5, fontSize: '0.875rem' }} />
+                                                    ມີຂໍ້ມູນເພີ່ມ
+                                                </Box>
+                                            )}
+                                        </TableCell>
                                         <TableCell align="center">{booking.service === 'Bath' ? 'ອາບນ້ຳ' : booking.service === 'Vaccination' ? 'ວັກຊີນ' : booking.service === 'Grooming' ? 'ຕັດຂົນ' : booking.service}</TableCell>
                                         <TableCell align="center">{booking.start_date}</TableCell>
                                         <TableCell align="center">{booking.stop_date}</TableCell>
-                                        <TableCell align="center">{booking.total}</TableCell>
+                                        <TableCell align="center">
+                                            {calculateTotalPrice(booking).toLocaleString()}
+                                            {/* Highlight if there's additional treatment price */}
+                                            {hasTreatmentInfo(booking) && (
+                                                <Typography
+                                                    variant="caption"
+                                                    component="div"
+                                                    sx={{
+                                                        color: '#2e7d32',
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                                    (ລວມຄ່າປິ່ນປົວ)
+                                                </Typography>
+                                            )}
+                                        </TableCell>
                                         <TableCell align="center">
                                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                                                 <Button
@@ -589,13 +665,14 @@ const BookingTable = () => {
                     <Dialog
                         open={openDialog}
                         onClose={handleDialogClose}
-                        maxWidth="md"
+                        maxWidth="lg" /* Changed from 'md' to 'lg' for wider dialog */
                         fullWidth
                         PaperProps={{
                             sx: {
-                                minHeight: { xs: 'auto', sm: '440px', md: '460px' },
-                                maxHeight: { xs: '90vh', sm: '85vh', md: '80vh' },
-                                width: { xs: '95%', sm: '90%', md: '88%' }
+                                minHeight: { xs: 'auto', sm: '500px', md: '550px' }, /* Increased height */
+                                maxHeight: { xs: '95vh', sm: '90vh', md: '90vh' }, /* Increased max height */
+                                width: { xs: '98%', sm: '95%', md: '95%' }, /* Increased width percentages */
+                                overflowY: 'visible' /* Helps with accordion expansion */
                             }
                         }}
                     >
@@ -761,10 +838,10 @@ const BookingTable = () => {
                                             </Box>
                                         </Box>
 
-                                        {/* Fourth row - Price */}
+                                        {/* Fourth row - Base Price */}
                                         <Box>
                                             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
-                                                ລາຄາ
+                                                ລາຄາພື້ນຖານ
                                             </Typography>
                                             <TextField
                                                 type="number"
@@ -783,6 +860,132 @@ const BookingTable = () => {
                                                 }}
                                             />
                                         </Box>
+
+                                        {/* Treatment Information Section - Only show for treatment service */}
+                                        {isTreatmentService(currentBooking) && (
+                                            <Box sx={{ mt: 2, mb: 1 }}>
+                                                <Accordion
+                                                    elevation={0}
+                                                    defaultExpanded={hasTreatmentInfo(currentBooking)}
+                                                    sx={{
+                                                        '&:before': { display: 'none' },
+                                                        bgcolor: hasTreatmentInfo(currentBooking) ? '#f0f7ff' : 'transparent',
+                                                        border: hasTreatmentInfo(currentBooking) ? '1px solid #90caf9' : 'none'
+                                                    }}
+                                                >
+                                                    <AccordionSummary
+                                                        expandIcon={<ExpandMore />}
+                                                        sx={{
+                                                            borderRadius: 1,
+                                                            bgcolor: hasTreatmentInfo(currentBooking) ? '#e3f2fd' : '#f5f5f5',
+                                                            '&:hover': { bgcolor: hasTreatmentInfo(currentBooking) ? '#bbdefb' : '#e0e0e0' }
+                                                        }}
+                                                    >
+                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                            <LocalHospital sx={{ mr: 1, color: theme.palette.primary.main }} />
+                                                            <Typography variant="subtitle2" color="primary.main" fontWeight="bold">
+                                                                ຂໍ້ມູນການປິ່ນປົວສັດລ້ຽງ
+                                                                {hasTreatmentInfo(currentBooking) && (
+                                                                    <Box component="span" sx={{ ml: 1, color: 'success.main', fontSize: '0.8rem' }}>
+                                                                        (ມີຂໍ້ມູນ)
+                                                                    </Box>
+                                                                )}
+                                                            </Typography>
+                                                        </Box>
+                                                    </AccordionSummary>
+                                                    <AccordionDetails sx={{ pt: 2 }}>
+                                                        {currentBooking.tb_service_infos && currentBooking.tb_service_infos.length > 0 ? (
+                                                            <Box>
+                                                                {currentBooking.tb_service_infos.map((info, index) => (
+                                                                    <Box
+                                                                        key={index}
+                                                                        sx={{
+                                                                            mb: 2,
+                                                                            p: 2,
+                                                                            borderRadius: 1,
+                                                                            bgcolor: 'background.paper',
+                                                                            border: '1px solid #e0e0e0'
+                                                                        }}
+                                                                    >
+                                                                        <Typography variant="body1" fontWeight="medium" sx={{ mb: 1 }}>
+                                                                            ລາຍລະອຽດການປິ່ນປົວ:
+                                                                        </Typography>
+                                                                        <Typography variant="body2" sx={{ mb: 2 }}>
+                                                                            {info.description || "ບໍ່ມີລາຍລະອຽດ"}
+                                                                        </Typography>
+
+                                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                            <Typography variant="body2" color="text.secondary">
+                                                                                ຄ່າປິ່ນປົວ:
+                                                                            </Typography>
+                                                                            <Typography variant="body1" fontWeight="bold" color="primary.dark">
+                                                                                {parseInt(info.price).toLocaleString()} ກີບ
+                                                                            </Typography>
+                                                                        </Box>
+                                                                    </Box>
+                                                                ))}
+                                                            </Box>
+                                                        ) : (
+                                                            <Box sx={{ textAlign: 'center', py: 2 }}>
+                                                                <Typography variant="body2" color="text.secondary">
+                                                                    ບໍ່ມີຂໍ້ມູນການປິ່ນປົວເພີ່ມເຕີມ
+                                                                </Typography>
+                                                            </Box>
+                                                        )}
+                                                    </AccordionDetails>
+                                                </Accordion>
+                                            </Box>
+                                        )}
+
+                                        {/* Total price row - Show calculated total if there's treatment */}
+                                        {hasTreatmentInfo(currentBooking) && (
+                                            <Box sx={{
+                                                mt: 1,
+                                                p: 2,
+                                                borderRadius: 1,
+                                                bgcolor: '#e8f5e9',
+                                                border: '1px solid #a5d6a7'
+                                            }}>
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Typography variant="subtitle2" color="primary.dark">
+                                                        ລາຄາພື້ນຖານ:
+                                                    </Typography>
+                                                    <Typography variant="body2">
+                                                        {parseInt(currentBooking.total).toLocaleString()} ກີບ
+                                                    </Typography>
+                                                </Box>
+
+                                                {currentBooking.tb_service_infos && currentBooking.tb_service_infos.map((info, index) => (
+                                                    <Box
+                                                        key={index}
+                                                        sx={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center',
+                                                            mt: 1
+                                                        }}
+                                                    >
+                                                        <Typography variant="subtitle2" color="primary.dark">
+                                                            ຄ່າປິ່ນປົວ:
+                                                        </Typography>
+                                                        <Typography variant="body2">
+                                                            {parseInt(info.price).toLocaleString()} ກີບ
+                                                        </Typography>
+                                                    </Box>
+                                                ))}
+
+                                                <Divider sx={{ my: 1.5 }} />
+
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Typography variant="subtitle1" fontWeight="bold" color="primary.dark">
+                                                        ລວມທັງໝົດ:
+                                                    </Typography>
+                                                    <Typography variant="subtitle1" fontWeight="bold" color="primary.dark">
+                                                        {calculateTotalPrice(currentBooking).toLocaleString()} ກີບ
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        )}
                                     </Box>
                                 </Box>
 
@@ -856,7 +1059,8 @@ const BookingTable = () => {
                                                         ຈຳນວນເງິນທີ່ຕ້ອງຊຳລະ
                                                     </Typography>
                                                     <Typography variant="subtitle1" fontWeight="bold" align="center">
-                                                        {currentBooking.total} ກີບ
+                                                        {/* Show calculated total including treatment if available */}
+                                                        {calculateTotalPrice(currentBooking).toLocaleString()} ກີບ
                                                     </Typography>
                                                 </Box>
                                             </Paper>
@@ -893,7 +1097,6 @@ const BookingTable = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
-
                     {/* Receipt Printer Dialog */}
                     <ReceiptPrinter
                         open={openReceiptDialog}
