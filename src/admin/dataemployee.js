@@ -18,6 +18,7 @@ import Cookies from 'js-cookie';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { GetAllEmp } from '../services/report.service';
+import { createDoctor, createGroomer, deletedoc, deletegrm } from '../services/createemp.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -60,20 +61,66 @@ const EmployeeManagement = () => {
     const [snackbarMessage, setSnackbarMessage] = useState("ບັນທຶກສຳເລັດ");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [showPassword, setShowPassword] = useState(false);
+    const [createData, setcreateData] = useState([]);//name,gender,address,phone,username,password
 
     // Add state for delete confirmation dialog
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
+    const APICREATEDoc = async () => {
+        try {
+            const docData = {
+                doc_name: createData.name,
+                gender: createData.gender,
+                address: createData.address,
+                tel: createData.tel,
+                username: createData.username,
+                password: createData.password,
+                status: 'ວ່າງ'
+            }
+            const response = await createDoctor(docData);
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const APICREATEgrm = async () => {
+        try {
+            const grmData = {
+                groomer_name: createData.name,
+                gender: createData.gender,
+                address: createData.address,
+                tel: createData.tel,
+                username: createData.username,
+                password: createData.password,
+                status: 'ວ່າງ'
+            }
+            const response = await createGroomer(grmData);
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
     useEffect(() => {
         const getReportAllempapi = async () => {
             const res = await GetAllEmp(accessToken);
 
-            const mappedData = res.report.map((item) => ({
-                id: item.doc_id,
+            const mappedData = res.report.map((item, index) => ({
+                id:
+                    item.role === 'doctor'
+                        ? item.doc_id
+                        : item.role === 'groomer'
+                            ? item.groomer_id
+                            : item.role === 'emp'
+                                ? item.emp_id
+                                : `unknown-${index}`, // fallback กรณีไม่มีข้อมูล
                 docname: item.doc_name,
                 empname: item.emp_name,
-                position: item.position,
+                groomer: item.groomer_name,
+                role: item.role,
                 phone: item.phone,
                 gender: item.gender,
                 address: item.address,
@@ -124,20 +171,77 @@ const EmployeeManagement = () => {
 
     const handleDialogClose = () => setOpenDialog(false);
 
-    const handleSaveEmployee = () => {
-        if (editMode) {
-            setEmployeeData(prevData => prevData.map(item => item.id === currentEmployee.id ? currentEmployee : item));
-        } else {
-            setEmployeeData(prevData => [...prevData, { ...currentEmployee, id: prevData.length + 1 }]);
+    const handleSaveEmployee = async () => {
+        console.log("📥 ຂໍ້ມູນທີ່ຜູ້ໃຊ້ກວດກ່ອນບັນທຶກ:");
+        console.table(createData);
+
+        try {
+            let response = null; // ✅ ประกาศไว้ด้านบน
+
+            if (createData.position === 'ທ່ານໝໍ') {
+                const docData = {
+                    doc_name: createData.name,
+                    gender: createData.gender,
+                    address: createData.address,
+                    tel: createData.tel,
+                    username: createData.username,
+                    password: createData.password,
+                    status: 'ວ່າງ'
+                };
+                response = await createDoctor(docData); // ❗ ไม่มี const ซ้ำ
+                console.log("🩺 createDoctor response:", response);
+
+            } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
+                const grmData = {
+                    groomer_name: createData.name,
+                    gender: createData.gender,
+                    address: createData.address,
+                    tel: createData.tel,
+                    username: createData.username,
+                    password: createData.password,
+                    status: 'ວ່າງ'
+                };
+                response = await createGroomer(grmData); // ❗ ไม่มี const ซ้ำ
+                console.log("✂️ createGroomer response:", response);
+            }
+
+            // ✅ ตรวจสอบ error และแสดงผล
+            if (response?.error) {
+                throw new Error(response.error);
+            }
+
+            // ✅ ถ้าไม่มี error ทำการบันทึก
+            if (editMode) {
+                setEmployeeData(prevData =>
+                    prevData.map(item =>
+                        item.id === createData.id ? createData : item
+                    )
+                );
+            } else {
+                setEmployeeData(prevData => [
+                    ...prevData,
+                    { ...createData, id: prevData.length + 1 }
+                ]);
+            }
+
+            setSnackbarMessage("ບັນທຶກສຳເລັດ");
+            setSnackbarSeverity("success");
+            window.location.reload();
+            setOpenSnackbar(true);
+            setOpenDialog(false);
+
+        } catch (error) {
+            console.error("❌ API Error:", error.message);
+            setSnackbarMessage(`❌ ຂໍ້ຜິດພາດ: ${error.message}`);
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
         }
-        setSnackbarMessage("ບັນທຶກສຳເລັດ");
-        setSnackbarSeverity("success");
-        setOpenSnackbar(true);
-        setOpenDialog(false);
     };
+
 
     // Updated delete handling functions
     const handleDeleteConfirmation = (employee) => {
+        console.log("handleDeleteConfirmation", employee);
         setEmployeeToDelete(employee);
         setDeleteDialogOpen(true);
     };
@@ -147,32 +251,57 @@ const EmployeeManagement = () => {
         setEmployeeToDelete(null);
     };
 
-    const handleConfirmDelete = () => {
-        if (employeeToDelete) {
-            const nameToDelete = employeeToDelete.docname || employeeToDelete.empname;
-
-            if (nameToDelete) {
-                console.log("Deleting person with name:", nameToDelete);
-
-                setEmployeeData(prevData =>
-                    prevData.filter(item =>
-                        (item.docname || item.empname) !== nameToDelete
-                    )
-                );
-
-                setSnackbarMessage("ລຶບຂໍ້ມູນສຳເລັດ");
-                setSnackbarSeverity("success");
+    const handleConfirmDelete = async () => {
+        try {
+            if (!employeeToDelete) {
+                console.warn("employeeToDelete is null");
+                setSnackbarMessage("❌ ບໍ່ພົບຂໍ້ມູນທີ່ຈະລຶບ");
+                setSnackbarSeverity("error");
                 setOpenSnackbar(true);
-            } else {
-                console.warn("No valid name to delete:", employeeToDelete);
+                return;
             }
-        } else {
-            console.warn("employeeToDelete is null");
-        }
 
-        setDeleteDialogOpen(false);
-        setEmployeeToDelete(null);
+            // 1. Call API ตาม role
+            if (employeeToDelete.role === 'doctor') {
+                console.log("Deleting doctor:", employeeToDelete.id);
+                await deletedoc(employeeToDelete.id, accessToken);
+            } else if (employeeToDelete.role === 'groomer') {
+                console.log("Deleting groomer:", employeeToDelete.id);
+                await deletegrm(employeeToDelete.id, accessToken);
+            } else {
+                console.warn("Unknown role:", employeeToDelete.role);
+                setSnackbarMessage("❌ ບໍ່ຮູ້ປະເພດພະນັກງານ");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+                return;
+            }
+
+            // 2. ลบข้อมูลจาก frontend
+            const nameToDelete = employeeToDelete.docname || employeeToDelete.empname || employeeToDelete.groomer;
+            console.log("Deleting person with name:", nameToDelete);
+
+            setEmployeeData(prevData =>
+                prevData.filter(item =>
+                    (item.docname || item.empname || item.groomer) !== nameToDelete
+                )
+            );
+
+            setSnackbarMessage("✅ ລຶບຂໍ້ມູນສຳເລັດ");
+            setSnackbarSeverity("success");
+            window.location.reload();
+            setOpenSnackbar(true);
+        } catch (error) {
+            console.error("❌ API Error:", error.message || error);
+            setSnackbarMessage(`❌ ຂໍ້ຜິດພາດ: ${error.message || 'ບໍ່ສາມາດລຶບໄດ້'}`);
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+        } finally {
+            // 3. ปิด dialog และ reset state
+            setDeleteDialogOpen(false);
+            setEmployeeToDelete(null);
+        }
     };
+
 
     const handleLogout = () => {
         navigate('/');
@@ -386,30 +515,48 @@ const EmployeeManagement = () => {
                                     <TableCell>ທີ່ຢູ່</TableCell>
                                     <TableCell>ເບີໂທລະສັບ</TableCell>
                                     <TableCell>ຊື່ຜູ້ໃຊ້</TableCell>
+                                    <TableCell>ຕຳແໜ່ງ</TableCell>
                                     <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {employeeData.map((employee, index) => (
-                                    <TableRow key={employee.id || `${employee.username}-${index}`}>
-                                        <TableCell>{employee.docname || employee.empname}</TableCell>
-                                        <TableCell>{employee.gender}</TableCell>
-                                        <TableCell>{employee.address}</TableCell>
-                                        <TableCell>{employee.tel}</TableCell>
-                                        <TableCell>{employee.username}</TableCell>
-                                        <TableCell>
-                                            <IconButton onClick={() => handleDialogOpen(employee)} sx={{ color: '#1976d2' }}><Edit /></IconButton>
-                                            <IconButton onClick={() => handleDeleteConfirmation(employee)} color="error"><Delete /></IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {employeeData.map((employee, index) => {
+                                    const uniqueKey = `${employee.role}-${employee.id || employee.username || index}`;
+
+                                    return (
+                                        <TableRow key={uniqueKey}>
+                                            <TableCell>{employee.docname || employee.empname || employee.groomer || '—'}</TableCell>
+                                            <TableCell>{employee.gender || '—'}</TableCell>
+                                            <TableCell>{employee.address || '—'}</TableCell>
+                                            <TableCell>{employee.tel || employee.phone || '—'}</TableCell>
+                                            <TableCell>{employee.username || '—'}</TableCell>
+                                            <TableCell>
+                                                {employee.role === 'doctor'
+                                                    ? 'ທ່ານໝໍ'
+                                                    : employee.role === 'emp'
+                                                        ? 'ພະນັກງານ'
+                                                        : employee.role === 'groomer'
+                                                            ? 'ຊ່າງຕັດຂົນສັດ'
+                                                            : '—'}
+                                            </TableCell>
+                                            <TableCell>
+                                                <IconButton onClick={() => handleDialogOpen(employee)} sx={{ color: '#1976d2' }}>
+                                                    <Edit />
+                                                </IconButton>
+                                                <IconButton onClick={() => handleDeleteConfirmation(employee)} color="error">
+                                                    <Delete />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </TableContainer>
 
                     {/* Employee Add/Edit Dialog - ປັບປຸງໃໝ່ */}
-                    <Dialog 
-                        open={openDialog} 
+                    <Dialog
+                        open={openDialog}
                         onClose={handleDialogClose}
                         maxWidth="md"
                         PaperProps={{
@@ -420,7 +567,7 @@ const EmployeeManagement = () => {
                             }
                         }}
                     >
-                        <DialogTitle 
+                        <DialogTitle
                             sx={{
                                 bgcolor: theme.palette.primary.main,
                                 color: 'white',
@@ -435,7 +582,7 @@ const EmployeeManagement = () => {
                             {editMode ? <Edit fontSize="small" /> : <AddCircle fontSize="small" />}
                             {editMode ? 'ແກ້ໄຂຂໍ້ມູນພະນັກງານ' : 'ເພີ່ມພະນັກງານ'}
                         </DialogTitle>
-                        
+
                         <DialogContent sx={{ p: 3, mt: 1 }}>
                             <Grid container spacing={3}>
                                 {/* ຂໍ້ມູນສ່ວນຕົວ */}
@@ -449,24 +596,16 @@ const EmployeeManagement = () => {
                                                 <TextField
                                                     label="ຊື່ ແລະ ນາມສະກຸນ"
                                                     fullWidth
-                                                    value={currentEmployee.docname || currentEmployee.empname || ''}
-                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, [fieldKey]: e.target.value })}
-                                                    InputProps={{
-                                                        startAdornment: (
-                                                            <InputAdornment position="start">
-                                                                <PersonIcon sx={{ color: 'action.active' }} />
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                    variant="outlined"
+                                                    value={createData.name || ''}
+                                                    onChange={(e) => setcreateData({ ...createData, name: e.target.value })}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} md={6}>
                                                 <TextField
                                                     label="ເພດ"
                                                     fullWidth
-                                                    value={currentEmployee.gender || ''}
-                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, gender: e.target.value })}
+                                                    value={createData.gender || ''}
+                                                    onChange={(e) => setcreateData({ ...createData, gender: e.target.value })}
                                                     InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
@@ -488,9 +627,9 @@ const EmployeeManagement = () => {
                                                         <Select
                                                             labelId="position-select-label"
                                                             id="position-select"
-                                                            value={currentEmployee.position || ''}
+                                                            value={createData.position || ''}
                                                             label="ຕຳແໜ່ງ"
-                                                            onChange={(e) => setCurrentEmployee({ ...currentEmployee, position: e.target.value })}
+                                                            onChange={(e) => setcreateData({ ...createData, position: e.target.value })}
                                                             startAdornment={
                                                                 <InputAdornment position="start">
                                                                     <Work sx={{ color: 'action.active' }} />
@@ -507,8 +646,8 @@ const EmployeeManagement = () => {
                                                 <TextField
                                                     label="ທີ່ຢູ່"
                                                     fullWidth
-                                                    value={currentEmployee.address || ''}
-                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, address: e.target.value })}
+                                                    value={createData.address || ''}
+                                                    onChange={(e) => setcreateData({ ...createData, address: e.target.value })}
                                                     InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
@@ -524,8 +663,8 @@ const EmployeeManagement = () => {
                                                     label="ເບີໂທລະສັບ"
                                                     type="tel"
                                                     fullWidth
-                                                    value={currentEmployee.tel || ''}
-                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, tel: e.target.value })}
+                                                    value={createData.tel || ''}
+                                                    onChange={(e) => setcreateData({ ...createData, tel: e.target.value })}
                                                     InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
@@ -551,8 +690,8 @@ const EmployeeManagement = () => {
                                                 <TextField
                                                     label="ຊື່ຜູ້ໃຊ້"
                                                     fullWidth
-                                                    value={currentEmployee.username || ''}
-                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, username: e.target.value })}
+                                                    value={createData.username || ''}
+                                                    onChange={(e) => setcreateData({ ...createData, username: e.target.value })}
                                                     InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
@@ -568,8 +707,8 @@ const EmployeeManagement = () => {
                                                     label="ລະຫັດຜ່ານ"
                                                     type={showPassword ? "text" : "password"}
                                                     fullWidth
-                                                    value={currentEmployee.password || ''}
-                                                    onChange={(e) => setCurrentEmployee({ ...currentEmployee, password: e.target.value })}
+                                                    value={createData.password || ''}
+                                                    onChange={(e) => setcreateData({ ...createData, password: e.target.value })}
                                                     InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
@@ -595,10 +734,10 @@ const EmployeeManagement = () => {
                                 </Grid>
                             </Grid>
                         </DialogContent>
-                        
+
                         <DialogActions sx={{ px: 3, py: 2, bgcolor: '#f5f5f5', borderTop: '1px solid #e0e0e0' }}>
-                            <Button 
-                                onClick={handleDialogClose} 
+                            <Button
+                                onClick={handleDialogClose}
                                 variant="outlined"
                                 color="inherit"
                                 startIcon={<Close />}
@@ -606,9 +745,9 @@ const EmployeeManagement = () => {
                             >
                                 ຍົກເລີກ
                             </Button>
-                            <Button 
-                                onClick={handleSaveEmployee} 
-                                variant="contained" 
+                            <Button
+                                onClick={handleSaveEmployee}
+                                variant="contained"
                                 color="primary"
                                 startIcon={editMode ? <Edit /> : <AddCircle />}
                                 sx={{ borderRadius: 2, px: 2 }}
