@@ -142,20 +142,57 @@ const EmployeeManagement = () => {
 
     const handleDialogOpen = (employee = null) => {
         if (employee) {
+            console.log("🔍 ຂໍ້ມູນພະນັກງານທີ່ເລືອກແກ້ໄຂ:", employee);
+
+            // ດຶງຊື່ຈາກ field ທີ່ມີຂໍ້ມູນ
+            const employeeName = employee.docname || employee.empname || employee.groomer || '';
+
+            // ກຳນົດ position ຕາມ role
+            let position = '';
+            if (employee.role === 'doctor') {
+                position = 'ທ່ານໝໍ';
+            } else if (employee.role === 'groomer') {
+                position = 'ຊ່າງຕັດຂົນ';
+            } else if (employee.role === 'emp') {
+                position = 'ພະນັກງານ';
+            }
+
+            // ເຊັດຂໍ້ມູນເຂົ້າໃນ createData state
+            const employeeData = {
+                id: employee.id,
+                name: employeeName,
+                gender: employee.gender || '',
+                address: employee.address || '',
+                tel: employee.tel || employee.phone || '',
+                username: employee.username || '',
+                password: '', // ບໍ່ໃຫ້ສະແດງລະຫັດຜ່ານເກົ່າ
+                position: position,
+                role: employee.role,
+                status: employee.status || ''
+            };
+
+            console.log("📝 ຂໍ້ມູນທີ່ຈະນໍາໄປແກ້ໄຂ:", employeeData);
+
+            setcreateData(employeeData);
             setCurrentEmployee(employee);
             setEditMode(true);
         } else {
-            setCurrentEmployee({
+            console.log("➕ ເປີດໜ້າຕ່າງເພີ່ມພະນັກງານໃໝ່");
+
+            // ເຄລຍ form ສໍາລັບການເພີ່ມພະນັກງານໃໝ່
+            const newEmployeeData = {
                 name: '',
-                position: '',
-                phone: '',
                 gender: '',
                 address: '',
                 tel: '',
                 username: '',
                 password: '',
-                status: ''
-            });
+                position: '',
+                status: 'ວ່າງ'
+            };
+
+            setcreateData(newEmployeeData);
+            setCurrentEmployee({});
             setEditMode(false);
         }
         setOpenDialog(true);
@@ -598,6 +635,14 @@ const EmployeeManagement = () => {
                                                     fullWidth
                                                     value={createData.name || ''}
                                                     onChange={(e) => setcreateData({ ...createData, name: e.target.value })}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <PersonIcon sx={{ color: 'action.active' }} />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    variant="outlined"
                                                 />
                                             </Grid>
                                             <Grid item xs={12} md={6}>
