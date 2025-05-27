@@ -71,13 +71,11 @@ const AdminLogin = () => {
       window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
-      // if (message === "Password is incorrect") {
-      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
-      // } else if (message === "User not found") {
-      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
-      // } else {
-      //   setError("ເກີດຂໍ້ຜິດພາດ");
-      // }
+      if (message === "Password is incorrect" || message === "User not found" || message === "Login failed") {
+        setError("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດບໍ່ຖືກຕ້ອງ");
+      } else {
+        setError("ເກີດຂໍ້ຜິດພາດ");
+      }
     }
   };
 
@@ -99,13 +97,11 @@ const AdminLogin = () => {
       window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
-      // if (message === "Password is incorrect") {
-      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
-      // } else if (message === "User not found") {
-      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
-      // } else {
-      //   setError("ເກີດຂໍ້ຜິດພາດ");
-      // }
+      if (message === "Password is incorrect" || message === "User not found" || message === "Login failed") {
+        setError("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດບໍ່ຖືກຕ້ອງ");
+      } else {
+        setError("ເກີດຂໍ້ຜິດພາດ");
+      }
     }
   };
 
@@ -127,13 +123,11 @@ const AdminLogin = () => {
       window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
-      // if (message === "Password is incorrect") {
-      //   setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
-      // } else if (message === "User not found") {
-      //   setError("ບໍ່ພົບຜູ້ໃຊ້");
-      // } else {
-      //   setError("ເກີດຂໍ້ຜິດພາດ");
-      // }
+      if (message === "Password is incorrect" || message === "User not found" || message === "Login failed") {
+        setError("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດບໍ່ຖືກຕ້ອງ");
+      } else {
+        setError("ເກີດຂໍ້ຜິດພາດ");
+      }
     }
   };
 
@@ -155,16 +149,14 @@ const AdminLogin = () => {
       window.location.reload();
     } catch (error) {
       const message = error?.response?.data?.error || "Login failed";
-      if (message === "Password is incorrect") {
-        setError("ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
-      } else if (message === "Owner not found") {
-        setError("ບໍ່ພົບຜູ້ໃຊ້");
+      // ປັບປຸງການແຈ້ງເຕືອນໃຫ້ເປັນຂໍ້ຄວາມດຽວສຳລັບທຸກກໍລະນີ
+      if (message === "Password is incorrect" || message === "Owner not found" || message === "Login failed" || message === "User not found") {
+        setError("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດບໍ່ຖືກຕ້ອງ");
       } else {
         setError("ເກີດຂໍ້ຜິດພາດ");
       }
     }
   };
-
 
   const handleLogin = async () => {
     setLoading(true);

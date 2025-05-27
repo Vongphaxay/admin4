@@ -209,15 +209,22 @@ const EmployeeManagement = () => {
     const handleDialogClose = () => setOpenDialog(false);
 
     const handleSaveEmployee = async () => {
-
-
         console.log("📥 ຂໍ້ມູນທີ່ຜູ້ໃຊ້ກວດກ່ອນບັນທຶກ:");
         console.table(createData);
 
         try {
-            let response = null; // ✅ ประกาศไว้ด้านบน
+            // ✅ กวดสอบຂໍ້ມູນຊ້ຳກ່ອນບັນທຶກ
+            const isDuplicate = checkForDuplicateData();
+            if (isDuplicate.hasDuplicate) {
+                setSnackbarMessage(`❌ ຂໍ້ມູນຊ້ຳກັນ: ${isDuplicate.message}`);
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+                return; // หยุดการทำงานถ้าพบข้อมูลซ้ำ
+            }
+
+            let response = null;
             if (editMode) {
-                console.log("📝 btບັນທຶກການແກ້ໄຂ"); // ถ้าเป็นการแก้ไข
+                console.log("📝 btບັນທຶກການແກ້ໄຂ");
                 if (createData.position === 'ທ່ານໝໍ') {
                     const docData = {
                         doc_name: createData.name,
@@ -226,7 +233,7 @@ const EmployeeManagement = () => {
                         tel: createData.tel,
                         password: createData.password,
                     };
-                    console.log(currentEmployee.id, docData,accessToken);
+                    console.log(currentEmployee.id, docData, accessToken);
                     response = await updatedoc(currentEmployee.id, docData, accessToken);
                     console.log("✂️ updatedoc response:", response);
 
@@ -238,12 +245,11 @@ const EmployeeManagement = () => {
                         tel: createData.tel,
                         password: createData.password,
                     };
-                    response = await updategroomer(currentEmployee.id, groomerData, accessToken); // ❗ ไม่มี const ซ้ำ
+                    response = await updategroomer(currentEmployee.id, groomerData, accessToken);
                     console.log("✂️ updategroomer response:", response);
-
                 }
             } else {
-                console.log("📌 btບັນທຶກ"); // ถ้าเป็นการเพิ่มใหม่
+                console.log("📌 btບັນທຶກ");
                 if (createData.position === 'ທ່ານໝໍ') {
                     const docData = {
                         doc_name: createData.name,
@@ -255,7 +261,7 @@ const EmployeeManagement = () => {
                         status: 'ວ່າງ'
                     };
 
-                    response = await createDoctor(docData); // ❗ ไม่มี const ซ้ำ
+                    response = await createDoctor(docData);
                     console.log("🩺 createDoctor response:", response);
 
                 } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
@@ -268,7 +274,7 @@ const EmployeeManagement = () => {
                         password: createData.password,
                         status: 'ວ່າງ'
                     };
-                    response = await createGroomer(grmData); // ❗ ไม่มี const ซ้ำ
+                    response = await createGroomer(grmData);
                     console.log("✂️ createGroomer response:", response);
                 }
             }
@@ -306,6 +312,59 @@ const EmployeeManagement = () => {
         }
     };
 
+    // ✅ ฟังก์ชันกวดสอບຂໍ້ມູນຊ້ຳ
+    const checkForDuplicateData = () => {
+        // กรองข้อมูลที่ไม่ใช่ตัวที่กำลังแก้ไข (ในกรณี editMode)
+        const otherEmployees = editMode
+            ? employeeData.filter(emp => emp.id !== currentEmployee.id)
+            : employeeData;
+
+        // ตรวจสอบชื่อซ้ำ
+        const nameExists = otherEmployees.some(emp => {
+            const existingName = emp.docname || emp.empname || emp.groomer || '';
+            return existingName.toLowerCase().trim() === createData.name.toLowerCase().trim();
+        });
+
+        if (nameExists) {
+            return {
+                hasDuplicate: true,
+                message: `ຊື່ "${createData.name}" ມີຢູ່ໃນລະບົບແລ້ວ`
+            };
+        }
+
+        // ตรวจสอบเบอร์โทรซ้ำ
+        const phoneExists = otherEmployees.some(emp => {
+            const existingPhone = emp.tel || emp.phone || '';
+            return existingPhone && existingPhone === createData.tel;
+        });
+
+        if (phoneExists && createData.tel) {
+            return {
+                hasDuplicate: true,
+                message: `ເບີໂທລະສັບ "${createData.tel}" ມີຢູ່ໃນລະບົບແລ້ວ`
+            };
+        }
+
+        // ตรวจสอบ username ซ้ำ (สำหรับการเพิ่มใหม่เท่านั้น)
+        if (!editMode) {
+            const usernameExists = otherEmployees.some(emp => {
+                const existingUsername = emp.username || '';
+                return existingUsername && existingUsername === createData.username;
+            });
+
+            if (usernameExists && createData.username) {
+                return {
+                    hasDuplicate: true,
+                    message: `ຊື່ຜູ້ໃຊ້ "${createData.username}" ມີຢູ່ໃນລະບົບແລ້ວ`
+                };
+            }
+        }
+
+        return {
+            hasDuplicate: false,
+            message: ''
+        };
+    };
 
     // Updated delete handling functions
     const handleDeleteConfirmation = (employee) => {
