@@ -29,3 +29,21 @@ export const deletegrm = async (grm_id,token) => {
     });
     return response.data;
 }
+
+export const updatedoc = async (doc_id,docData,token) => {
+    const response = await axios.put(`${REACT_APP_API_URL}/doctor/update?doc_id=${doc_id}`,docData,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+}
+
+export const updategroomer = async (groomer_id,groomerData,token) => {
+    const response = await axios.put(`${REACT_APP_API_URL}/groomer/update?groomer_id=${groomer_id}`,groomerData,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+}

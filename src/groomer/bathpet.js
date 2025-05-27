@@ -78,7 +78,7 @@ const LogoContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark
 }));
 
-const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
+const admin_name = decodeURIComponent(Cookies.get("name_groomer") || "");
 const cus_id = Cookies.get("cus_ida");
 const accessToken = Cookies.get("accessTokena");
 
@@ -328,7 +328,7 @@ const BathPet = () => {
                         component="div"
                         sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
                     >
-                        Admin: {admin_name}
+                        Groomer: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />

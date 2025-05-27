@@ -18,7 +18,7 @@ import Cookies from 'js-cookie';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { GetAllEmp } from '../services/report.service';
-import { createDoctor, createGroomer, deletedoc, deletegrm } from '../services/createemp.service';
+import { createDoctor, createGroomer, deletedoc, deletegrm, updatedoc, updategroomer } from '../services/createemp.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -209,37 +209,68 @@ const EmployeeManagement = () => {
     const handleDialogClose = () => setOpenDialog(false);
 
     const handleSaveEmployee = async () => {
+
+
         console.log("📥 ຂໍ້ມູນທີ່ຜູ້ໃຊ້ກວດກ່ອນບັນທຶກ:");
         console.table(createData);
 
         try {
             let response = null; // ✅ ประกาศไว้ด้านบน
+            if (editMode) {
+                console.log("📝 btບັນທຶກການແກ້ໄຂ"); // ถ้าเป็นการแก้ไข
+                if (createData.position === 'ທ່ານໝໍ') {
+                    const docData = {
+                        doc_name: createData.name,
+                        gender: createData.gender,
+                        address: createData.address,
+                        tel: createData.tel,
+                        password: createData.password,
+                    };
+                    console.log(currentEmployee.id, docData,accessToken);
+                    response = await updatedoc(currentEmployee.id, docData, accessToken);
+                    console.log("✂️ updatedoc response:", response);
 
-            if (createData.position === 'ທ່ານໝໍ') {
-                const docData = {
-                    doc_name: createData.name,
-                    gender: createData.gender,
-                    address: createData.address,
-                    tel: createData.tel,
-                    username: createData.username,
-                    password: createData.password,
-                    status: 'ວ່າງ'
-                };
-                response = await createDoctor(docData); // ❗ ไม่มี const ซ้ำ
-                console.log("🩺 createDoctor response:", response);
+                } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
+                    const groomerData = {
+                        groomer_name: createData.name,
+                        gender: createData.gender,
+                        address: createData.address,
+                        tel: createData.tel,
+                        password: createData.password,
+                    };
+                    response = await updategroomer(currentEmployee.id, groomerData, accessToken); // ❗ ไม่มี const ซ้ำ
+                    console.log("✂️ updategroomer response:", response);
 
-            } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
-                const grmData = {
-                    groomer_name: createData.name,
-                    gender: createData.gender,
-                    address: createData.address,
-                    tel: createData.tel,
-                    username: createData.username,
-                    password: createData.password,
-                    status: 'ວ່າງ'
-                };
-                response = await createGroomer(grmData); // ❗ ไม่มี const ซ้ำ
-                console.log("✂️ createGroomer response:", response);
+                }
+            } else {
+                console.log("📌 btບັນທຶກ"); // ถ้าเป็นการเพิ่มใหม่
+                if (createData.position === 'ທ່ານໝໍ') {
+                    const docData = {
+                        doc_name: createData.name,
+                        gender: createData.gender,
+                        address: createData.address,
+                        tel: createData.tel,
+                        username: createData.username,
+                        password: createData.password,
+                        status: 'ວ່າງ'
+                    };
+
+                    response = await createDoctor(docData); // ❗ ไม่มี const ซ้ำ
+                    console.log("🩺 createDoctor response:", response);
+
+                } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
+                    const grmData = {
+                        groomer_name: createData.name,
+                        gender: createData.gender,
+                        address: createData.address,
+                        tel: createData.tel,
+                        username: createData.username,
+                        password: createData.password,
+                        status: 'ວ່າງ'
+                    };
+                    response = await createGroomer(grmData); // ❗ ไม่มี const ซ้ำ
+                    console.log("✂️ createGroomer response:", response);
+                }
             }
 
             // ✅ ตรวจสอบ error และแสดงผล
