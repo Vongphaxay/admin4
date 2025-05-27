@@ -345,19 +345,17 @@ const EmployeeManagement = () => {
             };
         }
 
-        // ตรวจสอบ username ซ้ำ (สำหรับการเพิ่มใหม่เท่านั้น)
-        if (!editMode) {
-            const usernameExists = otherEmployees.some(emp => {
-                const existingUsername = emp.username || '';
-                return existingUsername && existingUsername === createData.username;
-            });
+        // ตรวจสอบ username ซ้ำ
+        const usernameExists = otherEmployees.some(emp => {
+            const existingUsername = emp.username || '';
+            return existingUsername && existingUsername === createData.username;
+        });
 
-            if (usernameExists && createData.username) {
-                return {
-                    hasDuplicate: true,
-                    message: `ຊື່ຜູ້ໃຊ້ "${createData.username}" ມີຢູ່ໃນລະບົບແລ້ວ`
-                };
-            }
+        if (usernameExists && createData.username) {
+            return {
+                hasDuplicate: true,
+                message: `ຊື່ຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ`
+            };
         }
 
         return {
