@@ -25,4 +25,16 @@ export const getAllBookingbycus_id = async (cus_id, token) => {
       }
     );
   return response;
+};
+
+export const Cancel_booking = async (book_id, token) => {
+  const response = await axios.delete(
+    `${REACT_APP_API_URL}/booking/cancel-booking/${book_id}`,
+    {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  return response;
 }

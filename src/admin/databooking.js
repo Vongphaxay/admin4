@@ -17,6 +17,7 @@ import Cookies from 'js-cookie';
 import { GetAllbooking, UpdatePayment_roompet } from '../services/report.service';
 import image from '../img/qrcode.png';
 import ReceiptPrinter from './ReceiptPrinter'; // Import the ReceiptPrinter component
+import {Cancel_booking} from '../services/booking.service'
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -198,11 +199,13 @@ const BookingTable = () => {
     };
 
     // Update the confirm cancel function to show success dialog
-    const handleConfirmCancel = () => {
+    const handleConfirmCancel =  async () => {
+        console.log("bookingToCancel", bookingToCancel);
         if (bookingToCancel) {
+            console.log("bookingToCancel.id", bookingToCancel.id);
             handleDeleteBooking(bookingToCancel.id);
-            // You can add your API call to cancel the booking here
-            // Example: cancelBookingAPI(bookingToCancel.id);
+            const response = await Cancel_booking(bookingToCancel.id, accessToken);
+            console.log("response", response);
         }
         setOpenCancelDialog(false);
         setOpenSuccessDialog(true); // Show success dialog instead of snackbar

@@ -110,7 +110,7 @@ const BathPet = () => {
 
     useEffect(() => {
         const getAllCategoryServices = async () => {
-            const response = await GetAllcategory_service(2, accessToken);
+            const response = await GetAllcategory_service(3, accessToken);
 
             if (response && response.report) {
                 const flatBoardingData = [];

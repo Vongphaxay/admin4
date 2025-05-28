@@ -35,6 +35,19 @@ export const getReportallcus = async (token) => {
     return response.data;
 };
 
+export const UpdateCus = async (cus_id, cusData, token) => {
+    const response = await axios.put(
+        `${REACT_APP_API_URL}/customer/update?cus_id=${cus_id}`,
+        cusData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+};
+
 export const DeleteCustomer = async (cus_id, token) => {
     const response = await axios.delete(
         `${REACT_APP_API_URL}/customer/delete/${cus_id}`,

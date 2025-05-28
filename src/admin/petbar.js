@@ -111,7 +111,7 @@ const PetBar = () => {
 
     useEffect(() => {
         const getAllCategoryServices = async () => {
-            const response = await GetAllcategory_service(3, accessToken);
+            const response = await GetAllcategory_service(2, accessToken);
 
             if (response && response.report) {
                 const flatBoardingData = [];
@@ -474,7 +474,6 @@ const PetBar = () => {
                                     <TableCell>ວັນທີຮັບກັບ</TableCell>
                                     <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
                                     <TableCell>ເພດສັດລ້ຽງ</TableCell>
-                                    <TableCell>ຊ່າງຕັດຂົນສັດລ້ຽງ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -487,7 +486,6 @@ const PetBar = () => {
                                         <TableCell>{boarding.endDate}</TableCell>
                                         <TableCell>{boarding.pet.type}</TableCell>
                                         <TableCell>{boarding.pet.gender}</TableCell>
-                                        <TableCell>{boarding.tb_service_infos && boarding.tb_service_infos[0]?.groomer?.name || '-'}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

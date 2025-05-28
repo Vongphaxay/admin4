@@ -109,7 +109,7 @@ const PetBar = () => {
 
     useEffect(() => {
         const getAllCategoryServices = async () => {
-            const response = await GetAllcategory_service(3, accessToken);
+            const response = await GetAllcategory_service(2, accessToken);
 
             if (response && response.report) {
                 const flatBoardingData = [];
@@ -492,7 +492,7 @@ const PetBar = () => {
                                     <TableCell align="center">ວັນທີຮັບກັບ</TableCell>
                                     <TableCell align="center">ປະເພດສັດລ້ຽງ</TableCell>
                                     <TableCell align="center">ເພດສັດລ້ຽງ</TableCell>
-                                    <TableCell align="center">ຈັດການ</TableCell>
+
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -505,34 +505,7 @@ const PetBar = () => {
                                         <TableCell align="center">{boarding.endDate}</TableCell>
                                         <TableCell align="center">{boarding.pet.type}</TableCell>
                                         <TableCell align="center">{boarding.pet.gender}</TableCell>
-                                        <TableCell align="center">
-                                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                                                {boarding.tb_service_infos && boarding.tb_service_infos.length > 0 ? (
-                                                    <Button
-                                                        disabled
-                                                        sx={{
-                                                            bgcolor: '#9e9e9e',
-                                                            color: 'white',
-                                                            px: 2
-                                                        }}
-                                                    >
-                                                        ຮັບແລ້ວ
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        onClick={() => handleReceivePet(boarding)}
-                                                        sx={{
-                                                            bgcolor: '#1976d2',
-                                                            color: 'white',
-                                                            '&:hover': { bgcolor: '#1565c0' },
-                                                            px: 2
-                                                        }}
-                                                    >
-                                                        ຮັບ
-                                                    </Button>
-                                                )}
-                                            </Box>
-                                        </TableCell>
+                                        
                                     </TableRow>
                                 ))}
                             </TableBody>

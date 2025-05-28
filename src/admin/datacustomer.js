@@ -7,7 +7,7 @@ import {
     Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
-import { getReportallcus, DeleteCustomer } from '../services/report.service';
+import { getReportallcus, DeleteCustomer, UpdateCus } from '../services/report.service';
 
 
 // Create a custom styled container for the logo
@@ -69,7 +69,7 @@ const CustomerManagement = () => {
     const [editMode, setEditMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [reportData, setReportData] = useState(null);
-    
+
     // ເພີ່ມ state ສຳລັບ Dialog ຢືນຢັນການລົບ
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [customerToDelete, setCustomerToDelete] = useState(null);
@@ -132,13 +132,51 @@ const CustomerManagement = () => {
 
     const handleDialogClose = () => setOpenDialog(false);
 
-    const handleSaveCustomer = () => {
+    const handleSaveCustomer = async () => {
         if (editMode) {
-            setCustomerData(prevData => prevData.map(item => item.id === currentCustomer.id ? currentCustomer : item));
+            try {
+                console.log("currentCustomer1", currentCustomer);
+                const CustomerData = {
+                    cus_name: currentCustomer.name,
+                    gender: currentCustomer.gender,
+                    address: currentCustomer.address,
+                    tel: currentCustomer.phone
+                };
+                console.log("CustomerData", CustomerData);
+                console.log("currentCustomer.id", currentCustomer.id);
+
+                const response = await UpdateCus(currentCustomer.id, CustomerData, accessToken);
+                console.log("response", response);
+
+                setCustomerData(prevData =>
+                    prevData.map(item =>
+                        item.id === currentCustomer.id ? currentCustomer : item
+                    )
+                );
+                setOpenDialog(false);
+                window.location.reload();
+            } catch (error) {
+                console.error("Error updating customer:", error);
+
+                if (error.response && error.response.data && error.response.data.error) {
+                    alert("เกิดข้อผิดพลาด: " + error.response.data.error); // แจ้งเตือนผู้ใช้
+                    window.location.reload();
+                } else {
+                    alert("เกิดข้อผิดพลาดในการอัปเดตข้อมูลลูกค้า");
+                }
+            }
         } else {
-            setCustomerData(prevData => [...prevData, { ...currentCustomer, id: prevData.length + 1, pets: currentCustomer.pets || [] }]);
+            console.log("currentCustomer2", currentCustomer);
+            setCustomerData(prevData => [
+                ...prevData,
+                {
+                    ...currentCustomer,
+                    id: prevData.length + 1,
+                    pets: currentCustomer.pets || []
+                }
+            ]);
+            setOpenDialog(false);
         }
-        setOpenDialog(false);
     };
 
     // ຟັງຊັນເປີດ Dialog ຢືນຢັນການລົບ
@@ -146,13 +184,13 @@ const CustomerManagement = () => {
         setCustomerToDelete(customer);
         setDeleteDialogOpen(true);
     };
-    
+
     // ຟັງຊັນປິດ Dialog ຢືນຢັນການລົບ
     const handleCloseDeleteDialog = () => {
         setDeleteDialogOpen(false);
         setCustomerToDelete(null);
     };
-    
+
     // ຟັງຊັນລົບຂໍ້ມູນລູກຄ້າທີ່ປັບປຸງແລ້ວ
     const handleDeleteCustomer = async () => {
         if (customerToDelete) {
@@ -168,7 +206,7 @@ const CustomerManagement = () => {
             }
         }
     };
-    
+
     // ຮາກສາໄວ້ເພື່ອຄວາມສອດຄ່ອງກັບໂຄດເກົ່າ (ຈະບໍ່ໄດ້ໃຊ້ແລ້ວ)
     const handleDeleteCustomerOld = async (id) => {
         if (window.confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນລູກຄ້ານີ້?')) {
@@ -442,8 +480,8 @@ const CustomerManagement = () => {
                                                 <Edit />
                                             </IconButton>
                                             {/* ປ່ຽນຈາກການໃຊ້ window.confirm ເປັນການເປີດ Dialog */}
-                                            <IconButton 
-                                                onClick={() => handleOpenDeleteDialog(customer)} 
+                                            <IconButton
+                                                onClick={() => handleOpenDeleteDialog(customer)}
                                                 color="error"
                                             >
                                                 <Delete />
@@ -607,7 +645,7 @@ const CustomerManagement = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
-                    
+
                     {/* Dialog ຢືນຢັນການລົບຂໍ້ມູນລູກຄ້າ */}
                     <Dialog
                         open={deleteDialogOpen}
@@ -619,8 +657,8 @@ const CustomerManagement = () => {
                             }
                         }}
                     >
-                        <DialogTitle sx={{ 
-                            bgcolor: '#ffebee', 
+                        <DialogTitle sx={{
+                            bgcolor: '#ffebee',
                             color: '#d32f2f',
                             display: 'flex',
                             alignItems: 'center',
