@@ -920,7 +920,7 @@ const EmployeeManagement = () => {
                                     <Person fontSize="medium" />
                                 </Avatar>
                                 <Typography variant="h6">
-                                    {employeeToDelete ? (employeeToDelete.docname || employeeToDelete.empname) : ''}
+                                    {employeeToDelete ? (employeeToDelete.docname || employeeToDelete.empname) || employeeToDelete.groomer : ''}
                                 </Typography>
                             </Box>
                             <Typography sx={{ color: 'text.secondary', mb: 1 }}>
