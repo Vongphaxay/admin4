@@ -39,6 +39,7 @@ import BathPets from './owner/bathpet';
 import PetBars from './owner/petbar';
 import TreatPets from './owner/treatpet';
 import Reportall from './owner/report';
+import InsertCage from './owner/insertCage';
 import { Person, Lock, Visibility, VisibilityOff, Login as LoginIcon, Pets, WorkOutline } from '@mui/icons-material';
 import { loginAdmin, loginGroomer, loginOwner, loginDoctor } from './services/login.service';
 import Cookies from "js-cookie";
@@ -483,6 +484,7 @@ const App = () => {
         <Route path="/owner/petbar" element={<PetBars />} />
         <Route path="/owner/treatpet" element={<TreatPets />} />
         <Route path="/owner/report" element={<Reportall />} />
+        <Route path="/owner/insertCage" element={<InsertCage />} />
       </Routes>
     </Router>
   );
