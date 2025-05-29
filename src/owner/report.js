@@ -54,18 +54,19 @@ import {
   ChevronRight,
   Menu as MenuIcon,
   Assessment as AssessmentIcon,
-  Notifications,
-  Logout
+  Logout,
+  AddBoxRounded
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import { GetAllbooking } from '../services/report.service';
 
-// Styled components
+// Create a custom styled container for the logo - ໃຊ້ແບບດຽວກັບໜ້າອື່ນ
 const LogoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(2),
+  padding: theme.spacing(0, 2), // ປ່ຽນຈາກ theme.spacing(2) ເປັນ theme.spacing(0, 2)
+  height: 64, // ເພີ່ມ height ໃຫ້ກົງກັບໜ້າອື່ນ
   backgroundColor: theme.palette.primary.dark,
 }));
 
@@ -75,7 +76,7 @@ const drawerWidth = 240;
 const admin_name = decodeURIComponent(Cookies.get("name_owner") || "");
 const accessToken = Cookies.get("accessTokena");
 
-// Menu items array
+// Menu items array - ປັບໃຫ້ກົງກັບໜ້າອື່ນ
 const menuItems = [
   { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/owner/dashboard' },
   { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/owner/dataemployee' },
@@ -86,7 +87,7 @@ const menuItems = [
   { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
   { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
   { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report', active: true },
-  { icon: <AssessmentIcon />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/insertCages' },
+  { icon: <AddBoxRounded />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/InsertCages' },
 ];
 
 // Main component
@@ -96,7 +97,7 @@ const ReportPage = () => {
   
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [reportType, setReportType] = useState('bookings'); // Changed default to bookings
+  const [reportType, setReportType] = useState('bookings');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [reportData, setReportData] = useState(null);
@@ -109,8 +110,6 @@ const ReportPage = () => {
 
   const handleReportTypeChange = (event) => {
     setReportType(event.target.value);
-    
-    // Reset report data when changing report type
     setReportData(null);
   };
 
@@ -168,11 +167,9 @@ const ReportPage = () => {
   }, [reportType, accessToken]);
 
   const generateReport = () => {
-    // Logic to generate report based on selected parameters
     setIsLoading(true);
     console.log('Generating report', { startDate, endDate, reportType });
 
-    // For booking report, filter by date if dates are selected
     if (reportType === 'bookings') {
       let filteredBookings = [...bookingData];
       
@@ -196,10 +193,8 @@ const ReportPage = () => {
       return;
     }
 
-    // For other report types
     setTimeout(() => {
       setIsLoading(false);
-      // Mock data for other report types
       setReportData({
         type: reportType,
         generatedAt: new Date().toLocaleString(),
@@ -222,14 +217,13 @@ const ReportPage = () => {
     Cookies.remove("cus_id");
     Cookies.remove("name");
     navigate('/');
-    window.location.reload(); // Force reload
+    window.location.reload();
   };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
   
-  // Handle printing functionality
   const handlePrint = () => {
     const printContent = document.getElementById('printable-report');
     const originalContents = document.body.innerHTML;
@@ -241,7 +235,6 @@ const ReportPage = () => {
     document.body.innerHTML = originalContents;
     setOpenPrintDialog(false);
     
-    // Reload the page to restore React app state
     window.location.reload();
   };
 
@@ -295,10 +288,8 @@ const ReportPage = () => {
       return null;
     }
 
-    // Calculate total amount
     const totalAmount = reportData.data.reduce((sum, booking) => sum + Number(booking.total), 0);
     
-    // Calculate count by service type
     const serviceCount = {};
     reportData.data.forEach(booking => {
       const service = booking.services?.name || 'ບໍ່ລະບຸ';
@@ -367,7 +358,6 @@ const ReportPage = () => {
     
     return (
       <div id="printable-report" style={{ padding: '20px', backgroundColor: 'white', width: '100%' }}>
-        {/* Report Header */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <h2 style={{ fontWeight: 'bold', color: '#1976d2', marginBottom: '8px' }}>
             DR. P VETERINARY
@@ -385,10 +375,8 @@ const ReportPage = () => {
           </p>
         </div>
         
-        {/* Report Content */}
         {reportData && reportData.data && reportData.data.length > 0 ? (
           <>
-            {/* Booking summary */}
             <div style={{ marginBottom: '30px' }}>
               <h4 style={{ color: '#1976d2', marginBottom: '15px' }}>ສະຫຼຸບລາຍງານການຈອງ</h4>
               
@@ -451,7 +439,6 @@ const ReportPage = () => {
               </table>
             </div>
             
-            {/* Booking detail table */}
             <h4 style={{ color: '#1976d2', marginBottom: '15px' }}>ລາຍລະອຽດການຈອງ</h4>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -486,7 +473,6 @@ const ReportPage = () => {
           </p>
         )}
         
-        {/* Footer */}
         <div style={{ marginTop: '30px', textAlign: 'center' }}>
           <p style={{ color: '#666', fontSize: '14px' }}>
             © {new Date().getFullYear()} DR. P VETERINARY - ລາຍງານນີ້ສ້າງຂຶ້ນໂດຍລະບົບບໍລິຫານຄລິນິກສັດລ້ຽງ
@@ -496,6 +482,7 @@ const ReportPage = () => {
     );
   };
 
+  // ປັບ drawer content ໃຫ້ກົງກັບໜ້າອື່ນ
   const drawerContent = (
     <>
       <LogoContainer>
@@ -567,7 +554,7 @@ const ReportPage = () => {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       
-      {/* App Bar */}
+      {/* App Bar - ແກ້ໄຂໃຫ້ກົງກັບໜ້າອື່ນ */}
       <AppBar
         position="fixed"
         color="default"
@@ -599,9 +586,6 @@ const ReportPage = () => {
             Owner: {admin_name}
           </Typography>
 
-          <IconButton color="inherit">
-            <Notifications />
-          </IconButton>
           <Button
             variant="contained"
             color="primary"
@@ -619,28 +603,6 @@ const ReportPage = () => {
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
-        {/* Mobile drawer */}
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better mobile performance
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-              backgroundColor: theme.palette.primary.dark,
-              color: theme.palette.primary.contrastText,
-              borderRight: 'none',
-            },
-          }}
-        >
-          {drawerContent}
-        </Drawer>
-
         {/* Desktop drawer */}
         <Drawer
           variant="permanent"
@@ -666,6 +628,27 @@ const ReportPage = () => {
             },
           }}
           open={sidebarOpen}
+        >
+          {drawerContent}
+        </Drawer>
+
+        {/* Mobile drawer */}
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true,
+          }}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              backgroundColor: theme.palette.primary.dark,
+              color: theme.palette.primary.contrastText,
+            },
+          }}
         >
           {drawerContent}
         </Drawer>
