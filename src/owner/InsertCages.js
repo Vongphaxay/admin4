@@ -1,9 +1,9 @@
 import {
-    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, Container, useTheme, styled, TextField, FormControl, InputLabel, Select, MenuItem, Alert, Snackbar
+    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, Container, useTheme, styled, TextField, FormControl, InputLabel, Select, MenuItem, Alert, Snackbar, Chip
 } from '@mui/material';
 import {
     ChevronRight, Home, People, CalendarMonth, Pets, Menu as MenuIcon,
-    Assessment as AssessmentIcon, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, Close, Add, Save
+    Assessment as AssessmentIcon, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, Close, Add, Save, Info, CheckCircle, Warning
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -305,25 +305,32 @@ const InsertCages = () => {
                 backgroundColor: '#f5f5f5',
                 minHeight: '100vh'
             }}>
-                <Container maxWidth="lg">
+                <Container maxWidth="xl">
                     {/* Page Header */}
-                    <Paper sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                        <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
-                            ເພີ່ມກົງສັດລ້ຽງ
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary">
-                            ສ້າງກົງສັດລ້ຽງໃໝ່ສໍາລັບຄລິນິກຂອງທ່ານ
-                        </Typography>
+                    <Paper sx={{ p: 3, mb: 4, borderRadius: 2, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', mr: 2, width: 56, height: 56 }}>
+                                <Add fontSize="large" />
+                            </Avatar>
+                            <Box>
+                                <Typography variant="h4" fontWeight="bold" gutterBottom>
+                                    ເພີ່ມກົງສັດລ້ຽງ
+                                </Typography>
+                                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                                    ສ້າງກົງສັດລ້ຽງໃໝ່ສໍາລັບຄລິນິກຂອງທ່ານ
+                                </Typography>
+                            </Box>
+                        </Box>
                     </Paper>
 
                     {/* Form Content */}
-                    <Grid container spacing={3}>
+                    <Grid container spacing={4}>
                         {/* Main Form */}
-                        <Grid item xs={12} lg={8}>
-                            <Paper sx={{ p: 4, borderRadius: 2 }}>
+                        <Grid item xs={12} lg={7}>
+                            <Paper sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                                     <Avatar sx={{ bgcolor: 'primary.light', mr: 2 }}>
-                                        <Add />
+                                        <Pets />
                                     </Avatar>
                                     <Typography variant="h6" fontWeight="bold">
                                         ຂໍ້ມູນກົງສັດລ້ຽງ
@@ -342,10 +349,15 @@ const InsertCages = () => {
                                                 required
                                                 variant="outlined"
                                                 placeholder="ເຊັ່ນ: ກົງ A1"
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        borderRadius: 2,
+                                                    }
+                                                }}
                                             />
                                         </Grid>
 
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid item xs={12}>
                                             <FormControl fullWidth required>
                                                 <InputLabel>ຂະໜາດກົງ</InputLabel>
                                                 <Select
@@ -353,10 +365,13 @@ const InsertCages = () => {
                                                     value={formData.cageSize}
                                                     label="ຂະໜາດກົງ"
                                                     onChange={handleInputChange}
+                                                    sx={{
+                                                        borderRadius: 2,
+                                                    }}
                                                 >
-                                                    <MenuItem value="ນ້ອຍ">ນ້ອຍ (ສໍາລັບສັດນ້ອຍ)</MenuItem>
-                                                    <MenuItem value="ກາງ">ກາງ (ສໍາລັບສັດປານກາງ)</MenuItem>
-                                                    <MenuItem value="ໃຫຍ່">ໃຫຍ່ (ສໍາລັບສັດໃຫຍ່)</MenuItem>
+                                                    <MenuItem value="ນ້ອຍ">ນ້ອຍ (ສໍາລັບສັດນ້ອຍ: ແມວ, ຫມາຕົວນ້ອຍ)</MenuItem>
+                                                    <MenuItem value="ກາງ">ກາງ (ສໍາລັບສັດປານກາງ: ຫມາປານກາງ)</MenuItem>
+                                                    <MenuItem value="ໃຫຍ່">ໃຫຍ່ (ສໍາລັບສັດໃຫຍ່: ຫມາໃຫຍ່)</MenuItem>
                                                 </Select>
                                             </FormControl>
                                         </Grid>
@@ -371,7 +386,12 @@ const InsertCages = () => {
                                                 value={formData.description}
                                                 onChange={handleInputChange}
                                                 variant="outlined"
-                                                placeholder="ລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບກົງ..."
+                                                placeholder="ລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບກົງ (ອຸປະກອນພິເສດ, ຂໍ້ມູນສຳຄັນ...)"
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        borderRadius: 2,
+                                                    }
+                                                }}
                                             />
                                         </Grid>
 
@@ -380,20 +400,23 @@ const InsertCages = () => {
                                             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                                                 <Button
                                                     variant="outlined"
+                                                    size="large"
                                                     onClick={() => setFormData({
                                                         cageName: '',
                                                         cageType: '',
                                                         cageSize: '',
                                                         description: ''
                                                     })}
+                                                    sx={{ minWidth: 120, borderRadius: 2 }}
                                                 >
                                                     ຍົກເລີກ
                                                 </Button>
                                                 <Button
                                                     type="submit"
                                                     variant="contained"
+                                                    size="large"
                                                     startIcon={<Save />}
-                                                    sx={{ minWidth: 120 }}
+                                                    sx={{ minWidth: 120, borderRadius: 2 }}
                                                 >
                                                     ບັນທຶກ
                                                 </Button>
@@ -405,15 +428,28 @@ const InsertCages = () => {
                         </Grid>
 
                         {/* Side Information */}
-                        <Grid item xs={12} lg={4}>
-                            <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-                                <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-                                    ຂໍ້ມູນສຳຄັນ
-                                </Typography>
-                                <Typography variant="body2" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
-                                    ກົງທີ່ສ້າງແລ້ວຈະສາມາດນຳໃຊ້ສຳລັບການຈອງ ແລະ ຝາກສັດລ້ຽງໄດ້ທັນທີ
-                                </Typography>
-                            </Paper>
+                        <Grid item xs={12} lg={5}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                {/* Important Information Card */}
+                                <Card sx={{ borderRadius: 2, boxShadow: 3, bgcolor: '#f8f9ff' }}>
+                                    <CardContent sx={{ p: 3 }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                            <Avatar sx={{ bgcolor: 'info.light', mr: 2 }}>
+                                                <Info />
+                                            </Avatar>
+                                            <Typography variant="h6" fontWeight="bold" color="info.main">
+                                                ຂໍ້ມູນສຳຄັນ
+                                            </Typography>
+                                        </Box>
+                                        <Typography variant="body2" sx={{ lineHeight: 1.8, mb: 2 }}>
+                                            ກົງທີ່ສ້າງແລ້ວຈະສາມາດນຳໃຊ້ສຳລັບການຈອງ ແລະ ຝາກສັດລ້ຽງໄດ້ທັນທີ
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ lineHeight: 1.8 }}>
+                                            ກະລຸນາກວດສອບຂໍ້ມູນໃຫ້ຄົບຖ້ວນກ່ອນບັນທຶກ
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Box>
                         </Grid>
                     </Grid>
                 </Container>
