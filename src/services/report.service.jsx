@@ -104,3 +104,16 @@ export const GetAllroompet = async () => {
     const response = await axios.get(`${REACT_APP_API_URL}/roompet/get-all`);
     return response.data;
 }
+
+export const UpdateRoompet = async (roompet_id, roompetData, token) => {
+    const response = await axios.put(
+        `${REACT_APP_API_URL}/roompet/update?room_id=${roompet_id}`,
+        roompetData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}

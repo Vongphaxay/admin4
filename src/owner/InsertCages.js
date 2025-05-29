@@ -8,7 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import React, { useState, useEffect } from 'react';
-import { GetAllroompet } from '../services/report.service';
+import { GetAllroompet, UpdateRoompet } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -123,7 +123,15 @@ const InsertCages = () => {
     const handleDialogOpen = (cage = null) => {
         console.log("cage", cage);
         if (cage) {
-            setFormData(cage);
+            // Map API data structure to form data structure
+            const mappedFormData = {
+                id: cage.room_id,
+                cageName: cage.room_name,
+                cagePrice: cage.price.toString(), // Convert to string for TextField
+                cageStatus: cage.status,
+                description: cage.description || '' // Handle if description doesn't exist
+            };
+            setFormData(mappedFormData);
             setEditMode(true);
         } else {
             setFormData({
@@ -144,10 +152,11 @@ const InsertCages = () => {
 
     // Handle form submission
     const handleSubmit = (e) => {
+        console.log("formData", formData);
         e.preventDefault();
 
         // Basic validation
-        if (!formData.cageName || !formData.cagePrice || !formData.cageSize) {
+        if (!formData.cageName || !formData.cagePrice || !formData.cageStatus) {
             setSnackbarMessage('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
@@ -155,6 +164,15 @@ const InsertCages = () => {
         }
 
         if (editMode) {
+            console.log("editMode1", editMode);
+            const roomData = {
+                room_name: formData.cageName,
+                price: formData.cagePrice,
+                status: formData.cageStatus,
+            }
+            console.log("roomData", roomData);
+            console.log("formData.id", formData.id);
+            const response = UpdateRoompet(formData.id, roomData, accessToken);
             // Update existing cage
             setCageData(prevData =>
                 prevData.map(cage =>
@@ -163,6 +181,7 @@ const InsertCages = () => {
             );
             setSnackbarMessage('ແກ້ໄຂກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
         } else {
+            console.log("editMode2", editMode);
             // Add new cage
             const newCage = {
                 ...formData,
@@ -184,6 +203,7 @@ const InsertCages = () => {
             cageStatus: 'ວ່າງ',
             description: ''
         });
+        window.location.reload();
     };
 
     // Handle delete cage
@@ -538,23 +558,6 @@ const InsertCages = () => {
 
                                     <Grid item xs={12} sm={6}>
                                         <FormControl fullWidth required>
-                                            <InputLabel>ຂະໜາດກົງ</InputLabel>
-                                            <Select
-                                                name="cageSize"
-                                                value={formData.cageSize}
-                                                label="ຂະໜາດກົງ"
-                                                onChange={handleInputChange}
-                                                sx={{ borderRadius: 2 }}
-                                            >
-                                                <MenuItem value="ນ້ອຍ">ນ້ອຍ (ສໍາລັບສັດນ້ອຍ)</MenuItem>
-                                                <MenuItem value="ກາງ">ກາງ (ສໍາລັບສັດປານກາງ)</MenuItem>
-                                                <MenuItem value="ໃຫຍ່">ໃຫຍ່ (ສໍາລັບສັດໃຫຍ່)</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-
-                                    <Grid item xs={12} sm={6}>
-                                        <FormControl fullWidth required>
                                             <InputLabel>ສະຖານະ</InputLabel>
                                             <Select
                                                 name="cageStatus"
@@ -567,25 +570,6 @@ const InsertCages = () => {
                                                 <MenuItem value="ບໍ່ວ່າງ">ບໍ່ວ່າງ</MenuItem>
                                             </Select>
                                         </FormControl>
-                                    </Grid>
-
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            multiline
-                                            rows={3}
-                                            label="ລາຍລະອຽດເພີ່ມເຕີມ"
-                                            name="description"
-                                            value={formData.description}
-                                            onChange={handleInputChange}
-                                            variant="outlined"
-                                            placeholder="ລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບກົງ"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    borderRadius: 2,
-                                                }
-                                            }}
-                                        />
                                     </Grid>
                                 </Grid>
                             </form>
