@@ -99,3 +99,8 @@ export const GetAllcategory_service = async (cat_id, token) => {
     });
     return response.data;
 }
+
+export const GetAllroompet = async () => {
+    const response = await axios.get(`${REACT_APP_API_URL}/roompet/get-all`);
+    return response.data;
+}

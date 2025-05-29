@@ -7,7 +7,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { GetAllroompet } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -28,8 +29,8 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/owner/dataemployee' },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/owner/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding'},
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet'  },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding' },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet' },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
     { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
@@ -46,7 +47,30 @@ const InsertCages = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    
+    const [roompetData, setRoompetData] = useState([]);
+    const [cageData, setCageData] = useState([
+
+    ]);
+
+    useEffect(() => {
+        const getAllRoompet = async () => {
+            const response = await GetAllroompet();
+            const mapped = response.map((room) => ({
+                id: room.room_id,
+                cageName: room.room_name,
+                cagePrice: room.price,
+                cageStatus: room.status,
+                cageSize: '-', // หรือเพิ่มข้อมูลจาก backend ถ้ามี
+            }));
+            setCageData(mapped);
+
+            setCageData(response);
+            console.log("roompetData", roompetData);
+            console.log("response", response);
+        }
+        getAllRoompet();
+    }, []);
+
     // Form states
     const [formData, setFormData] = useState({
         cageName: '',
@@ -55,35 +79,10 @@ const InsertCages = () => {
         cageStatus: 'ວ່າງ',
         description: ''
     });
-    
+
     // Sample cage data
-    const [cageData, setCageData] = useState([
-        {
-            id: 1,
-            cageName: 'ກົງ A1',
-            cagePrice: '50000',
-            cageSize: 'ນ້ອຍ',
-            cageStatus: 'ວ່າງ',
-            description: 'ກົງສໍາລັບສັດນ້ອຍ'
-        },
-        {
-            id: 2,
-            cageName: 'ກົງ B1',
-            cagePrice: '80000',
-            cageSize: 'ກາງ',
-            cageStatus: 'ບໍ່ວ່າງ',
-            description: 'ກົງສໍາລັບສັດປານກາງ'
-        },
-        {
-            id: 3,
-            cageName: 'ກົງ C1',
-            cagePrice: '120000',
-            cageSize: 'ໃຫຍ່',
-            cageStatus: 'ວ່າງ',
-            description: 'ກົງສໍາລັບສັດໃຫຍ່'
-        }
-    ]);
-    
+
+
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -122,6 +121,7 @@ const InsertCages = () => {
 
     // Handle dialog open/close
     const handleDialogOpen = (cage = null) => {
+        console.log("cage", cage);
         if (cage) {
             setFormData(cage);
             setEditMode(true);
@@ -145,7 +145,7 @@ const InsertCages = () => {
     // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
-        
+
         // Basic validation
         if (!formData.cageName || !formData.cagePrice || !formData.cageSize) {
             setSnackbarMessage('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ');
@@ -156,8 +156,8 @@ const InsertCages = () => {
 
         if (editMode) {
             // Update existing cage
-            setCageData(prevData => 
-                prevData.map(cage => 
+            setCageData(prevData =>
+                prevData.map(cage =>
                     cage.id === formData.id ? formData : cage
                 )
             );
@@ -171,11 +171,11 @@ const InsertCages = () => {
             setCageData(prevData => [...prevData, newCage]);
             setSnackbarMessage('ເພີ່ມກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
         }
-        
+
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
         setOpenDialog(false);
-        
+
         // Reset form
         setFormData({
             cageName: '',
@@ -414,14 +414,22 @@ const InsertCages = () => {
                             </TableHead>
                             <TableBody>
                                 {cageData.map((cage) => (
-                                    <TableRow key={cage.id} hover>
-                                        <TableCell>{cage.cageName}</TableCell>
-                                        <TableCell>{Number(cage.cagePrice).toLocaleString()}</TableCell>
-                                        <TableCell>{cage.cageSize}</TableCell>
+                                    <TableRow key={cage.room_id} hover>
+                                        <TableCell>{cage.room_name}</TableCell>
+                                        <TableCell>{Number(cage.price).toLocaleString()}</TableCell>
+                                        <TableCell>
+                                            {Number(cage.price) === 50000
+                                                ? 'S'
+                                                : Number(cage.price) === 70000
+                                                    ? 'M'
+                                                    : Number(cage.price) === 100000
+                                                        ? 'L'
+                                                        : '-'}
+                                        </TableCell>
                                         <TableCell>
                                             <Chip
-                                                label={cage.cageStatus}
-                                                color={cage.cageStatus === 'ວ່າງ' ? 'success' : 'error'}
+                                                label={cage.status}
+                                                color={cage.status === 'ວ່າງ' ? 'success' : 'error'}
                                                 size="small"
                                                 sx={{ fontWeight: 'bold' }}
                                             />
@@ -435,19 +443,19 @@ const InsertCages = () => {
                                                     sx={{
                                                         bgcolor: 'primary.light',
                                                         color: 'white',
-                                                        '&:hover': { bgcolor: 'primary.main' }
+                                                        '&:hover': { bgcolor: 'primary.main' },
                                                     }}
                                                 >
                                                     <Edit fontSize="small" />
                                                 </IconButton>
                                                 <IconButton
-                                                    onClick={() => handleDeleteCage(cage.id)}
+                                                    onClick={() => handleDeleteCage(cage.room_id)}
                                                     color="error"
                                                     size="small"
                                                     sx={{
                                                         bgcolor: 'error.light',
                                                         color: 'white',
-                                                        '&:hover': { bgcolor: 'error.main' }
+                                                        '&:hover': { bgcolor: 'error.main' },
                                                     }}
                                                 >
                                                     <Delete fontSize="small" />
@@ -457,6 +465,8 @@ const InsertCages = () => {
                                     </TableRow>
                                 ))}
                             </TableBody>
+
+
                         </Table>
                     </TableContainer>
 
