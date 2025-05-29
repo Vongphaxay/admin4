@@ -1,9 +1,9 @@
 import {
-    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, Container, useTheme, styled, TextField, FormControl, InputLabel, Select, MenuItem, Alert, Snackbar, Chip
+    Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, Container, useTheme, styled, TextField, FormControl, InputLabel, Select, MenuItem, Alert, Snackbar, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
 import {
     ChevronRight, Home, People, CalendarMonth, Pets, Menu as MenuIcon,
-    Assessment as AssessmentIcon, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, Close, Add, Save, Info, CheckCircle, Warning
+    Assessment as AssessmentIcon, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, Close, Add, Save, Info, CheckCircle, Warning, Edit, Delete, AddCircle
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -44,14 +44,46 @@ const InsertCages = () => {
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [editMode, setEditMode] = useState(false);
     
     // Form states
     const [formData, setFormData] = useState({
         cageName: '',
-        cageType: '',
+        cagePrice: '',
         cageSize: '',
+        cageStatus: 'ວ່າງ',
         description: ''
     });
+    
+    // Sample cage data
+    const [cageData, setCageData] = useState([
+        {
+            id: 1,
+            cageName: 'ກົງ A1',
+            cagePrice: '50000',
+            cageSize: 'ນ້ອຍ',
+            cageStatus: 'ວ່າງ',
+            description: 'ກົງສໍາລັບສັດນ້ອຍ'
+        },
+        {
+            id: 2,
+            cageName: 'ກົງ B1',
+            cagePrice: '80000',
+            cageSize: 'ກາງ',
+            cageStatus: 'ບໍ່ວ່າງ',
+            description: 'ກົງສໍາລັບສັດປານກາງ'
+        },
+        {
+            id: 3,
+            cageName: 'ກົງ C1',
+            cagePrice: '120000',
+            cageSize: 'ໃຫຍ່',
+            cageStatus: 'ວ່າງ',
+            description: 'ກົງສໍາລັບສັດໃຫຍ່'
+        }
+    ]);
+    
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -88,32 +120,78 @@ const InsertCages = () => {
         }));
     };
 
+    // Handle dialog open/close
+    const handleDialogOpen = (cage = null) => {
+        if (cage) {
+            setFormData(cage);
+            setEditMode(true);
+        } else {
+            setFormData({
+                cageName: '',
+                cagePrice: '',
+                cageSize: '',
+                cageStatus: 'ວ່າງ',
+                description: ''
+            });
+            setEditMode(false);
+        }
+        setOpenDialog(true);
+    };
+
+    const handleDialogClose = () => {
+        setOpenDialog(false);
+    };
+
     // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         
         // Basic validation
-        if (!formData.cageName || !formData.cageType || !formData.cageSize) {
+        if (!formData.cageName || !formData.cagePrice || !formData.cageSize) {
             setSnackbarMessage('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
             return;
         }
 
-        // Here you would typically send the data to your API
-        console.log('Cage data:', formData);
+        if (editMode) {
+            // Update existing cage
+            setCageData(prevData => 
+                prevData.map(cage => 
+                    cage.id === formData.id ? formData : cage
+                )
+            );
+            setSnackbarMessage('ແກ້ໄຂກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
+        } else {
+            // Add new cage
+            const newCage = {
+                ...formData,
+                id: cageData.length + 1
+            };
+            setCageData(prevData => [...prevData, newCage]);
+            setSnackbarMessage('ເພີ່ມກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
+        }
         
-        setSnackbarMessage('ເພີ່ມກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
+        setOpenDialog(false);
         
         // Reset form
         setFormData({
             cageName: '',
-            cageType: '',
+            cagePrice: '',
             cageSize: '',
+            cageStatus: 'ວ່າງ',
             description: ''
         });
+    };
+
+    // Handle delete cage
+    const handleDeleteCage = (id) => {
+        setCageData(prevData => prevData.filter(cage => cage.id !== id));
+        setSnackbarMessage('ລຶບກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
     };
 
     const handleCloseSnackbar = () => {
@@ -307,151 +385,222 @@ const InsertCages = () => {
             }}>
                 <Container maxWidth="xl">
                     {/* Page Header */}
-                    <Paper sx={{ p: 3, mb: 4, borderRadius: 2, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', mr: 2, width: 56, height: 56 }}>
-                                <Add fontSize="large" />
-                            </Avatar>
-                            <Box>
-                                <Typography variant="h4" fontWeight="bold" gutterBottom>
-                                    ເພີ່ມກົງສັດລ້ຽງ
-                                </Typography>
-                                <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                                    ສ້າງກົງສັດລ້ຽງໃໝ່ສໍາລັບຄລິນິກຂອງທ່ານ
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Paper>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                        <Typography variant="h4" fontWeight="bold" color="primary">
+                            ຈັດການກົງສັດລ້ຽງ
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<Add />}
+                            onClick={() => handleDialogOpen()}
+                            sx={{ borderRadius: 2 }}
+                        >
+                            ເພີ່ມກົງໃໝ່
+                        </Button>
+                    </Box>
 
-                    {/* Form Content */}
-                    <Grid container spacing={4}>
-                        {/* Main Form */}
-                        <Grid item xs={12} lg={7}>
-                            <Paper sx={{ p: 4, borderRadius: 2, boxShadow: 3 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                                    <Avatar sx={{ bgcolor: 'primary.light', mr: 2 }}>
-                                        <Pets />
-                                    </Avatar>
-                                    <Typography variant="h6" fontWeight="bold">
-                                        ຂໍ້ມູນກົງສັດລ້ຽງ
-                                    </Typography>
-                                </Box>
-
-                                <form onSubmit={handleSubmit}>
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="ຊື່ກົງ"
-                                                name="cageName"
-                                                value={formData.cageName}
-                                                onChange={handleInputChange}
-                                                required
-                                                variant="outlined"
-                                                placeholder="ເຊັ່ນ: ກົງ A1"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 2,
-                                                    }
-                                                }}
+                    {/* Cages Table */}
+                    <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
+                        <Table>
+                            <TableHead sx={{ bgcolor: '#e3f2fd' }}>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>ຊື່ກົງ</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>ລາຄາ (ກີບ)</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>ຂະໜາດ</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>ສະຖານະ</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>ຈັດການ</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {cageData.map((cage) => (
+                                    <TableRow key={cage.id} hover>
+                                        <TableCell>{cage.cageName}</TableCell>
+                                        <TableCell>{Number(cage.cagePrice).toLocaleString()}</TableCell>
+                                        <TableCell>{cage.cageSize}</TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                label={cage.cageStatus}
+                                                color={cage.cageStatus === 'ວ່າງ' ? 'success' : 'error'}
+                                                size="small"
+                                                sx={{ fontWeight: 'bold' }}
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12}>
-                                            <FormControl fullWidth required>
-                                                <InputLabel>ຂະໜາດກົງ</InputLabel>
-                                                <Select
-                                                    name="cageSize"
-                                                    value={formData.cageSize}
-                                                    label="ຂະໜາດກົງ"
-                                                    onChange={handleInputChange}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <IconButton
+                                                    onClick={() => handleDialogOpen(cage)}
+                                                    color="primary"
+                                                    size="small"
                                                     sx={{
-                                                        borderRadius: 2,
+                                                        bgcolor: 'primary.light',
+                                                        color: 'white',
+                                                        '&:hover': { bgcolor: 'primary.main' }
                                                     }}
                                                 >
-                                                    <MenuItem value="ນ້ອຍ">ນ້ອຍ (ສໍາລັບສັດນ້ອຍ: ແມວ, ຫມາຕົວນ້ອຍ)</MenuItem>
-                                                    <MenuItem value="ກາງ">ກາງ (ສໍາລັບສັດປານກາງ: ຫມາປານກາງ)</MenuItem>
-                                                    <MenuItem value="ໃຫຍ່">ໃຫຍ່ (ສໍາລັບສັດໃຫຍ່: ຫມາໃຫຍ່)</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </Grid>
-
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                multiline
-                                                rows={4}
-                                                label="ລາຍລະອຽດເພີ່ມເຕີມ"
-                                                name="description"
-                                                value={formData.description}
-                                                onChange={handleInputChange}
-                                                variant="outlined"
-                                                placeholder="ລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບກົງ (ອຸປະກອນພິເສດ, ຂໍ້ມູນສຳຄັນ...)"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 2,
-                                                    }
-                                                }}
-                                            />
-                                        </Grid>
-
-                                        <Grid item xs={12}>
-                                            <Divider sx={{ my: 2 }} />
-                                            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                                                <Button
-                                                    variant="outlined"
-                                                    size="large"
-                                                    onClick={() => setFormData({
-                                                        cageName: '',
-                                                        cageType: '',
-                                                        cageSize: '',
-                                                        description: ''
-                                                    })}
-                                                    sx={{ minWidth: 120, borderRadius: 2 }}
+                                                    <Edit fontSize="small" />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={() => handleDeleteCage(cage.id)}
+                                                    color="error"
+                                                    size="small"
+                                                    sx={{
+                                                        bgcolor: 'error.light',
+                                                        color: 'white',
+                                                        '&:hover': { bgcolor: 'error.main' }
+                                                    }}
                                                 >
-                                                    ຍົກເລີກ
-                                                </Button>
-                                                <Button
-                                                    type="submit"
-                                                    variant="contained"
-                                                    size="large"
-                                                    startIcon={<Save />}
-                                                    sx={{ minWidth: 120, borderRadius: 2 }}
-                                                >
-                                                    ບັນທຶກ
-                                                </Button>
+                                                    <Delete fontSize="small" />
+                                                </IconButton>
                                             </Box>
-                                        </Grid>
-                                    </Grid>
-                                </form>
-                            </Paper>
-                        </Grid>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
 
-                        {/* Side Information */}
-                        <Grid item xs={12} lg={5}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                                {/* Important Information Card */}
-                                <Card sx={{ borderRadius: 2, boxShadow: 3, bgcolor: '#f8f9ff' }}>
-                                    <CardContent sx={{ p: 3 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                            <Avatar sx={{ bgcolor: 'info.light', mr: 2 }}>
-                                                <Info />
-                                            </Avatar>
-                                            <Typography variant="h6" fontWeight="bold" color="info.main">
-                                                ຂໍ້ມູນສຳຄັນ
-                                            </Typography>
-                                        </Box>
-                                        <Typography variant="body2" sx={{ lineHeight: 1.8, mb: 2 }}>
-                                            ກົງທີ່ສ້າງແລ້ວຈະສາມາດນຳໃຊ້ສຳລັບການຈອງ ແລະ ຝາກສັດລ້ຽງໄດ້ທັນທີ
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ lineHeight: 1.8 }}>
-                                            ກະລຸນາກວດສອບຂໍ້ມູນໃຫ້ຄົບຖ້ວນກ່ອນບັນທຶກ
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
+                    {/* Add/Edit Dialog */}
+                    <Dialog
+                        open={openDialog}
+                        onClose={handleDialogClose}
+                        maxWidth="sm"
+                        fullWidth
+                        PaperProps={{
+                            sx: { borderRadius: 2 }
+                        }}
+                    >
+                        <DialogTitle sx={{
+                            fontWeight: 'bold',
+                            bgcolor: theme.palette.primary.main,
+                            color: 'white',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Pets sx={{ mr: 1 }} />
+                                {editMode ? 'ແກ້ໄຂກົງສັດລ້ຽງ' : 'ເພີ່ມກົງສັດລ້ຽງ'}
                             </Box>
-                        </Grid>
-                    </Grid>
+                            <IconButton onClick={handleDialogClose} sx={{ color: 'white' }}>
+                                <Close />
+                            </IconButton>
+                        </DialogTitle>
+                        <DialogContent sx={{ p: 3 }}>
+                            <form onSubmit={handleSubmit}>
+                                <Grid container spacing={3} sx={{ mt: 1 }}>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="ຊື່ກົງ"
+                                            name="cageName"
+                                            value={formData.cageName}
+                                            onChange={handleInputChange}
+                                            required
+                                            variant="outlined"
+                                            placeholder="ເຊັ່ນ: ກົງ A1"
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 2,
+                                                }
+                                            }}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="ລາຄາ (ກີບ)"
+                                            name="cagePrice"
+                                            type="number"
+                                            value={formData.cagePrice}
+                                            onChange={handleInputChange}
+                                            required
+                                            variant="outlined"
+                                            placeholder="ເຊັ່ນ: 50000"
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 2,
+                                                }
+                                            }}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        <FormControl fullWidth required>
+                                            <InputLabel>ຂະໜາດກົງ</InputLabel>
+                                            <Select
+                                                name="cageSize"
+                                                value={formData.cageSize}
+                                                label="ຂະໜາດກົງ"
+                                                onChange={handleInputChange}
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                <MenuItem value="ນ້ອຍ">ນ້ອຍ (ສໍາລັບສັດນ້ອຍ)</MenuItem>
+                                                <MenuItem value="ກາງ">ກາງ (ສໍາລັບສັດປານກາງ)</MenuItem>
+                                                <MenuItem value="ໃຫຍ່">ໃຫຍ່ (ສໍາລັບສັດໃຫຍ່)</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        <FormControl fullWidth required>
+                                            <InputLabel>ສະຖານະ</InputLabel>
+                                            <Select
+                                                name="cageStatus"
+                                                value={formData.cageStatus}
+                                                label="ສະຖານະ"
+                                                onChange={handleInputChange}
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                <MenuItem value="ວ່າງ">ວ່າງ</MenuItem>
+                                                <MenuItem value="ບໍ່ວ່າງ">ບໍ່ວ່າງ</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={3}
+                                            label="ລາຍລະອຽດເພີ່ມເຕີມ"
+                                            name="description"
+                                            value={formData.description}
+                                            onChange={handleInputChange}
+                                            variant="outlined"
+                                            placeholder="ລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບກົງ"
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 2,
+                                                }
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </form>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 3 }}>
+                            <Button
+                                onClick={handleDialogClose}
+                                variant="outlined"
+                                color="error"
+                                startIcon={<Close />}
+                                sx={{ borderRadius: 2 }}
+                            >
+                                ຍົກເລີກ
+                            </Button>
+                            <Button
+                                onClick={handleSubmit}
+                                variant="contained"
+                                color="primary"
+                                startIcon={editMode ? <Save /> : <Add />}
+                                sx={{ borderRadius: 2 }}
+                            >
+                                {editMode ? 'ແກ້ໄຂ' : 'ເພີ່ມ'}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Container>
             </Box>
 
