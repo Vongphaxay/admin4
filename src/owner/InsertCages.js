@@ -307,20 +307,21 @@ const InsertCages = () => {
             }}>
                 <Container maxWidth="lg">
                     {/* Page Header */}
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="h4" fontWeight="bold" color="primary">
+                    <Paper sx={{ p: 3, mb: 4, borderRadius: 2 }}>
+                        <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
                             ເພີ່ມກົງສັດລ້ຽງ
                         </Typography>
-                        <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
+                        <Typography variant="body1" color="text.secondary">
                             ສ້າງກົງສັດລ້ຽງໃໝ່ສໍາລັບຄລິນິກຂອງທ່ານ
                         </Typography>
-                    </Box>
+                    </Paper>
 
                     {/* Form Content */}
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={8}>
+                        {/* Main Form */}
+                        <Grid item xs={12} lg={8}>
                             <Paper sx={{ p: 4, borderRadius: 2 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                                     <Avatar sx={{ bgcolor: 'primary.light', mr: 2 }}>
                                         <Add />
                                     </Avatar>
@@ -375,6 +376,7 @@ const InsertCages = () => {
                                         </Grid>
 
                                         <Grid item xs={12}>
+                                            <Divider sx={{ my: 2 }} />
                                             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                                                 <Button
                                                     variant="outlined"
@@ -403,12 +405,12 @@ const InsertCages = () => {
                         </Grid>
 
                         {/* Side Information */}
-                        <Grid item xs={12} md={4}>
-                            <Paper sx={{ p: 3, borderRadius: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-                                <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+                        <Grid item xs={12} lg={4}>
+                            <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+                                <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
                                     ຂໍ້ມູນສຳຄັນ
                                 </Typography>
-                                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                                <Typography variant="body2" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
                                     ກົງທີ່ສ້າງແລ້ວຈະສາມາດນຳໃຊ້ສຳລັບການຈອງ ແລະ ຝາກສັດລ້ຽງໄດ້ທັນທີ
                                 </Typography>
                             </Paper>
