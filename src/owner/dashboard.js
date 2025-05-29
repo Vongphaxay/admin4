@@ -2,12 +2,11 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, LinearProgress, Chip, Stack, Container, useTheme, styled
 } from '@mui/material';
 import {
-    ChevronRight, Home, People, CalendarMonth, Pets,  Menu as MenuIcon,
-  Assessment as AssessmentIcon, Bathtub, ContentCut, Vaccines, LocalHospital, History, Menu, Logout, TrendingUp, CheckCircle, AttachMoney, Notifications, Close
+    ChevronRight, Home, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines,Assessment as AssessmentIcon,AddBoxRounded, LocalHospital, History, Menu, Logout, TrendingUp, CheckCircle, AttachMoney, Notifications, Close
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { getNormalReport } from '../services/report.service';
+import { getNormalReport, getallcate_servicereport } from '../services/report.service';
 import React, { useState, useEffect } from 'react';
 
 // Create a custom styled container for the logo
@@ -34,14 +33,7 @@ const menuItems = [
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
     { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
-    { icon: <AssessmentIcon />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/InsertCages' },
-];
-
-const services = [
-    { name: 'ຝາກສັດລ້ຽງ', count: 120, target: 150, progress: 80 },
-    { name: 'ອາບນ້ຳ', count: 95, target: 100, progress: 95 },
-    { name: 'ຕັດຂົນ', count: 68, target: 80, progress: 85 },
-    { name: 'ປິ່ນປົວສັດລ້ຽງ', count: 45, target: 60, progress: 75 },
+    { icon: <AddBoxRounded />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/insertCages' },
 ];
 
 // Define the drawer width
@@ -52,6 +44,8 @@ const Dashboard = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [reportData, setReportData] = useState(null);
+    const [categoryData, setCategoryData] = useState([]); // use [] not null
+
 
     // Count the number of 'ໝາ' and 'ແມວ' pets
     const pets = reportData?.report?.report_pet ?? [];
@@ -66,7 +60,6 @@ const Dashboard = () => {
     const catPercentage = totalPets ? (catCount / totalPets) * 100 : 0;
 
 
-
     useEffect(() => {
         const getNormalReportapi = async () => {
             const response = await getNormalReport(accessToken);
@@ -75,6 +68,45 @@ const Dashboard = () => {
         };
         getNormalReportapi();
     }, []);
+
+    useEffect(() => {
+        const getallcate_servicereportapi = async () => {
+            const response = await getallcate_servicereport(accessToken);
+            console.log("response", response);
+            if (response?.report) {
+                const { cat_service, category_service } = response.report;
+
+                const categoryWithCounts = cat_service.map((cat) => {
+                    // Filter services that match current category ID
+                    const services = category_service.filter(
+                        (s) => s.cat_id === cat.cat_id
+                    );
+
+                    // Sum all bookings for this category
+                    const totalBookings = services.reduce(
+                        (sum, service) => sum + (service.tb_bookings?.length || 0),
+                        0
+                    );
+
+                    const target = 12; // You can customize this
+                    const progress = (totalBookings / target) * 100;
+
+                    return {
+                        name: cat.cat_name,
+                        count: totalBookings,
+                        target,
+                        progress,
+                    };
+                });
+
+                setCategoryData(categoryWithCounts);
+            } else {
+                setCategoryData([]); // fallback
+            }
+
+        };
+        getallcate_servicereportapi();
+    }, [accessToken]);
 
     // Toggle sidebar for desktop
     const toggleSidebar = () => {
@@ -415,7 +447,7 @@ const Dashboard = () => {
                                 </Box>
 
                                 <Stack spacing={3}>
-                                    {services.map((service, index) => (
+                                    {categoryData.map((service, index) => (
                                         <Box key={index}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                                 <Typography variant="body2" fontWeight="medium">{service.name}</Typography>

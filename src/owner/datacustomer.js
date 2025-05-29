@@ -4,11 +4,10 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container, Chip, DialogContentText
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Menu as MenuIcon,
-    Assessment as AssessmentIcon, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines,Assessment as AssessmentIcon,AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
-import { getReportallcus, DeleteCustomer } from '../services/report.service';
+import { getReportallcus, DeleteCustomer, UpdateCus } from '../services/report.service';
 
 
 // Create a custom styled container for the logo
@@ -46,6 +45,9 @@ const Deletecusapi = async (cus_id) => {
     }
 };
 
+
+
+
 // Menu items
 const menuItems = [
     { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/owner/dashboard' },
@@ -57,7 +59,7 @@ const menuItems = [
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
     { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
-    { icon: <AssessmentIcon />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/InsertCages' },
+    { icon: <AddBoxRounded />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/insertCages' },
 ];
 
 const CustomerManagement = () => {
@@ -132,13 +134,51 @@ const CustomerManagement = () => {
 
     const handleDialogClose = () => setOpenDialog(false);
 
-    const handleSaveCustomer = () => {
+    const handleSaveCustomer = async () => {
         if (editMode) {
-            setCustomerData(prevData => prevData.map(item => item.id === currentCustomer.id ? currentCustomer : item));
+            try {
+                console.log("currentCustomer1", currentCustomer);
+                const CustomerData = {
+                    cus_name: currentCustomer.name,
+                    gender: currentCustomer.gender,
+                    address: currentCustomer.address,
+                    tel: currentCustomer.phone
+                };
+                console.log("CustomerData", CustomerData);
+                console.log("currentCustomer.id", currentCustomer.id);
+
+                const response = await UpdateCus(currentCustomer.id, CustomerData, accessToken);
+                console.log("response", response);
+
+                setCustomerData(prevData =>
+                    prevData.map(item =>
+                        item.id === currentCustomer.id ? currentCustomer : item
+                    )
+                );
+                setOpenDialog(false);
+                window.location.reload();
+            } catch (error) {
+                console.error("Error updating customer:", error);
+
+                if (error.response && error.response.data && error.response.data.error) {
+                    alert("เกิดข้อผิดพลาด: " + error.response.data.error); // แจ้งเตือนผู้ใช้
+                    window.location.reload();
+                } else {
+                    alert("เกิดข้อผิดพลาดในการอัปเดตข้อมูลลูกค้า");
+                }
+            }
         } else {
-            setCustomerData(prevData => [...prevData, { ...currentCustomer, id: prevData.length + 1, pets: currentCustomer.pets || [] }]);
+            console.log("currentCustomer2", currentCustomer);
+            setCustomerData(prevData => [
+                ...prevData,
+                {
+                    ...currentCustomer,
+                    id: prevData.length + 1,
+                    pets: currentCustomer.pets || []
+                }
+            ]);
+            setOpenDialog(false);
         }
-        setOpenDialog(false);
     };
 
     // ຟັງຊັນເປີດ Dialog ຢືນຢັນການລົບ
@@ -417,31 +457,31 @@ const CustomerManagement = () => {
                     </Paper>
 
                     {/* Customer Table */}
-                    {/* Customer Table */}
                     <TableContainer component={Paper} sx={{ boxShadow: 3, mb: 4 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
-                                    <TableCell align="center">ຊື່ ແລະ ນາມສະກຸນ</TableCell>
-                                    <TableCell align="center">ເພດ</TableCell>
-                                    <TableCell align="center">ທີ່ຢູ່</TableCell>
-                                    <TableCell align="center">ເບີໂທລະສັບ</TableCell>
-                                    <TableCell align="center">ຊື່ຜູ້ໃຊ້</TableCell>
-                                    <TableCell align="center">ຈັດການ</TableCell>
+                                    <TableCell>ຊື່ ແລະ ນາມສະກຸນ</TableCell>
+                                    <TableCell>ເພດ</TableCell>
+                                    <TableCell>ທີ່ຢູ່</TableCell>
+                                    <TableCell>ເບີໂທລະສັບ</TableCell>
+                                    <TableCell>ຊື່ຜູ້ໃຊ້</TableCell>
+                                    <TableCell>ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {filteredCustomers.map((customer) => (
                                     <TableRow key={customer.id}>
-                                        <TableCell align="center">{customer.name}</TableCell>
-                                        <TableCell align="center">{customer.gender}</TableCell>
-                                        <TableCell align="center">{customer.address}</TableCell>
-                                        <TableCell align="center">{customer.phone}</TableCell>
-                                        <TableCell align="center">{customer.username}</TableCell>
-                                        <TableCell align="center">
+                                        <TableCell>{customer.name}</TableCell>
+                                        <TableCell>{customer.gender}</TableCell>
+                                        <TableCell>{customer.address}</TableCell>
+                                        <TableCell>{customer.phone}</TableCell>
+                                        <TableCell>{customer.username}</TableCell>
+                                        <TableCell>
                                             <IconButton onClick={() => handleDialogOpen(customer)} sx={{ color: '#1976d2' }}>
                                                 <Edit />
                                             </IconButton>
+                                            {/* ປ່ຽນຈາກການໃຊ້ window.confirm ເປັນການເປີດ Dialog */}
                                             <IconButton
                                                 onClick={() => handleOpenDeleteDialog(customer)}
                                                 color="error"

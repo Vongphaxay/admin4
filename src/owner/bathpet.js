@@ -54,9 +54,7 @@ import {
     Vaccines,
     Menu,
     ChevronRight,
-    Notifications,
-    Menu as MenuIcon,
-    Assessment as AssessmentIcon,
+    Notifications,AddBoxRounded,Assessment as AssessmentIcon,
     Close,
     Logout,
     Phone,
@@ -98,7 +96,7 @@ const menuItems = [
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
     { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
-    { icon: <AssessmentIcon />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/InsertCages' },
+    { icon: <AddBoxRounded />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/insertCages' },
 ];
 
 const BathPet = () => {
@@ -114,7 +112,7 @@ const BathPet = () => {
 
     useEffect(() => {
         const getAllCategoryServices = async () => {
-            const response = await GetAllcategory_service(2, accessToken);
+            const response = await GetAllcategory_service(3, accessToken);
 
             if (response && response.report) {
                 const flatBoardingData = [];

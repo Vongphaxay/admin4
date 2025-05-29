@@ -52,6 +52,8 @@ import {
     Bathtub,
     ContentCut,
     Vaccines,
+    Assessment as AssessmentIcon,
+    AddBoxRounded,
     Menu,
     ChevronRight,
     Notifications,
@@ -61,8 +63,7 @@ import {
     Email,
     Search,
     DateRange,
-    AccessTime, Menu as MenuIcon,
-    Assessment as AssessmentIcon,
+    AccessTime,
     Info,
     EventNote,
     PetsOutlined
@@ -97,7 +98,7 @@ const menuItems = [
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
     { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
-    { icon: <AssessmentIcon />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/InsertCages' },
+    { icon: <AddBoxRounded />, label: 'ເພີ່ມກົງສັດລ້ຽງ', path: '/owner/insertCages' },
 ];
 
 const PetBoarding = () => {
@@ -337,7 +338,7 @@ const PetBoarding = () => {
                         component="div"
                         sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
                     >
-                        Owner: {admin_name}
+                        Admin: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
