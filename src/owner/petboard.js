@@ -338,7 +338,7 @@ const PetBoarding = () => {
                         component="div"
                         sx={{ flexGrow: 1, fontWeight: 'bold', color: theme.palette.primary.main }}
                     >
-                        Admin: {admin_name}
+                        Owner: {admin_name}
                     </Typography>
                     <IconButton color="inherit">
                         <Notifications />
