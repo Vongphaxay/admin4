@@ -7,7 +7,7 @@ import {
     TableContainer, TableHead, TableRow, TextField, useTheme, styled, Container,
     Snackbar, Alert, Accordion, AccordionSummary, AccordionDetails
 } from '@mui/material';
-import { CheckCircle, ExpandMore } from '@mui/icons-material';
+import { CheckCircle, ExpandMore, Search } from '@mui/icons-material';
 import {
     Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub,
     ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print,
@@ -56,10 +56,11 @@ const BookingTable = () => {
     const [openCancelDialog, setOpenCancelDialog] = useState(false);
     const [bookingToCancel, setBookingToCancel] = useState(null);
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
-    const [openReceiptDialog, setOpenReceiptDialog] = useState(false); // State for receipt dialog
+    const [openReceiptDialog, setOpenReceiptDialog] = useState(false);
+    const [searchQuery, setSearchQuery] = useState(''); // Add search state
     const [currentBooking, setCurrentBooking] = useState({
-        id: '', // add this
-        roomId: '', // add this
+        id: '',
+        roomId: '',
         petName: '',
         customerName: '',
         service: '',
@@ -70,10 +71,8 @@ const BookingTable = () => {
         start_date: '',
         stop_date: '',
         total: '',
-        // Add tb_service_infos to store treatment info
         tb_service_infos: []
     });
-
 
     const admin_name = decodeURIComponent(Cookies.get("name_admin") || "");
     const accessToken = Cookies.get("accessTokena");
@@ -82,7 +81,6 @@ const BookingTable = () => {
     const calculateTotalPrice = (booking) => {
         let basePrice = parseFloat(booking.total) || 0;
 
-        // If there are treatment services, add their prices
         if (booking.tb_service_infos && booking.tb_service_infos.length > 0) {
             booking.tb_service_infos.forEach(info => {
                 if (info.price) {
@@ -154,7 +152,7 @@ const BookingTable = () => {
                 }
                 console.log("flatBookings", flatBookings);
                 setBookingData(flatBookings);
-                setReportData(response); // raw backup
+                setReportData(response);
             } catch (error) {
                 console.error('Error fetching bookings:', error);
             }
@@ -163,9 +161,29 @@ const BookingTable = () => {
         getAllbokapi();
     }, [accessToken]);
 
+    // Add filtered bookings function
+    const filteredBookings = bookingData.filter((booking) => {
+        const petName = (booking.petName || '').toLowerCase();
+        const customerName = (booking.customerName || '').toLowerCase();
+        const serviceName = (booking.services?.name || '').toLowerCase();
+        const roomName = (booking.service || '').toLowerCase();
+        const startDate = booking.start_date || '';
+        const stopDate = booking.stop_date || '';
+
+        const searchTerm = searchQuery.toLowerCase();
+
+        return (
+            petName.includes(searchTerm) ||
+            customerName.includes(searchTerm) ||
+            serviceName.includes(searchTerm) ||
+            roomName.includes(searchTerm) ||
+            startDate.includes(searchTerm) ||
+            stopDate.includes(searchTerm)
+        );
+    });
+
     const handleDialogOpen = (booking = null) => {
         if (booking) {
-            // Set current booking with all details
             setCurrentBooking(booking);
             setEditMode(true);
         } else {
@@ -192,13 +210,11 @@ const BookingTable = () => {
         setSidebarOpen(!sidebarOpen);
     };
 
-    // Add this function to handle opening the cancel dialog
     const handleOpenCancelDialog = (booking) => {
         setBookingToCancel(booking);
         setOpenCancelDialog(true);
     };
 
-    // Update the confirm cancel function to show success dialog
     const handleConfirmCancel =  async () => {
         console.log("bookingToCancel", bookingToCancel);
         if (bookingToCancel) {
@@ -208,11 +224,10 @@ const BookingTable = () => {
             console.log("response", response);
         }
         setOpenCancelDialog(false);
-        setOpenSuccessDialog(true); // Show success dialog instead of snackbar
+        setOpenSuccessDialog(true);
         setBookingToCancel(null);
     };
 
-    // Add this function to close the success dialog
     const handleCloseSuccessDialog = () => {
         setOpenSuccessDialog(false);
     };
@@ -236,7 +251,7 @@ const BookingTable = () => {
         } else {
             setBookingData(prevData => [...prevData, { ...currentBooking, id: prevData.length + 1 }]);
         }
-        setOpenSnackbar(true); // Show success message
+        setOpenSnackbar(true);
         setOpenDialog(false);
     };
 
@@ -246,12 +261,10 @@ const BookingTable = () => {
         navigate('/');
     };
 
-    // Check if the service is for treatment (ປິ່ນປົວສັດລ້ຽງ)
     const isTreatmentService = (booking) => {
         return booking.services && booking.services.name === 'ປິ່ນປົວສັດລ້ຽງ';
     };
 
-    // Filter bookings to find treatment services that have additional info
     const hasTreatmentInfo = (booking) => {
         return isTreatmentService(booking) &&
             booking.tb_service_infos &&
@@ -386,7 +399,7 @@ const BookingTable = () => {
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
+                        keepMounted: true,
                     }}
                     sx={{
                         display: { xs: 'block', sm: 'none' },
@@ -449,6 +462,33 @@ const BookingTable = () => {
                     <Box sx={{ mb: 4 }}>
                         <Typography variant="h4" fontWeight="bold" color="primary">ຕາຕະລາງການຈອງ</Typography>
                     </Box>
+
+                    {/* Search Bar */}
+                    <Paper
+                        elevation={2}
+                        sx={{
+                            p: 2,
+                            mb: 3,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            flexDirection: { xs: 'column', md: 'row' }
+                        }}
+                    >
+                        <TextField
+                            placeholder="ຄົ້ນຫາການຈອງ..."
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            InputProps={{
+                                startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />,
+                            }}
+                            sx={{ flexGrow: 1 }}
+                        />
+                    </Paper>
+
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
@@ -464,13 +504,12 @@ const BookingTable = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {bookingData.map((booking) => (
+                                {filteredBookings.map((booking) => (
                                     <TableRow key={booking.id}>
                                         <TableCell align="center">{booking.petName}</TableCell>
                                         <TableCell align="center">{booking.customerName}</TableCell>
                                         <TableCell align="center">
                                             {booking.services.name}
-                                            {/* Show indicator if there's treatment info */}
                                             {hasTreatmentInfo(booking) && (
                                                 <Box
                                                     component="span"
@@ -496,7 +535,6 @@ const BookingTable = () => {
                                         <TableCell align="center">{booking.stop_date}</TableCell>
                                         <TableCell align="center">
                                             {calculateTotalPrice(booking).toLocaleString()}
-                                            {/* Highlight if there's additional treatment price */}
                                             {hasTreatmentInfo(booking) && (
                                                 <Typography
                                                     variant="caption"
@@ -539,6 +577,11 @@ const BookingTable = () => {
                                         </TableCell>
                                     </TableRow>
                                 ))}
+                                {filteredBookings.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={8} align="center">ບໍ່ພົບຂໍ້ມູນ</TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -664,7 +707,6 @@ const BookingTable = () => {
                         </Box>
                     </Dialog>
 
-                    {/* Payment Dialog with QR Code on the right - adjusted padding/margin and larger buttons */}
                     {/* Payment Dialog with QR Code on the right - compact layout without scrolling */}
                     <Dialog
                         open={openDialog}
@@ -712,7 +754,6 @@ const BookingTable = () => {
                                         ຂໍ້ມູນການຈອງ
                                     </Typography>
 
-                                    {/* Container with conditional width based on service type */}
                                     <Box sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -845,7 +886,7 @@ const BookingTable = () => {
 
                                         {/* Fourth row - Price and Treatment Info */}
                                         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
-                                            {/* Price Information - Different sizing based on service type */}
+                                            {/* Price Information */}
                                             <Box sx={{
                                                 flex: isTreatmentService(currentBooking) ? 1 : '0 0 auto',
                                                 width: isTreatmentService(currentBooking) ? '100%' : { xs: '100%', sm: '50%', md: '50%' }
@@ -869,7 +910,7 @@ const BookingTable = () => {
                                                     }}
                                                 />
 
-                                                {/* Total price calculation - Show calculated total if there's treatment */}
+                                                {/* Total price calculation */}
                                                 {hasTreatmentInfo(currentBooking) && (
                                                     <Box sx={{
                                                         mt: 1,
@@ -920,7 +961,7 @@ const BookingTable = () => {
                                                 )}
                                             </Box>
 
-                                            {/* Treatment Information - Keep unchanged as requested */}
+                                            {/* Treatment Information */}
                                             {isTreatmentService(currentBooking) && (
                                                 <Box sx={{ flex: 1 }}>
                                                     <Box sx={{
@@ -1075,6 +1116,7 @@ const BookingTable = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
+                    
                     {/* Receipt Printer Dialog */}
                     <ReceiptPrinter
                         open={openReceiptDialog}

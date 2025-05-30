@@ -5,7 +5,7 @@ import WcIcon from '@mui/icons-material/Wc';
 import HomeIcon from '@mui/icons-material/Home';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff, Search } from '@mui/icons-material';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -38,7 +38,7 @@ const drawerWidth = 240;
 
 // Menu items
 const menuItems = [
-    { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/dashboard' },
+    { icon: <Home />, label: 'ພາບລວມຄລີນິກ', path: '/dashboard' },
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee', active: true },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
@@ -61,7 +61,9 @@ const EmployeeManagement = () => {
     const [snackbarMessage, setSnackbarMessage] = useState("ບັນທຶກສຳເລັດ");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [showPassword, setShowPassword] = useState(false);
-    const [createData, setcreateData] = useState([]);//name,gender,address,phone,username,password
+    const [createData, setcreateData] = useState([]);
+    // Add search state
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Add state for delete confirmation dialog
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -103,7 +105,6 @@ const EmployeeManagement = () => {
         }
     }
 
-
     useEffect(() => {
         const getReportAllempapi = async () => {
             const res = await GetAllEmp(accessToken);
@@ -116,7 +117,7 @@ const EmployeeManagement = () => {
                             ? item.groomer_id
                             : item.role === 'emp'
                                 ? item.emp_id
-                                : `unknown-${index}`, // fallback กรณีไม่มีข้อมูล
+                                : `unknown-${index}`,
                 docname: item.doc_name,
                 empname: item.emp_name,
                 groomer: item.groomer_name,
@@ -133,6 +134,7 @@ const EmployeeManagement = () => {
         }
         getReportAllempapi();
     }, [accessToken]);
+
     const fieldKey = currentEmployee.docname !== undefined ? 'docname' : 'empname';
 
     const handleSnackbarClose = (event, reason) => {
@@ -140,14 +142,35 @@ const EmployeeManagement = () => {
         setOpenSnackbar(false);
     };
 
+    // Add filtered employees function
+    const filteredEmployees = employeeData.filter((employee) => {
+        const name = (employee.docname || employee.empname || employee.groomer || '').toLowerCase();
+        const gender = (employee.gender || '').toLowerCase();
+        const address = (employee.address || '').toLowerCase();
+        const phone = employee.tel || employee.phone || '';
+        const username = (employee.username || '').toLowerCase();
+        const role = employee.role === 'doctor' ? 'ທ່ານໝໍ' 
+                   : employee.role === 'groomer' ? 'ຊ່າງຕັດຂົນສັດ'
+                   : employee.role === 'emp' ? 'ພະນັກງານ' : '';
+
+        const searchTerm = searchQuery.toLowerCase();
+
+        return (
+            name.includes(searchTerm) ||
+            gender.includes(searchTerm) ||
+            address.includes(searchTerm) ||
+            phone.includes(searchTerm) ||
+            username.includes(searchTerm) ||
+            role.toLowerCase().includes(searchTerm)
+        );
+    });
+
     const handleDialogOpen = (employee = null) => {
         if (employee) {
             console.log("🔍 ຂໍ້ມູນພະນັກງານທີ່ເລືອກແກ້ໄຂ:", employee);
 
-            // ດຶງຊື່ຈາກ field ທີ່ມີຂໍ້ມູນ
             const employeeName = employee.docname || employee.empname || employee.groomer || '';
 
-            // ກຳນົດ position ຕາມ role
             let position = '';
             if (employee.role === 'doctor') {
                 position = 'ທ່ານໝໍ';
@@ -157,7 +180,6 @@ const EmployeeManagement = () => {
                 position = 'ພະນັກງານ';
             }
 
-            // ເຊັດຂໍ້ມູນເຂົ້າໃນ createData state
             const employeeData = {
                 id: employee.id,
                 name: employeeName,
@@ -165,7 +187,7 @@ const EmployeeManagement = () => {
                 address: employee.address || '',
                 tel: employee.tel || employee.phone || '',
                 username: employee.username || '',
-                password: '', // ບໍ່ໃຫ້ສະແດງລະຫັດຜ່ານເກົ່າ
+                password: '',
                 position: position,
                 role: employee.role,
                 status: employee.status || ''
@@ -179,7 +201,6 @@ const EmployeeManagement = () => {
         } else {
             console.log("➕ ເປີດໜ້າຕ່າງເພີ່ມພະນັກງານໃໝ່");
 
-            // ເຄລຍ form ສໍາລັບການເພີ່ມພະນັກງານໃໝ່
             const newEmployeeData = {
                 name: '',
                 gender: '',
@@ -213,13 +234,12 @@ const EmployeeManagement = () => {
         console.table(createData);
 
         try {
-            // ✅ กวดสอบຂໍ້ມູນຊ້ຳກ່ອນບັນທຶກ
             const isDuplicate = checkForDuplicateData();
             if (isDuplicate.hasDuplicate) {
                 setSnackbarMessage(`❌ ຂໍ້ມູນຊ້ຳກັນ: ${isDuplicate.message}`);
                 setSnackbarSeverity("error");
                 setOpenSnackbar(true);
-                return; // หยุดการทำงานถ้าพบข้อมูลซ้ำ
+                return;
             }
 
             let response = null;
@@ -279,12 +299,10 @@ const EmployeeManagement = () => {
                 }
             }
 
-            // ✅ ตรวจสอบ error และแสดงผล
             if (response?.error) {
                 throw new Error(response.error);
             }
 
-            // ✅ ถ้าไม่มี error ทำการบันทึก
             if (editMode) {
                 setEmployeeData(prevData =>
                     prevData.map(item =>
@@ -312,14 +330,11 @@ const EmployeeManagement = () => {
         }
     };
 
-    // ✅ ฟังก์ชันกวดสอບຂໍ້ມູນຊ້ຳ
     const checkForDuplicateData = () => {
-        // กรองข้อมูลที่ไม่ใช่ตัวที่กำลังแก้ไข (ในกรณี editMode)
         const otherEmployees = editMode
             ? employeeData.filter(emp => emp.id !== currentEmployee.id)
             : employeeData;
 
-        // ตรวจสอบชื่อซ้ำ
         const nameExists = otherEmployees.some(emp => {
             const existingName = emp.docname || emp.empname || emp.groomer || '';
             return existingName.toLowerCase().trim() === createData.name.toLowerCase().trim();
@@ -332,7 +347,6 @@ const EmployeeManagement = () => {
             };
         }
 
-        // ตรวจสอบเบอร์โทรซ้ำ
         const phoneExists = otherEmployees.some(emp => {
             const existingPhone = emp.tel || emp.phone || '';
             return existingPhone && existingPhone === createData.tel;
@@ -345,7 +359,6 @@ const EmployeeManagement = () => {
             };
         }
 
-        // ตรวจสอบ username ซ้ำ
         const usernameExists = otherEmployees.some(emp => {
             const existingUsername = emp.username || '';
             return existingUsername && existingUsername === createData.username;
@@ -364,7 +377,6 @@ const EmployeeManagement = () => {
         };
     };
 
-    // Updated delete handling functions
     const handleDeleteConfirmation = (employee) => {
         console.log("handleDeleteConfirmation", employee);
         setEmployeeToDelete(employee);
@@ -386,7 +398,6 @@ const EmployeeManagement = () => {
                 return;
             }
 
-            // 1. Call API ตาม role
             if (employeeToDelete.role === 'doctor') {
                 console.log("Deleting doctor:", employeeToDelete.id);
                 await deletedoc(employeeToDelete.id, accessToken);
@@ -401,7 +412,6 @@ const EmployeeManagement = () => {
                 return;
             }
 
-            // 2. ลบข้อมูลจาก frontend
             const nameToDelete = employeeToDelete.docname || employeeToDelete.empname || employeeToDelete.groomer;
             console.log("Deleting person with name:", nameToDelete);
 
@@ -421,12 +431,10 @@ const EmployeeManagement = () => {
             setSnackbarSeverity("error");
             setOpenSnackbar(true);
         } finally {
-            // 3. ปิด dialog และ reset state
             setDeleteDialogOpen(false);
             setEmployeeToDelete(null);
         }
     };
-
 
     const handleLogout = () => {
         navigate('/');
@@ -560,7 +568,7 @@ const EmployeeManagement = () => {
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
+                        keepMounted: true,
                     }}
                     sx={{
                         display: { xs: 'block', sm: 'none' },
@@ -624,12 +632,44 @@ const EmployeeManagement = () => {
                         <Typography variant="h4" fontWeight="bold" color="primary">ຂໍ້ມູນພະນັກງານ</Typography>
                     </Box>
 
-                    <Button
-                        variant="contained"
-                        sx={{ mb: 3, bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
-                        startIcon={<AddCircle />}
-                        onClick={() => handleDialogOpen()}
-                    >ເພີ່ມພະນັກງານ</Button>
+                    {/* Search and Add Button Container */}
+                    <Box sx={{ mb: 3, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, alignItems: { md: 'center' }, justifyContent: 'space-between' }}>
+                        {/* Search Bar */}
+                        <Paper
+                            elevation={2}
+                            sx={{
+                                p: 2,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                                flex: 1,
+                                maxWidth: { md: '400px' }
+                            }}
+                        >
+                            <TextField
+                                placeholder="ຄົ້ນຫາພະນັກງານ..."
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                InputProps={{
+                                    startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />,
+                                }}
+                                sx={{ flexGrow: 1 }}
+                            />
+                        </Paper>
+
+                        {/* Add Employee Button */}
+                        <Button
+                            variant="contained"
+                            sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
+                            startIcon={<AddCircle />}
+                            onClick={() => handleDialogOpen()}
+                        >
+                            ເພີ່ມພະນັກງານ
+                        </Button>
+                    </Box>
 
                     <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
                         <Table>
@@ -645,7 +685,7 @@ const EmployeeManagement = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {employeeData.map((employee, index) => {
+                                {filteredEmployees.map((employee, index) => {
                                     const uniqueKey = `${employee.role}-${employee.id || employee.username || index}`;
 
                                     return (
@@ -675,11 +715,16 @@ const EmployeeManagement = () => {
                                         </TableRow>
                                     );
                                 })}
+                                {filteredEmployees.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={7} align="center">ບໍ່ພົບຂໍ້ມູນ</TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                         </Table>
                     </TableContainer>
 
-                    {/* Employee Add/Edit Dialog - ປັບປຸງໃໝ່ */}
+                    {/* Employee Add/Edit Dialog */}
                     <Dialog
                         open={openDialog}
                         onClose={handleDialogClose}
@@ -815,7 +860,7 @@ const EmployeeManagement = () => {
                                 {/* ຂໍ້ມູນບັນຊີ */}
                                 <Grid item xs={12}>
                                     <Typography variant="subtitle1" fontWeight="bold" color="primary" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <AccountCircleIcon fontSize="small" /> ຂໍ້ມູນບັນຊີຜູ້ໃຊ້
+                                        <AccountCircleIcon fontSize="small" /> ຂໍ້ມູນບັນຊີຄ້ໃຊ້
                                     </Typography>
                                     <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 2, border: '1px solid #e0e0e0' }}>
                                         <Grid container spacing={2}>
