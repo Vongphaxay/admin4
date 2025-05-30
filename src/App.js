@@ -87,9 +87,9 @@ const AdminLogin = () => {
 
       // ✅ Set cookies
       Cookies.set("name_doctor", response.name);
-      Cookies.set("cus_ida", response.cus_id);
-      Cookies.set("rolea", response.role);
-      Cookies.set("accessTokena", response.accessToken, {
+      Cookies.set("cus_idd", response.cus_id);
+      Cookies.set("roled", response.role);
+      Cookies.set("accessTokend", response.accessToken, {
         secure: true,
         sameSite: "strict",
       });
@@ -113,9 +113,9 @@ const AdminLogin = () => {
 
       // ✅ Set cookies
       Cookies.set("name_groomer", response.name);
-      Cookies.set("cus_ida", response.cus_id);
-      Cookies.set("rolea", response.role);
-      Cookies.set("accessTokena", response.accessToken, {
+      Cookies.set("cus_idg", response.cus_id);
+      Cookies.set("roleg", response.role);
+      Cookies.set("accessTokeng", response.accessToken, {
         secure: true,
         sameSite: "strict",
       });
@@ -139,9 +139,9 @@ const AdminLogin = () => {
 
       // ✅ Set cookies
       Cookies.set("name_owner", response.name);
-      Cookies.set("cus_ida", response.cus_id);
-      Cookies.set("rolea", response.role);
-      Cookies.set("accessTokena", response.accessToken, {
+      Cookies.set("cus_ido", response.cus_id);
+      Cookies.set("roleo", response.role);
+      Cookies.set("accessTokeno", response.accessToken, {
         secure: true,
         sameSite: "strict",
       });

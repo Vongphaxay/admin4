@@ -78,7 +78,7 @@ const BookingTable = () => {
 
 
     const admin_name = decodeURIComponent(Cookies.get("name_owner") || "");
-    const accessToken = Cookies.get("accessTokena");
+    const accessToken = Cookies.get("accessTokeno");
 
     // Calculate total price including treatment
     const calculateTotalPrice = (booking) => {

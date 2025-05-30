@@ -74,7 +74,7 @@ const drawerWidth = 240;
 
 // Get admin data from cookies
 const admin_name = decodeURIComponent(Cookies.get("name_owner") || "");
-const accessToken = Cookies.get("accessTokena");
+const accessToken = Cookies.get("accessTokeno");
 
 // Menu items array - ປັບໃຫ້ກົງກັບໜ້າອື່ນ
 const menuItems = [

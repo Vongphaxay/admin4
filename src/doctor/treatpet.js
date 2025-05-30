@@ -83,8 +83,8 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const admin_name = decodeURIComponent(Cookies.get("name_doctor") || "");
-const cus_id = Cookies.get("cus_ida");
-const accessToken = Cookies.get("accessTokena");
+const cus_id = Cookies.get("cus_idd");
+const accessToken = Cookies.get("accessTokend");
 
 // Define the drawer width
 const drawerWidth = 240;
@@ -216,7 +216,7 @@ const TreatPet = () => {
 
     const APICREATESERVICE_INFO = async (booking) => {
         try {
-            const getdocid = Number(Cookies.get('cus_ida'));
+            const getdocid = Number(Cookies.get('cus_idd'));
             console.log("getdocid", getdocid);
             const dataservice_info = {
                 doc_id: getdocid,  // Adjust based on your data

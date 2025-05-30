@@ -30,8 +30,8 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const admin_name = decodeURIComponent(Cookies.get("name_owner") || "");
-const cus_id = Cookies.get("cus_ida");
-const accessToken = Cookies.get("accessTokena");
+const cus_id = Cookies.get("cus_ido");
+const accessToken = Cookies.get("accessTokeno");
 
 // Define the drawer width
 const drawerWidth = 240;
