@@ -149,9 +149,9 @@ const EmployeeManagement = () => {
         const address = (employee.address || '').toLowerCase();
         const phone = employee.tel || employee.phone || '';
         const username = (employee.username || '').toLowerCase();
-        const role = employee.role === 'doctor' ? 'ທ່ານໝໍ' 
-                   : employee.role === 'groomer' ? 'ຊ່າງຕັດຂົນສັດ'
-                   : employee.role === 'emp' ? 'ພະນັກງານ' : '';
+        const role = employee.role === 'doctor' ? 'ທ່ານໝໍ'
+            : employee.role === 'groomer' ? 'ຊ່າງຕັດຂົນສັດ'
+                : employee.role === 'emp' ? 'ພະນັກງານ' : '';
 
         const searchTerm = searchQuery.toLowerCase();
 
@@ -234,17 +234,27 @@ const EmployeeManagement = () => {
         console.table(createData);
 
         try {
+            // ✅ กวดสอบຂໍ້ມູນຊ້ຳກ່ອນບັນທຶກ
             const isDuplicate = checkForDuplicateData();
             if (isDuplicate.hasDuplicate) {
                 setSnackbarMessage(`❌ ຂໍ້ມູນຊ້ຳກັນ: ${isDuplicate.message}`);
                 setSnackbarSeverity("error");
                 setOpenSnackbar(true);
-                return;
+                return; // หยุดการทำงานถ้าพบข้อมูลซ้ำ
             }
 
             let response = null;
+
+            if (!createData.position) {
+                setSnackbarMessage("❌ ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນບັນທຶກ");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+                return;
+            }
+
             if (editMode) {
                 console.log("📝 btບັນທຶກການແກ້ໄຂ");
+
                 if (createData.position === 'ທ່ານໝໍ') {
                     const docData = {
                         doc_name: createData.name,
@@ -253,10 +263,8 @@ const EmployeeManagement = () => {
                         tel: createData.tel,
                         password: createData.password,
                     };
-                    console.log(currentEmployee.id, docData, accessToken);
+                    console.log(createData.position);
                     response = await updatedoc(currentEmployee.id, docData, accessToken);
-                    console.log("✂️ updatedoc response:", response);
-
                 } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
                     const groomerData = {
                         groomer_name: createData.name,
@@ -266,10 +274,12 @@ const EmployeeManagement = () => {
                         password: createData.password,
                     };
                     response = await updategroomer(currentEmployee.id, groomerData, accessToken);
-                    console.log("✂️ updategroomer response:", response);
+                } else {
+                    throw new Error("Unknown position");
                 }
             } else {
                 console.log("📌 btບັນທຶກ");
+
                 if (createData.position === 'ທ່ານໝໍ') {
                     const docData = {
                         doc_name: createData.name,
@@ -280,10 +290,7 @@ const EmployeeManagement = () => {
                         password: createData.password,
                         status: 'ວ່າງ'
                     };
-
                     response = await createDoctor(docData);
-                    console.log("🩺 createDoctor response:", response);
-
                 } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
                     const grmData = {
                         groomer_name: createData.name,
@@ -295,14 +302,16 @@ const EmployeeManagement = () => {
                         status: 'ວ່າງ'
                     };
                     response = await createGroomer(grmData);
-                    console.log("✂️ createGroomer response:", response);
+                } else {
+                    throw new Error("Unknown position");
                 }
             }
-
+            // ✅ ตรวจสอบ error และแสดงผล
             if (response?.error) {
                 throw new Error(response.error);
             }
 
+            // ✅ ถ้าไม่มี error ทำการบันทึก
             if (editMode) {
                 setEmployeeData(prevData =>
                     prevData.map(item =>
@@ -318,9 +327,12 @@ const EmployeeManagement = () => {
 
             setSnackbarMessage("ບັນທຶກສຳເລັດ");
             setSnackbarSeverity("success");
-            window.location.reload();
             setOpenSnackbar(true);
             setOpenDialog(false);
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
 
         } catch (error) {
             console.error("❌ API Error:", error.message);

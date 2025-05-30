@@ -12,7 +12,7 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines,Assessment as AssessmentIcon,AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, Work
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Assessment as AssessmentIcon, AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, Work
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import Snackbar from '@mui/material/Snackbar';
@@ -225,8 +225,17 @@ const EmployeeManagement = () => {
             }
 
             let response = null;
+
+            if (!createData.position) {
+                setSnackbarMessage("❌ ກະລຸນາເລືອກຕຳແໜ່ງກ່ອນບັນທຶກ");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+                return;
+            }
+
             if (editMode) {
                 console.log("📝 btບັນທຶກການແກ້ໄຂ");
+
                 if (createData.position === 'ທ່ານໝໍ') {
                     const docData = {
                         doc_name: createData.name,
@@ -235,10 +244,8 @@ const EmployeeManagement = () => {
                         tel: createData.tel,
                         password: createData.password,
                     };
-                    console.log(currentEmployee.id, docData, accessToken);
+                    console.log(createData.position);
                     response = await updatedoc(currentEmployee.id, docData, accessToken);
-                    console.log("✂️ updatedoc response:", response);
-
                 } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
                     const groomerData = {
                         groomer_name: createData.name,
@@ -248,10 +255,12 @@ const EmployeeManagement = () => {
                         password: createData.password,
                     };
                     response = await updategroomer(currentEmployee.id, groomerData, accessToken);
-                    console.log("✂️ updategroomer response:", response);
+                } else {
+                    throw new Error("Unknown position");
                 }
             } else {
                 console.log("📌 btບັນທຶກ");
+
                 if (createData.position === 'ທ່ານໝໍ') {
                     const docData = {
                         doc_name: createData.name,
@@ -262,10 +271,7 @@ const EmployeeManagement = () => {
                         password: createData.password,
                         status: 'ວ່າງ'
                     };
-
                     response = await createDoctor(docData);
-                    console.log("🩺 createDoctor response:", response);
-
                 } else if (createData.position === 'ຊ່າງຕັດຂົນ') {
                     const grmData = {
                         groomer_name: createData.name,
@@ -277,10 +283,10 @@ const EmployeeManagement = () => {
                         status: 'ວ່າງ'
                     };
                     response = await createGroomer(grmData);
-                    console.log("✂️ createGroomer response:", response);
+                } else {
+                    throw new Error("Unknown position");
                 }
             }
-
             // ✅ ตรวจสอบ error และแสดงผล
             if (response?.error) {
                 throw new Error(response.error);
@@ -302,9 +308,12 @@ const EmployeeManagement = () => {
 
             setSnackbarMessage("ບັນທຶກສຳເລັດ");
             setSnackbarSeverity("success");
-            window.location.reload();
             setOpenSnackbar(true);
             setOpenDialog(false);
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
 
         } catch (error) {
             console.error("❌ API Error:", error.message);

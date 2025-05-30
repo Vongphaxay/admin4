@@ -9,7 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import React, { useState, useEffect } from 'react';
-import { GetAllroompet, UpdateRoompet } from '../services/report.service';
+import { GetAllroompet, UpdateRoompet,createRoompet, DeleteRoompet } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -49,9 +49,11 @@ const InsertCages = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [roompetData, setRoompetData] = useState([]);
-    const [cageData, setCageData] = useState([
+    const [cageData, setCageData] = useState([]);
 
-    ]);
+    // State สำหรับ Delete Confirmation Dialog
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [cageToDelete, setCageToDelete] = useState(null);
 
     useEffect(() => {
         const getAllRoompet = async () => {
@@ -80,9 +82,6 @@ const InsertCages = () => {
         cageStatus: 'ວ່າງ',
         description: ''
     });
-
-    // Sample cage data
-
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -185,9 +184,14 @@ const InsertCages = () => {
             console.log("editMode2", editMode);
             // Add new cage
             const newCage = {
-                ...formData,
-                id: cageData.length + 1
+                room_name: formData.cageName,
+                owner_id: cus_id,
+                price: formData.cagePrice,
+                status: formData.cageStatus,
             };
+            console.log("newCage", newCage);
+            const response = createRoompet(newCage, accessToken);
+            console.log("response", response);
             setCageData(prevData => [...prevData, newCage]);
             setSnackbarMessage('ເພີ່ມກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
         }
@@ -204,15 +208,42 @@ const InsertCages = () => {
             cageStatus: 'ວ່າງ',
             description: ''
         });
+
         window.location.reload();
     };
 
-    // Handle delete cage
-    const handleDeleteCage = (id) => {
-        setCageData(prevData => prevData.filter(cage => cage.id !== id));
-        setSnackbarMessage('ລຶບກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
-        setSnackbarSeverity('success');
-        setOpenSnackbar(true);
+    // Handle delete cage button click - ເປີດ confirmation dialog
+    const handleDeleteClick = (cage) => {
+        console.log("cage", cage);
+        console.log("cageid", cage.room_id);
+        setCageToDelete(cage);
+        setOpenDeleteDialog(true);
+    };
+
+    // Handle actual delete after confirmation
+    const handleConfirmDelete = () => {
+        console.log("cageToDelete", cageToDelete);
+        console.log("cageToDelete.room_id", cageToDelete.room_id);
+        const response = DeleteRoompet(cageToDelete.room_id, accessToken);
+        console.log("response", response);
+        if (cageToDelete) {
+            setCageData(prevData => prevData.filter(cage => cage.room_id !== cageToDelete.room_id));
+            setSnackbarMessage('ລຶບກົງສັດລ້ຽງສຳເລັດແລ້ວ!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+        }
+        setOpenDeleteDialog(false);
+        setCageToDelete(null);
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
+    };
+
+    // Handle cancel delete
+    const handleCancelDelete = () => {
+        setOpenDeleteDialog(false);
+        setCageToDelete(null);
     };
 
     const handleCloseSnackbar = () => {
@@ -470,7 +501,7 @@ const InsertCages = () => {
                                                     <Edit fontSize="small" />
                                                 </IconButton>
                                                 <IconButton
-                                                    onClick={() => handleDeleteCage(cage.room_id)}
+                                                    onClick={() => handleDeleteClick(cage)}
                                                     color="error"
                                                     size="small"
                                                     sx={{
@@ -486,8 +517,6 @@ const InsertCages = () => {
                                     </TableRow>
                                 ))}
                             </TableBody>
-
-
                         </Table>
                     </TableContainer>
 
@@ -593,6 +622,72 @@ const InsertCages = () => {
                                 sx={{ borderRadius: 2 }}
                             >
                                 {editMode ? 'ແກ້ໄຂ' : 'ເພີ່ມ'}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    {/* Delete Confirmation Dialog */}
+                    <Dialog
+                        open={openDeleteDialog}
+                        onClose={handleCancelDelete}
+                        maxWidth="sm"
+                        PaperProps={{
+                            sx: { borderRadius: 2 }
+                        }}
+                    >
+                        <DialogTitle sx={{
+                            fontWeight: 'bold',
+                            bgcolor: theme.palette.error.main,
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center'
+                        }}>
+                            <Warning sx={{ mr: 1 }} />
+                            ຢືນຢັນການລຶບ
+                        </DialogTitle>
+                        <DialogContent sx={{ p: 3 }}>
+                            <Typography variant="h6" sx={{ mb: 2 }}>
+                                ທ່ານຕ້ອງການລຶບກົງສັດລ້ຽງນີ້ແທ້ບໍ?
+                            </Typography>
+                            {cageToDelete && (
+                                <Box sx={{ 
+                                    bgcolor: '#f5f5f5', 
+                                    p: 2, 
+                                    borderRadius: 2,
+                                    border: '1px solid #ddd'
+                                }}>
+                                    <Typography variant="body1">
+                                        <strong>ຊື່ກົງ:</strong> {cageToDelete.room_name}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>ລາຄາ:</strong> {Number(cageToDelete.price).toLocaleString()} ກີບ
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>ສະຖານະ:</strong> {cageToDelete.status}
+                                    </Typography>
+                                </Box>
+                            )}
+                            <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+                                ⚠️ ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້!
+                            </Typography>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 3 }}>
+                            <Button
+                                onClick={handleCancelDelete}
+                                variant="outlined"
+                                color="primary"
+                                sx={{ borderRadius: 2 }}
+                            >
+                                ຍົກເລີກ
+                            </Button>
+                            <Button
+                                onClick={handleConfirmDelete}
+                                variant="contained"
+                                color="error"
+                                startIcon={<Delete />}
+                                sx={{ borderRadius: 2 }}
+                            >
+                                ຕົກລົງ ລຶບ
                             </Button>
                         </DialogActions>
                     </Dialog>

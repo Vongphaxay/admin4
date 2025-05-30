@@ -117,3 +117,24 @@ export const UpdateRoompet = async (roompet_id, roompetData, token) => {
     );
     return response.data;
 }
+
+export const DeleteRoompet = async (roompet_id, token) => {
+    const response = await axios.delete(
+        `${REACT_APP_API_URL}/roompet/delete/${roompet_id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}
+
+export const createRoompet = async (roompetData, token) => {
+    const response = await axios.post(`${REACT_APP_API_URL}/roompet/create`, roompetData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+}
