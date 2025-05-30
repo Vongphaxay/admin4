@@ -17,7 +17,7 @@ import Cookies from 'js-cookie';
 import { GetAllbooking, UpdatePayment_roompet } from '../services/report.service';
 import image from '../img/qrcode.png';
 import ReceiptPrinter from './ReceiptPrinter'; // Import the ReceiptPrinter component
-import {Cancel_booking} from '../services/booking.service'
+import { Cancel_booking } from '../services/booking.service'
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -215,7 +215,7 @@ const BookingTable = () => {
         setOpenCancelDialog(true);
     };
 
-    const handleConfirmCancel =  async () => {
+    const handleConfirmCancel = async () => {
         console.log("bookingToCancel", bookingToCancel);
         if (bookingToCancel) {
             console.log("bookingToCancel.id", bookingToCancel.id);
@@ -472,7 +472,8 @@ const BookingTable = () => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: 2,
-                            flexDirection: { xs: 'column', md: 'row' }
+                            flex: 1,
+                            maxWidth: { md: '400px' }
                         }}
                     >
                         <TextField
@@ -1116,7 +1117,7 @@ const BookingTable = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
-                    
+
                     {/* Receipt Printer Dialog */}
                     <ReceiptPrinter
                         open={openReceiptDialog}

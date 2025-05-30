@@ -4,7 +4,7 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container, Chip, DialogContentText
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines,Assessment as AssessmentIcon,AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Assessment as AssessmentIcon, AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { getReportallcus, DeleteCustomer, UpdateCus } from '../services/report.service';
@@ -222,7 +222,7 @@ const CustomerManagement = () => {
     };
 
     const handleLogout = () => {
-        if (window.confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການອອກຈາກລະບົບ?')) {
+        {
             navigate('/');
         }
     };
@@ -439,7 +439,8 @@ const CustomerManagement = () => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: 2,
-                            flexDirection: { xs: 'column', md: 'row' }
+                            flex: 1,
+                            maxWidth: { md: '400px' }
                         }}
                     >
                         <TextField

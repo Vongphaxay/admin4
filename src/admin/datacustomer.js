@@ -220,7 +220,7 @@ const CustomerManagement = () => {
     };
 
     const handleLogout = () => {
-        if (window.confirm('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການອອກຈາກລະບົບ?')) {
+        {
             navigate('/');
         }
     };
@@ -437,7 +437,8 @@ const CustomerManagement = () => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: 2,
-                            flexDirection: { xs: 'column', md: 'row' }
+                            flex: 1,
+                            maxWidth: { md: '400px' }
                         }}
                     >
                         <TextField
