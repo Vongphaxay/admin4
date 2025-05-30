@@ -107,7 +107,7 @@ const TreatPet = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchQuery, setSearchQuery] = useState(''); // Changed from searchTerm to searchQuery
     const [boardingData, setBoardingData] = useState([]);
 
     useEffect(() => {
@@ -261,13 +261,24 @@ const TreatPet = () => {
         navigate('/');
     };
 
-    const filteredData = boardingData.filter(boarding =>
-        boarding.pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        boarding.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        boarding.customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Updated filtering logic to match datacustomer pattern
+    const filteredData = boardingData.filter(boarding => {
+        const petName = boarding.pet?.name?.toLowerCase() || '';
+        const customerName = boarding.customer?.name?.toLowerCase() || '';
+        const customerPhone = boarding.customer?.phone || '';
+        const petType = boarding.pet?.type?.toLowerCase() || '';
+        const petGender = boarding.pet?.gender?.toLowerCase() || '';
+        const doctorName = boarding.tb_service_infos?.[0]?.doctor?.name?.toLowerCase() || '';
 
-
+        return (
+            petName.includes(searchQuery.toLowerCase()) ||
+            customerName.includes(searchQuery.toLowerCase()) ||
+            customerPhone.includes(searchQuery) ||
+            petType.includes(searchQuery.toLowerCase()) ||
+            petGender.includes(searchQuery.toLowerCase()) ||
+            doctorName.includes(searchQuery.toLowerCase())
+        );
+    });
 
     const drawerContent = (
         <>
@@ -464,45 +475,34 @@ const TreatPet = () => {
                         </Typography>
                     </Box>
 
-                    {/* Search and Add Button Row */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', width: { xs: '100%', md: '50%' } }}>
-                            <TextField
-                                placeholder="ຄົ້ນຫາ..."
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                InputProps={{
-                                    startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />,
-                                }}
-                            />
-                        </Box>
-                    </Box>
-                    {/* <Grid container spacing={3} sx={{ mb: 3 }}>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#e8f5e9', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ສຳເລັດແລ້ວ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {completedCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card sx={{ bgcolor: '#fff3e0', boxShadow: 2 }}>
-                                <CardContent sx={{ textAlign: 'center' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>ກຳລັງປິ່ນປົວ</Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary">
-                                        {inProgressCount}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    </Grid> */}
-                    <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
+                    {/* Search and Filters - Updated to match datacustomer style */}
+                    <Paper
+                        elevation={2}
+                        sx={{
+                            p: 2,
+                            mb: 3,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            flex: 1,
+                            maxWidth: { md: '400px' }
+                        }}
+                    >
+                        <TextField
+                            placeholder="ຄົ້ນຫາສັດລ້ຽງ..."
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            InputProps={{
+                                startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />,
+                            }}
+                            sx={{ flexGrow: 1 }}
+                        />
+                    </Paper>
+
+                    <TableContainer component={Paper} sx={{ boxShadow: 3, mb: 4 }}>
                         <Table>
                             <TableHead sx={{ bgcolor: '#e3f2fd' }}>
                                 <TableRow>
@@ -529,8 +529,12 @@ const TreatPet = () => {
                                         <TableCell>{boarding.tb_service_infos[0]?.doctor?.name || '-'}</TableCell>
                                     </TableRow>
                                 ))}
+                                {filteredData.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={8} align="center">ບໍ່ພົບຂໍ້ມູນ</TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
-
                         </Table>
                     </TableContainer>
                 </Container>
