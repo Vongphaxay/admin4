@@ -332,7 +332,7 @@ const EmployeeManagement = () => {
 
             setTimeout(() => {
                 window.location.reload();
-            }, 100);
+            }, 300);
 
         } catch (error) {
             console.error("❌ API Error:", error.message);
