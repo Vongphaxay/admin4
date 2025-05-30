@@ -4,11 +4,13 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container, Chip, DialogContentText
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Assessment as AssessmentIcon, AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Menu,Assessment as AssessmentIcon, AddBoxRounded, ChevronRight, Notifications, Close, Logout, Phone, Email, LocationOn, Cake, Search, FilterList, Warning
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+// ເພີ່ມການນຳເຂົ້າ Snackbar ແລະ MuiAlert
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import { getReportallcus, DeleteCustomer, UpdateCus } from '../services/report.service';
-
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -45,9 +47,6 @@ const Deletecusapi = async (cus_id) => {
     }
 };
 
-
-
-
 // Menu items
 const menuItems = [
     { icon: <Home />, label: 'ພາບລວມຄລິນິກ', path: '/owner/dashboard' },
@@ -71,12 +70,22 @@ const CustomerManagement = () => {
     const [editMode, setEditMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [reportData, setReportData] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
     // ເພີ່ມ state ສຳລັບ Dialog ຢືນຢັນການລົບ
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [customerToDelete, setCustomerToDelete] = useState(null);
 
     const [customerData, setCustomerData] = useState([]);
+    
+    // ເພີ່ມຟັງຊັນສຳລັບປິດ Snackbar
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') return;
+        setOpenSnackbar(false);
+    };
+
     useEffect(() => {
         const getReportallcusapi = async () => {
             const response = await getReportallcus(accessToken);
@@ -150,25 +159,49 @@ const CustomerManagement = () => {
                 const response = await UpdateCus(currentCustomer.id, CustomerData, accessToken);
                 console.log("response", response);
 
+                // ອັບເດດ state ກ່ອນ
                 setCustomerData(prevData =>
                     prevData.map(item =>
                         item.id === currentCustomer.id ? currentCustomer : item
                     )
                 );
+
+                // ປິດ dialog
                 setOpenDialog(false);
-                window.location.reload();
+
+                // ສະແດງຂໍ້ຄວາມສຳເລັດພ້ອມໄອຄອນ ✅
+                setSnackbarMessage(" ແກ້ໄຂຂໍ້ມູນລູກຄ້າສຳເລັດ");
+                setSnackbarSeverity("success");
+                setOpenSnackbar(true);
+
+                // Reload ໜ້າຫຼັງຈາກສະແດງຂໍ້ຄວາມສຳເລັດແລ້ວ 1.5 ວິນາທີ
+                setTimeout(() => {
+                    window.location.reload();
+                }, 600);
+
             } catch (error) {
                 console.error("Error updating customer:", error);
 
+                // ສະແດງຂໍ້ຄວາມຜິດພາດ
+                let errorMessage = "ຂໍ້ຜິດພາດໃນການແກ້ໄຂຂໍ້ມູນລູກຄ້າ";
+
                 if (error.response && error.response.data && error.response.data.error) {
-                    alert("เกิดข้อผิดพลาด: " + error.response.data.error); // แจ้งเตือนผู้ใช้
-                    window.location.reload();
-                } else {
-                    alert("เกิดข้อผิดพลาดในการอัปเดตข้อมูลลูกค้า");
+                    errorMessage = "ເກີດຂໍ້ຜິດພາດ: " + error.response.data.error;
                 }
+
+                setSnackbarMessage("❌ " + errorMessage);
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+
+                // Reload ໜ້າຫຼັງຈາກສະແດງຂໍ້ຄວາມຜິດພາດແລ້ວ 2 ວິນາທີ
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             }
         } else {
+            // ກໍລະນີເພີ່ມລູກຄ້າໃໝ່
             console.log("currentCustomer2", currentCustomer);
+
             setCustomerData(prevData => [
                 ...prevData,
                 {
@@ -177,7 +210,14 @@ const CustomerManagement = () => {
                     pets: currentCustomer.pets || []
                 }
             ]);
+
+            // ປິດ dialog
             setOpenDialog(false);
+
+            // ສະແດງຂໍ້ຄວາມສຳເລັດສຳລັບການເພີ່ມລູກຄ້າໃໝ່
+            setSnackbarMessage("✅ ເພີ່ມລູກຄ້າໃໝ່ສຳເລັດ");
+            setSnackbarSeverity("success");
+            setOpenSnackbar(true);
         }
     };
 
@@ -198,13 +238,26 @@ const CustomerManagement = () => {
         if (customerToDelete) {
             try {
                 await Deletecusapi(customerToDelete.id);
+                
+                // ສະແດງຂໍ້ຄວາມສຳເລັດສຳລັບການລົບ
+                setSnackbarMessage("✅ ລົບຂໍ້ມູນລູກຄ້າສຳເລັດ");
+                setSnackbarSeverity("success");
+                setOpenSnackbar(true);
+                
                 // ປິດ Dialog ຫຼັງຈາກລົບສໍາເລັດ
                 handleCloseDeleteDialog();
+                
                 // Reload page to show updated data
-                window.location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             } catch (error) {
                 console.error("Error deleting customer:", error);
-                // ຖ້າຕ້ອງການຈັດການກັບຂໍ້ຜິດພາດ, ສາມາດເຮັດໄດ້ທີ່ນີ້
+                
+                // ສະແດງຂໍ້ຄວາມຜິດພາດສຳລັບການລົບ
+                setSnackbarMessage("❌ ເກີດຂໍ້ຜິດພາດໃນການລົບຂໍ້ມູນລູກຄ້າ");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
             }
         }
     };
@@ -500,6 +553,7 @@ const CustomerManagement = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    
                     {/* Dialog for editing customer data */}
                     <Dialog
                         open={openDialog}
@@ -700,6 +754,24 @@ const CustomerManagement = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
+
+                    {/* Snackbar ສຳລັບສະແດງຂໍ້ຄວາມ */}
+                    <Snackbar
+                        open={openSnackbar}
+                        autoHideDuration={3000}
+                        onClose={handleSnackbarClose}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    >
+                        <MuiAlert
+                            onClose={handleSnackbarClose}
+                            severity={snackbarSeverity}
+                            sx={{ width: '100%' }}
+                            elevation={6}
+                            variant="filled"
+                        >
+                            {snackbarMessage}
+                        </MuiAlert>
+                    </Snackbar>
                 </Container>
             </Box>
         </Box>
