@@ -69,6 +69,9 @@ const CustomerManagement = () => {
     const [editMode, setEditMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [reportData, setReportData] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
     // ເພີ່ມ state ສຳລັບ Dialog ຢືນຢັນການລົບ
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -148,25 +151,49 @@ const CustomerManagement = () => {
                 const response = await UpdateCus(currentCustomer.id, CustomerData, accessToken);
                 console.log("response", response);
 
+                // ອັບເດດ state ກ່ອນ
                 setCustomerData(prevData =>
                     prevData.map(item =>
                         item.id === currentCustomer.id ? currentCustomer : item
                     )
                 );
+
+                // ປິດ dialog
                 setOpenDialog(false);
-                window.location.reload();
+
+                // ສະແດງຂໍ້ຄວາມສຳເລັດ
+                setSnackbarMessage(" ແກ້ໄຂລູກຄ້າສຳເລັດ");
+                setSnackbarSeverity("success");
+                setOpenSnackbar(true);
+
+                // Reload ໜ້າຫຼັງຈາກສະແດງຂໍ້ຄວາມສຳເລັດແລ້ວ 1.5 ວິນາທີ
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+
             } catch (error) {
                 console.error("Error updating customer:", error);
 
+                // ສະແດງຂໍ້ຄວາມຜິດພາດ
+                let errorMessage = "ຂໍ້ຜິດພາດໃນການແກ້ໄຂຂໍ້ມູນລູກຄ້າ";
+
                 if (error.response && error.response.data && error.response.data.error) {
-                    alert("เกิดข้อผิดพลาด: " + error.response.data.error); // แจ้งเตือนผู้ใช้
-                    window.location.reload();
-                } else {
-                    alert("เกิดข้อผิดพลาดในการอัปเดตข้อมูลลูกค้า");
+                    errorMessage = "ເກີດຂໍ້ຜິດພາດ: " + error.response.data.error;
                 }
+
+                setSnackbarMessage("❌ " + errorMessage);
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+
+                // Reload ໜ້າຫຼັງຈາກສະແດງຂໍ້ຄວາມຜິດພາດແລ້ວ 2 ວິນາທີ
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
             }
         } else {
+            // ກໍລະນີເພີ່ມລູກຄ້າໃໝ່
             console.log("currentCustomer2", currentCustomer);
+
             setCustomerData(prevData => [
                 ...prevData,
                 {
@@ -175,7 +202,14 @@ const CustomerManagement = () => {
                     pets: currentCustomer.pets || []
                 }
             ]);
+
+            // ປິດ dialog
             setOpenDialog(false);
+
+            // ສະແດງຂໍ້ຄວາມສຳເລັດສຳລັບການເພີ່ມລູກຄ້າໃໝ່
+            setSnackbarMessage(" ເພີ່ມລູກຄ້າໃໝ່ສຳເລັດ");
+            setSnackbarSeverity("success");
+            setOpenSnackbar(true);
         }
     };
 

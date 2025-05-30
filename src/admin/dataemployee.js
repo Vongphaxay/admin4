@@ -427,22 +427,34 @@ const EmployeeManagement = () => {
             const nameToDelete = employeeToDelete.docname || employeeToDelete.empname || employeeToDelete.groomer;
             console.log("Deleting person with name:", nameToDelete);
 
+            // ອັບເດດ state ກ່ອນ
             setEmployeeData(prevData =>
                 prevData.filter(item =>
                     (item.docname || item.empname || item.groomer) !== nameToDelete
                 )
             );
 
-            setSnackbarMessage("✅ ລຶບຂໍ້ມູນສຳເລັດ");
+            // ສະແດງຂໍ້ຄວາມສຳເລັດ
+            setSnackbarMessage("ລົບພະນັກງານສຳເລັດ");
             setSnackbarSeverity("success");
-            window.location.reload();
             setOpenSnackbar(true);
+
+            // ປິດ dialog
+            setDeleteDialogOpen(false);
+            setEmployeeToDelete(null);
+
+            // Reload ໜ້າຫຼັງຈາກສະແດງຂໍ້ຄວາມສຳເລັດແລ້ວ 1.5 ວິນາທີ
+            setTimeout(() => {
+                window.location.reload();
+            }, 300);
+
         } catch (error) {
             console.error("❌ API Error:", error.message || error);
             setSnackbarMessage(`❌ ຂໍ້ຜິດພາດ: ${error.message || 'ບໍ່ສາມາດລຶບໄດ້'}`);
             setSnackbarSeverity("error");
             setOpenSnackbar(true);
-        } finally {
+
+            // ປິດ dialog ກໍລະນີມີຂໍ້ຜິດພາດ
             setDeleteDialogOpen(false);
             setEmployeeToDelete(null);
         }
