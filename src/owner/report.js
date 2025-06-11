@@ -59,7 +59,7 @@ import {
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import { GetAllbooking } from '../services/report.service';
+import { GetAllbooking, ReportAll } from '../services/report.service';
 
 // Create a custom styled container for the logo - ໃຊ້ແບບດຽວກັບໜ້າອື່ນ
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -91,10 +91,11 @@ const menuItems = [
 ];
 
 // Main component
+
 const ReportPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  
+
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [reportType, setReportType] = useState('bookings');
@@ -104,7 +105,16 @@ const ReportPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [bookingData, setBookingData] = useState([]);
   const [openPrintDialog, setOpenPrintDialog] = useState(false);
-  
+
+  const [typeofservice, settypeofservice] = useState([]);
+  const [report_sercive, setreport_sercive] = useState([]);
+  const [reportroom_pet, setreportroom_pet] = useState([]);
+  const [reportbook, setreportbook] = useState([]);
+  const [reportcut, setreportcut] = useState([]);
+  const [reporthelp, setreporthelp] = useState([]);
+  const [reportdaily, setreportdaily] = useState([]);
+  const [reportpayment, setreportpayment] = useState([]);
+
   // Reference for the printable content
   const printComponentRef = useRef();
 
@@ -166,29 +176,95 @@ const ReportPage = () => {
     }
   }, [reportType, accessToken]);
 
-  const generateReport = () => {
+  const formatDateToYMD = (date) => {
+    const local = new Date(date);
+    const yyyy = local.getFullYear();
+    const mm = String(local.getMonth() + 1).padStart(2, '0');
+    const dd = String(local.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+  const generateReport = async () => {
+    const formattedStartDate = formatDateToYMD(startDate);
+    const formattedEndDate = formatDateToYMD(endDate);
+    let typeofservice = ''
+    let report_sercive = ''
+    let reportroom_pet = ''
+    let reportbook = ''
+    let reportcut = ''
+    let reporthelp = ''
+    let reportdaily = ''
+    let reportpayment = ''
+
+    if (reportType === 'service_type') {
+      console.log('Generating report', { formattedStartDate, formattedEndDate, reportType });
+      typeofservice = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      // console.log('response service_type', response);
+      const flattypedata = []
+      response.report.forEach(item => {
+        flattypedata.push({
+          cat_id: item.cat_id,
+          cat_name: item.cat_name,
+
+        })
+      })
+      settypeofservice(flattypedata)
+      console.log('flattypedata', flattypedata);
+    } else if (reportType === 'services') {
+      report_sercive = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      console.log('response services', response);
+      setreport_sercive(response.report)
+    } else if (reportType === 'animals') {
+      reportroom_pet = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      console.log('response reportroom_pet', response);
+    } else if (reportType === 'bookings') {
+      reportbook = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      console.log('response reportbook', response);
+    } else if (reportType === 'grooming') {
+      reportcut = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      console.log('response reportcut', response);
+    } else if (reportType === 'treatment') {
+      reporthelp = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      console.log('response reporthelp', response);
+    } else if (reportType === 'daily_income') {
+      reportdaily = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      console.log('response reportdaily', response);
+    } else if (reportType === 'payments') {
+      reportpayment = 'All'
+      const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
+      console.log('response reportpayment', response);
+    } else {
+      console.log('Invalid report type');
+    }
+
     setIsLoading(true);
-    console.log('Generating report', { startDate, endDate, reportType });
+    // console.log('Generating report', { formattedStartDate, formattedEndDate, reportType });
 
     if (reportType === 'bookings') {
       let filteredBookings = [...bookingData];
-      
+
       if (startDate && endDate) {
         const start = new Date(startDate).getTime();
         const end = new Date(endDate).getTime();
-        
+
         filteredBookings = bookingData.filter(booking => {
           const bookingStartDate = new Date(booking.start_date).getTime();
           return bookingStartDate >= start && bookingStartDate <= end;
         });
       }
-      
+
       setReportData({
         type: reportType,
         generatedAt: new Date().toLocaleString(),
         data: filteredBookings
       });
-      
+
       setIsLoading(false);
       return;
     }
@@ -223,18 +299,18 @@ const ReportPage = () => {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
-  
+
   const handlePrint = () => {
     const printContent = document.getElementById('printable-report');
     const originalContents = document.body.innerHTML;
-    
+
     document.body.innerHTML = printContent.innerHTML;
-    
+
     window.print();
-    
+
     document.body.innerHTML = originalContents;
     setOpenPrintDialog(false);
-    
+
     window.location.reload();
   };
 
@@ -289,7 +365,7 @@ const ReportPage = () => {
     }
 
     const totalAmount = reportData.data.reduce((sum, booking) => sum + Number(booking.total), 0);
-    
+
     const serviceCount = {};
     reportData.data.forEach(booking => {
       const service = booking.services?.name || 'ບໍ່ລະບຸ';
@@ -299,7 +375,7 @@ const ReportPage = () => {
     return (
       <Box sx={{ mt: 3 }}>
         <Typography variant="h6" gutterBottom color="primary">ສະຫຼຸບລາຍງານການຈອງ</Typography>
-        
+
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} sm={4}>
             <Paper sx={{ p: 2, bgcolor: '#e3f2fd', height: '100%' }}>
@@ -322,7 +398,7 @@ const ReportPage = () => {
             </Paper>
           </Grid>
         </Grid>
-        
+
         <Paper sx={{ p: 2, mt: 2 }}>
           <Typography variant="subtitle1" gutterBottom>ການຈອງແບ່ງຕາມບໍລິການ</Typography>
           <TableContainer>
@@ -355,7 +431,7 @@ const ReportPage = () => {
   // Printable component
   const PrintableReport = () => {
     const currentDate = new Date().toLocaleDateString('lo-LA');
-    
+
     return (
       <div id="printable-report" style={{ padding: '20px', backgroundColor: 'white', width: '100%' }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
@@ -374,12 +450,12 @@ const ReportPage = () => {
             ວັນທີພິມ: {currentDate}
           </p>
         </div>
-        
+
         {reportData && reportData.data && reportData.data.length > 0 ? (
           <>
             <div style={{ marginBottom: '30px' }}>
               <h4 style={{ color: '#1976d2', marginBottom: '15px' }}>ສະຫຼຸບລາຍງານການຈອງ</h4>
-              
+
               <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
                 <div style={{ flex: 1, padding: '15px', border: '1px solid #ddd', borderRadius: '4px' }}>
                   <p style={{ color: '#666', fontSize: '14px', marginBottom: '5px' }}>ຈຳນວນການຈອງທັງໝົດ</p>
@@ -408,7 +484,7 @@ const ReportPage = () => {
                   })()}
                 </div>
               </div>
-              
+
               <h5 style={{ marginBottom: '10px' }}>ການຈອງແບ່ງຕາມບໍລິການ</h5>
               <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
                 <thead>
@@ -438,7 +514,7 @@ const ReportPage = () => {
                 </tbody>
               </table>
             </div>
-            
+
             <h4 style={{ color: '#1976d2', marginBottom: '15px' }}>ລາຍລະອຽດການຈອງ</h4>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -472,7 +548,7 @@ const ReportPage = () => {
             ບໍ່ພົບຂໍ້ມູນການຈອງໃນຊ່ວງເວລາທີ່ກຳນົດ
           </p>
         )}
-        
+
         <div style={{ marginTop: '30px', textAlign: 'center' }}>
           <p style={{ color: '#666', fontSize: '14px' }}>
             © {new Date().getFullYear()} DR. P VETERINARY - ລາຍງານນີ້ສ້າງຂຶ້ນໂດຍລະບົບບໍລິຫານຄລິນິກສັດລ້ຽງ
@@ -553,7 +629,7 @@ const ReportPage = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      
+
       {/* App Bar - ແກ້ໄຂໃຫ້ກົງກັບໜ້າອື່ນ */}
       <AppBar
         position="fixed"
@@ -735,16 +811,16 @@ const ReportPage = () => {
                   >
                     {isLoading ? 'ກຳລັງສ້າງ...' : 'ສ້າງລາຍງານ'}
                   </Button>
-                  <IconButton 
-                    color="primary" 
-                    aria-label="download report" 
+                  <IconButton
+                    color="primary"
+                    aria-label="download report"
                     disabled={!reportData || isLoading}
                   >
                     <DownloadIcon />
                   </IconButton>
-                  <IconButton 
-                    color="primary" 
-                    aria-label="print report" 
+                  <IconButton
+                    color="primary"
+                    aria-label="print report"
                     disabled={!reportData || isLoading}
                     onClick={() => setOpenPrintDialog(true)}
                   >
@@ -766,8 +842,45 @@ const ReportPage = () => {
                 <Box>
                   <Box sx={{ mb: 3, p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
                     <Typography variant="h6" gutterBottom>
-                      {reportType === 'service_type' && 'ລາຍງານປະເພດບໍລິການ'}
-                      {reportType === 'services' && 'ລາຍງານບໍລິການ'}
+                      {reportType === 'service_type' && (
+                        <Box sx={{ mt: 2 }}>
+                          {typeofservice.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ມີຂໍ້ມູນປະເພດບໍລິການ
+                            </Typography>
+                          ) : (
+                            typeofservice.map((item, index) => (
+                              <Box key={item.cat_id} sx={{ mb: 1, p: 1, border: '1px solid #ddd', borderRadius: 1 }}>
+                                <Typography variant="subtitle2">#{index + 1} {item.cat_name}</Typography>
+                              </Box>
+                            ))
+                          )}
+                        </Box>
+                      )}
+
+                      {reportType === 'services' && (
+                        <Box sx={{ mt: 2 }}>
+                          {report_sercive.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ມີຂໍ້ມູນການບໍລິການ
+                            </Typography>
+                          ) : (
+                            report_sercive.map((item, index) => (
+                              <Box key={item.book_id} sx={{ mb: 1, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                  #{index + 1} - {item.service?.service_name || 'N/A'}
+                                </Typography>
+                                <Typography variant="body2">ລະຫັດການຈອງ: {item.book_id}</Typography>
+                                <Typography variant="body2">ວັນເລີ່ມ: {item.start_date}</Typography>
+                                <Typography variant="body2">ວັນສິ້ນສຸດ: {item.stop_date}</Typography>
+                                <Typography variant="body2">ລາຄາລວມ: {parseInt(item.total).toLocaleString()} ກີບ</Typography>
+                                <Typography variant="body2">ຫ້ອງເບີ: {item.room_id}</Typography>
+                              </Box>
+                            ))
+                          )}
+                        </Box>
+                      )}
+
                       {reportType === 'animals' && 'ລາຍງາຍກົງສັດ'}
                       {reportType === 'bookings' && 'ລາຍງານການຈອງໃຊ້ບໍລິການ'}
                       {reportType === 'grooming' && 'ລາຍງານຈຳນວນສັດຕັດຂົນທັງໝົດ'}
@@ -779,7 +892,7 @@ const ReportPage = () => {
                       ສ້າງເມື່ອ: {reportData.generatedAt}
                     </Typography>
                   </Box>
-                  
+
                   {/* Report Content Based on Type */}
                   {reportType === 'bookings' ? (
                     <>
@@ -806,7 +919,7 @@ const ReportPage = () => {
           </Paper>
         </Container>
       </Box>
-      
+
       {/* Print Dialog */}
       <Dialog
         open={openPrintDialog}

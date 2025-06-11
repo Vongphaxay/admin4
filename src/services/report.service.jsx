@@ -138,3 +138,8 @@ export const createRoompet = async (roompetData, token) => {
     });
     return response.data;
 }
+
+export const ReportAll = async (start_date, end_date, typeofservice, report_sercive,reportroom_pet,reportbook, reportcut, reporthelp, reportdaily, reportpayment) => {
+    const response = await axios.get(`${REACT_APP_API_URL}/report/report-all?start_date=${start_date}&end_date=${end_date}&typeofservice=${typeofservice}&report_sercive=${report_sercive}&reportroom_pet=${reportroom_pet}&reportbook=${reportbook}&reportcut=${reportcut}&reporthelp=${reporthelp}&reportdaily=${reportdaily}&reportpayment=${reportpayment}`);
+    return response.data;
+}
