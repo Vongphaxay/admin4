@@ -216,29 +216,35 @@ const ReportPage = () => {
       console.log('response services', response);
       setreport_sercive(response.report)
     } else if (reportType === 'animals') {
-      reportroom_pet = 'All'
+      reportroom_pet = 'All';
       const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
-      console.log('response reportroom_pet', response);
+      console.log('response animals', response);
+      setreportroom_pet(response.report);
     } else if (reportType === 'bookings') {
       reportbook = 'All'
       const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
       console.log('response reportbook', response);
+      setreportbook(response.report)
     } else if (reportType === 'grooming') {
       reportcut = 'All'
       const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
       console.log('response reportcut', response);
+      setreportcut(response.report)
     } else if (reportType === 'treatment') {
       reporthelp = 'All'
       const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
       console.log('response reporthelp', response);
+      setreporthelp(response.report)
     } else if (reportType === 'daily_income') {
       reportdaily = 'All'
       const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
       console.log('response reportdaily', response);
+      setreportdaily(response.report)
     } else if (reportType === 'payments') {
       reportpayment = 'All'
       const response = await ReportAll(startDate, endDate, typeofservice, report_sercive, reportroom_pet, reportbook, reportcut, reporthelp, reportdaily, reportpayment);
       console.log('response reportpayment', response);
+      setreportpayment(response.report)
     } else {
       console.log('Invalid report type');
     }
@@ -325,107 +331,6 @@ const ReportPage = () => {
         </Box>
       );
     }
-
-    return (
-      <TableContainer component={Paper} sx={{ boxShadow: 2, mt: 2 }}>
-        <Table>
-          <TableHead sx={{ bgcolor: '#e3f2fd' }}>
-            <TableRow>
-              <TableCell>ຊື່ສັດລ້ຽງ</TableCell>
-              <TableCell>ຊື່ເຈົ້າຂອງ</TableCell>
-              <TableCell>ບໍລິການ</TableCell>
-              <TableCell>ກົງທີຈອງ</TableCell>
-              <TableCell>ວັນທີເລີ່ມ</TableCell>
-              <TableCell>ວັນທີສິ້ນສຸດ</TableCell>
-              <TableCell>ລາຄາ</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {reportData.data.map((booking) => (
-              <TableRow key={booking.id}>
-                <TableCell>{booking.petName}</TableCell>
-                <TableCell>{booking.customerName}</TableCell>
-                <TableCell>{booking.services?.name || ''}</TableCell>
-                <TableCell>{booking.service}</TableCell>
-                <TableCell>{booking.start_date}</TableCell>
-                <TableCell>{booking.stop_date}</TableCell>
-                <TableCell>{booking.total}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
-
-  // Render summary statistics for booking report
-  const renderBookingSummary = () => {
-    if (!reportData || !reportData.data || reportData.data.length === 0) {
-      return null;
-    }
-
-    const totalAmount = reportData.data.reduce((sum, booking) => sum + Number(booking.total), 0);
-
-    const serviceCount = {};
-    reportData.data.forEach(booking => {
-      const service = booking.services?.name || 'ບໍ່ລະບຸ';
-      serviceCount[service] = (serviceCount[service] || 0) + 1;
-    });
-
-    return (
-      <Box sx={{ mt: 3 }}>
-        <Typography variant="h6" gutterBottom color="primary">ສະຫຼຸບລາຍງານການຈອງ</Typography>
-
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={4}>
-            <Paper sx={{ p: 2, bgcolor: '#e3f2fd', height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">ຈຳນວນການຈອງທັງໝົດ</Typography>
-              <Typography variant="h5" color="primary" fontWeight="bold">{reportData.data.length}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Paper sx={{ p: 2, bgcolor: '#e8f5e9', height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">ຍອດເງິນລວມ</Typography>
-              <Typography variant="h5" color="success.main" fontWeight="bold">{totalAmount.toLocaleString()} ກີບ</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Paper sx={{ p: 2, bgcolor: '#fff8e1', height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">ບໍລິການທີ່ນິຍົມ</Typography>
-              <Typography variant="h5" color="warning.main" fontWeight="bold">
-                {Object.entries(serviceCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'ບໍ່ມີຂໍ້ມູນ'}
-              </Typography>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        <Paper sx={{ p: 2, mt: 2 }}>
-          <Typography variant="subtitle1" gutterBottom>ການຈອງແບ່ງຕາມບໍລິການ</Typography>
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ບໍລິການ</TableCell>
-                  <TableCell align="right">ຈຳນວນ</TableCell>
-                  <TableCell align="right">ເປີເຊັນ</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {Object.entries(serviceCount).map(([service, count]) => (
-                  <TableRow key={service}>
-                    <TableCell>{service}</TableCell>
-                    <TableCell align="right">{count}</TableCell>
-                    <TableCell align="right">
-                      {((count / reportData.data.length) * 100).toFixed(1)}%
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
-    );
   };
 
   // Printable component
@@ -881,12 +786,212 @@ const ReportPage = () => {
                         </Box>
                       )}
 
-                      {reportType === 'animals' && 'ລາຍງາຍກົງສັດ'}
-                      {reportType === 'bookings' && 'ລາຍງານການຈອງໃຊ້ບໍລິການ'}
-                      {reportType === 'grooming' && 'ລາຍງານຈຳນວນສັດຕັດຂົນທັງໝົດ'}
-                      {reportType === 'treatment' && 'ລາຍງານຈຳນວນສັດປິ່ນປົວທັງໝົດ'}
-                      {reportType === 'daily_income' && 'ລາຍງານລາຍຮັບປະຈຳວັນ'}
-                      {reportType === 'payments' && 'ລາຍງານການຊຳລະເງິນ'}
+                      {reportType === 'animals' && (
+                        <Box sx={{ mt: 2 }}>
+                          {reportroom_pet.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ພົບຂໍ້ມູນກົງສັດ
+                            </Typography>
+                          ) : (
+                            reportroom_pet.map((item, index) => (
+                              <Box key={item.book_id} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                  #{index + 1} - {item.room?.room_name || 'ບໍ່ລະບຸ'}
+                                </Typography>
+                                <Typography variant="body2">ສະຖານະຫ້ອງ: {item.room?.status}</Typography>
+                                <Typography variant="body2">ລາຄາຕໍ່ຄັ້ງ: {parseInt(item.room?.price || 0).toLocaleString()} ກີບ</Typography>
+                                <Typography variant="body2">ວັນເລີ່ມ: {item.start_date}</Typography>
+                                <Typography variant="body2">ວັນສິ້ນສຸດ: {item.stop_date}</Typography>
+                                <Typography variant="body2">ລະຫັດຈອງ: {item.book_id}</Typography>
+                              </Box>
+                            ))
+                          )}
+                        </Box>
+                      )}
+
+                      {reportType === 'bookings' && (
+                        <Box sx={{ mt: 2 }}>
+                          {reportbook.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ພົບຂໍ້ມູນການຈອງ
+                            </Typography>
+                          ) : (
+                            reportbook.map((item, index) => (
+                              <Box key={item.book_id} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                  #{index + 1} - ລູກຄ້າ: {item.cu?.cus_name || 'N/A'}
+                                </Typography>
+                                <Typography variant="body2">ສັດລ້ຽງ: {item.pet?.pet_name} ({item.pet?.pet_type})</Typography>
+                                <Typography variant="body2">ວັນເລີ່ມ: {item.start_date}</Typography>
+                                <Typography variant="body2">ວັນສິ້ນສຸດ: {item.stop_date}</Typography>
+                                <Typography variant="body2">ລາຄາລວມ: {parseInt(item.total).toLocaleString()} ກີບ</Typography>
+
+                                {/* รายละเอียดบริการเพิ่มเติม */}
+                                {item.tb_service_infos?.length > 0 && (
+                                  <Box sx={{ mt: 1, pl: 2, borderLeft: '3px solid #90caf9' }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                       ລາຍລະອຽດບໍລິການເພີ່ມເຕີມ:
+                                    </Typography>
+                                    {item.tb_service_infos.map((info) => (
+                                      <Box key={info.info_id} sx={{ mb: 1 }}>
+                                        <Typography variant="body2">• ຄ່າບໍລິການ: {parseInt(info.price).toLocaleString()} ກີບ</Typography>
+                                        <Typography variant="body2">• ໝໍ: {info.doc?.doc_name || 'N/A'}</Typography>
+                                        <Typography variant="body2">• ອະທິບາຍ: {info.description || ' - '}</Typography>
+                                      </Box>
+                                    ))}
+                                  </Box>
+                                )}
+                              </Box>
+                            ))
+                          )}
+                        </Box>
+                      )}
+
+                      {reportType === 'grooming' && (
+                        <Box sx={{ mt: 2 }}>
+                          {reportcut.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ພົບຂໍ້ມູນການຕັດຂົນສັດ
+                            </Typography>
+                          ) : (
+                            <>
+                              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                                ຈຳນວນທັງໝົດ: {reportcut.length} ຄັ້ງ
+                              </Typography>
+                              {reportcut.map((item, index) => (
+                                <Box key={item.book_id} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                                  <Typography variant="subtitle2">
+                                    #{index + 1} - {item.service?.service_name || 'N/A'}
+                                  </Typography>
+                                  <Typography variant="body2">ວັນເລີ່ມ: {item.start_date}</Typography>
+                                  <Typography variant="body2">ວັນສິ້ນສຸດ: {item.stop_date}</Typography>
+                                  <Typography variant="body2">ລາຄາລວມ: {parseInt(item.total).toLocaleString()} ກີບ</Typography>
+                                </Box>
+                              ))}
+                            </>
+                          )}
+                        </Box>
+                      )}
+
+                      {reportType === 'treatment' && (
+                        <Box sx={{ mt: 2 }}>
+                          {reporthelp.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ພົບຂໍ້ມູນການປິ່ນປົວສັດ
+                            </Typography>
+                          ) : (
+                            <>
+                              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                                 ຈຳນວນການປິ່ນປົວທັງໝົດ: {reporthelp.length} ຄັ້ງ
+                              </Typography>
+                              {reporthelp.map((item, index) => (
+                                <Box key={item.book_id} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                    #{index + 1} - {item.service?.service_name || 'N/A'}
+                                  </Typography>
+                                  <Typography variant="body2">ວັນເລີ່ມ: {item.start_date}</Typography>
+                                  <Typography variant="body2">ວັນສິ້ນສຸດ: {item.stop_date}</Typography>
+                                  <Typography variant="body2">ລາຄາລວມ: {parseInt(item.total).toLocaleString()} ກີບ</Typography>
+
+                                  {/* บริการเสริมจากหมอ */}
+                                  {item.tb_service_infos?.length > 0 && (
+                                    <Box sx={{ mt: 1, pl: 2, borderLeft: '3px solid #81c784' }}>
+                                      <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                         ລາຍລະອຽດການປິ່ນປົວ:
+                                      </Typography>
+                                      {item.tb_service_infos.map((info) => (
+                                        <Box key={info.info_id} sx={{ mb: 1 }}>
+                                          <Typography variant="body2">• ຄ່າບໍລິການ: {parseInt(info.price).toLocaleString()} ກີບ</Typography>
+                                          <Typography variant="body2">• ໝໍປະຈຳການ: {info.doc?.doc_name}</Typography>
+                                          <Typography variant="body2">• ຄຳອະທິບາຍ: {info.description || '-'}</Typography>
+                                        </Box>
+                                      ))}
+                                    </Box>
+                                  )}
+                                </Box>
+                              ))}
+                            </>
+                          )}
+                        </Box>
+                      )}
+
+                      {reportType === 'daily_income' && (
+                        <Box sx={{ mt: 2 }}>
+                          {/* กรองรายการที่จ่ายเงินแล้ว */}
+                          {reportdaily.filter(item => item.pay_id !== null).length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ມີລາຍຮັບໃນວັນນີ້
+                            </Typography>
+                          ) : (
+                            <>
+                              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                                 ຈຳນວນລາຍການທີ່ຈ່າຍແລ້ວ: {reportdaily.filter(item => item.pay_id !== null).length} ລາຍການ
+                              </Typography>
+
+                              {reportdaily
+                                .filter(item => item.pay_id !== null)
+                                .map((item, index) => (
+                                  <Box key={item.book_id} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                      #{index + 1} - {item.service?.service_name || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2">ວັນເລີ່ມ: {item.start_date}</Typography>
+                                    <Typography variant="body2">ວັນສິ້ນສຸດ: {item.stop_date}</Typography>
+                                    <Typography variant="body2">ລາຄາທີ່ຈ່າຍ: {parseInt(item.total).toLocaleString()} ກີບ</Typography>
+                                  </Box>
+                                ))}
+
+                              {/* รวมยอดรวมทั้งหมด */}
+                              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+                                 ລາຍຮັບລວມ:{" "}
+                                {reportdaily
+                                  .filter(item => item.pay_id !== null)
+                                  .reduce((sum, item) => sum + parseInt(item.total), 0)
+                                  .toLocaleString()} ກີບ
+                              </Typography>
+                            </>
+                          )}
+                        </Box>
+                      )}
+
+                      {reportType === 'payments' && (
+                        <Box sx={{ mt: 2 }}>
+                          {reportpayment.filter(item => item.pay_id !== null).length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              ບໍ່ພົບລາຍການການຊຳລະເງິນ
+                            </Typography>
+                          ) : (
+                            <>
+                              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                                ຈຳນວນການຊຳລະເງິນແລ້ວ: {reportpayment.filter(item => item.pay_id !== null).length} ລາຍການ
+                              </Typography>
+
+                              {reportpayment
+                                .filter(item => item.pay_id !== null)
+                                .map((item, index) => (
+                                  <Box key={item.book_id} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                      #{index + 1} - {item.service?.service_name || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2">ວັນຊຳລະ: {item.pay?.pay_date || '-'}</Typography>
+                                    <Typography variant="body2">ລາຄາທີ່ຈ່າຍ: {parseInt(item.total).toLocaleString()} ກີບ</Typography>
+                                    <Typography variant="body2">ລະຫັດການຈອງ: {item.book_id}</Typography>
+                                  </Box>
+                                ))}
+
+                              {/* รวมยอดเงินทั้งหมด */}
+                              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+                                ລາຍຮັບທັງໝົດ:{" "}
+                                {reportpayment
+                                  .filter(item => item.pay_id !== null)
+                                  .reduce((sum, item) => sum + parseInt(item.total), 0)
+                                  .toLocaleString()} ກີບ
+                              </Typography>
+                            </>
+                          )}
+                        </Box>
+                      )}
+
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       ສ້າງເມື່ອ: {reportData.generatedAt}
@@ -897,7 +1002,7 @@ const ReportPage = () => {
                   {reportType === 'bookings' ? (
                     <>
                       {renderBookingReport()}
-                      {renderBookingSummary()}
+                      {/* {renderBookingSummary()} */}
                     </>
                   ) : (
                     <Box sx={{ height: '300px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
