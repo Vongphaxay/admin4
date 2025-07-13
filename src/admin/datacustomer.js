@@ -11,6 +11,10 @@ import Cookies from 'js-cookie';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { getReportallcus, DeleteCustomer, UpdateCus } from '../services/report.service';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -36,14 +40,16 @@ const Deletecusapi = async (cus_id) => {
         const message = error?.response?.data?.error;
 
         if (message?.includes("foreign key constraint fails")) {
-            alert("ບໍ່ສາມາດລົບລູກຄ້ານີ້ໄດ້ ເນື່ອງຈາກຍັງມີຂໍ້ມູນການຈອງຢູ່.");
+            // alert("ບໍ່ສາມາດລົບລູກຄ້ານີ້ໄດ້ ເນື່ອງຈາກຍັງມີຂໍ້ມູນການຈອງຢູ່.");
+            return "foreign_key_error";
+
         } else {
             // แสดงข้อความทั่วไป ถ้าไม่ใช่ error แบบ foreign key
             alert("ເກີດຂໍ້ຜິດພາດໃນການລົບຂໍ້ມູນ. ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.");
         }
 
         // Log ใน console สำหรับนักพัฒนา
-        console.error("❌ Delete error:", error.response?.data || error.message);
+        console.error(" Delete error:", error.response?.data || error.message);
     }
 };
 
@@ -77,7 +83,7 @@ const CustomerManagement = () => {
     const [customerToDelete, setCustomerToDelete] = useState(null);
 
     const [customerData, setCustomerData] = useState([]);
-    
+
     // ເພີ່ມຟັງຊັນສຳລັບປິດ Snackbar
     const handleSnackbarClose = (event, reason) => {
         if (reason === 'clickaway') return;
@@ -185,9 +191,13 @@ const CustomerManagement = () => {
 
                 if (error.response && error.response.data && error.response.data.error) {
                     errorMessage = "ເກີດຂໍ້ຜິດພາດ: " + error.response.data.error;
+                    //ເກີດຂໍ້ຜິດພາດ: if Phone number already exists. 
+                    if (errorMessage.includes("Phone number already exists.")) {
+                        errorMessage = "ບໍ່ສາມາດແກ້ໄຂໄດ້ ເນື່ອງຈາກມີເບີໂທຊ້ຳກັບຜູ້ອື່ນ";
+                    }
                 }
 
-                setSnackbarMessage("❌ " + errorMessage);
+                setSnackbarMessage(" " + errorMessage);
                 setSnackbarSeverity("error");
                 setOpenSnackbar(true);
 
@@ -234,29 +244,26 @@ const CustomerManagement = () => {
     // ຟັງຊັນລົບຂໍ້ມູນລູກຄ້າທີ່ປັບປຸງແລ້ວ
     const handleDeleteCustomer = async () => {
         if (customerToDelete) {
-            try {
-                await Deletecusapi(customerToDelete.id);
-                
-                // ສະແດງຂໍ້ຄວາມສຳເລັດສຳລັບການລົບ
-                setSnackbarMessage("✅ ລົບຂໍ້ມູນລູກຄ້າສຳເລັດ");
-                setSnackbarSeverity("success");
-                setOpenSnackbar(true);
-                
-                // ປິດ Dialog ຫຼັງຈາກລົບສໍາເລັດ
-                handleCloseDeleteDialog();
-                
-                // Reload page to show updated data
-                setTimeout(() => {
+            const result = await Deletecusapi(customerToDelete.id);
+
+            if (result === "foreign_key_error") {
+                MySwal.fire({
+                    icon: 'error',
+                    title: 'ບໍ່ສາມາດລົບໄດ້',
+                    text: 'ບໍ່ສາມາດລົບລູກຄ້ານີ້ໄດ້ ເນື່ອງຈາກຍັງມີຂໍ້ມູນການຈອງຢູ່.',
+                    confirmButtonText: 'ຕົກລົງ'
+                });
+            } else if (result) {
+                MySwal.fire({
+                    icon: 'success',
+                    title: 'ລົບສຳເລັດ',
+                    text: 'ຂໍ້ມູນລູກຄ້າຖືກລົບອອກຈາກລະບົບແລ້ວ.',
+                    confirmButtonText: 'ຕົກລົງ'
+                }).then(() => {
                     window.location.reload();
-                }, 1500);
-            } catch (error) {
-                console.error("Error deleting customer:", error);
-                
-                // ສະແດງຂໍ້ຄວາມຜິດພາດສຳລັບການລົບ
-                setSnackbarMessage("❌ ເກີດຂໍ້ຜິດພາດໃນການລົບຂໍ້ມູນລູກຄ້າ");
-                setSnackbarSeverity("error");
-                setOpenSnackbar(true);
+                });
             }
+            handleCloseDeleteDialog();
         }
     };
 
@@ -551,7 +558,7 @@ const CustomerManagement = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    
+
                     {/* Dialog for editing customer data */}
                     <Dialog
                         open={openDialog}

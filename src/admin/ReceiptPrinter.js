@@ -11,6 +11,22 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
     return date.toLocaleDateString('lo-LA', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  const calculateTotalPrice = (booking) => {
+    if (!booking) {
+      return 0;
+    }
+    let basePrice = parseFloat(booking.total) || 0;
+
+    if (booking.tb_service_infos && booking.tb_service_infos.length > 0) {
+      booking.tb_service_infos.forEach(info => {
+        if (info.price) {
+          basePrice += parseFloat(info.price);
+        }
+      });
+    }
+    return basePrice;
+  };
+
   // Current date and time for receipt
   const currentDate = new Date();
   const formattedDateTime = currentDate.toLocaleString('lo-LA', {
@@ -156,6 +172,17 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
               <span class="info-label">ກົງທີຈອງ:</span>
               <span>${booking.roomId || '-'}</span>
             </div>
+            ${booking.tb_service_infos && booking.tb_service_infos.length > 0 ? `
+            <div class="info-row">
+              <span class="info-label">ລາຍລະອຽດການປິ່ນປົວ:</span>
+            ${booking.tb_service_infos.map(info => `
+              <div class="info-row">
+                <span>- ${info.description || 'ບໍ່ມີລາຍລະອຽດ'}</span>
+                <span>${info.price ? `${Number(info.price).toLocaleString('lo-LA')} ກີບ` : ''}</span>
+              </div>
+            `).join('')}
+            ` : ''}
+            </div>
             <div class="info-row">
               <span class="info-label">ວັນທີເລີ່ມ:</span>
               <span>${formatDate(booking.start_date)}</span>
@@ -170,7 +197,7 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
           
           <div class="total-row">
             <span class="info-label">ລວມເງິນ:</span>
-            <span>${Number(booking.total).toLocaleString('lo-LA')} ກີບ</span>
+            <span>${calculateTotalPrice(booking).toLocaleString()} ກີບ</span>
           </div>
           
           <div class="separator"></div>
@@ -199,7 +226,7 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
       window.location.reload();
       // Don't close window to allow user to select printer options
     }, 500);
-    
+
   };
 
   return (
@@ -306,11 +333,41 @@ const ReceiptPrinter = ({ open, onClose, booking }) => {
 
           <Grid container spacing={1}>
             <Grid item xs={6}>
+              <Typography variant="body2" fontWeight="bold">ລາຍລະອຽດການປິ່ນປົວ:</Typography>
+            </Grid>
+            {booking.tb_service_infos && booking.tb_service_infos.length > 0 ? (
+              booking.tb_service_infos.map((info, index) => (
+                <React.Fragment key={index}>
+                  <Grid item xs={8}>
+                    <Typography variant="body2" sx={{ pl: 2 }}>
+                      - {info.description || 'ບໍ່ມີລາຍລະອຽດ'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="body2" textAlign="right">
+                      {info.price ? `${Number(info.price).toLocaleString('lo-LA')} ກີບ` : ''}
+                    </Typography>
+                  </Grid>
+                </React.Fragment>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Typography variant="body2" textAlign="center" sx={{ fontStyle: 'italic' }}>
+                  - ບໍ່ມີຂໍ້ມູນການປິ່ນປົວເພີ່ມເຕີມ -
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+
+          <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
+
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
               <Typography variant="subtitle1" fontWeight="bold">ລວມເງິນ:</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="subtitle1" fontWeight="bold" textAlign="right">
-                {Number(booking.total).toLocaleString('lo-LA')} ກີບ
+                {calculateTotalPrice(booking).toLocaleString()} ກີບ
               </Typography>
             </Grid>
           </Grid>

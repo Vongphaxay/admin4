@@ -60,6 +60,7 @@ import {
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import { GetAllbooking, ReportAll } from '../services/report.service';
+import * as XLSX from 'xlsx';
 
 // Create a custom styled container for the logo - ໃຊ້ແບບດຽວກັບໜ້າອື່ນ
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -155,6 +156,94 @@ const ReportPage = () => {
       default:
         return false;
     }
+  };
+
+  const handleDownload = () => {
+    if (!reportData || !reportData.data || reportData.data.length === 0) {
+      alert(`ບໍ່ມີຂໍ້ມູນເພື່ອດາວໂຫຼດສຳລັບລາຍງານ: ${getReportTypeName(reportType)}`);
+      return;
+    }
+
+    let dataToExport = [];
+    let worksheetName = 'Report';
+    let fileName = `Report_${reportType}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    switch (reportType) {
+      case 'service_type':
+        worksheetName = 'Service_Types';
+        dataToExport = typeofservice.map(item => ({ 'ID': item.cat_id, 'Name': item.cat_name }));
+        break;
+      case 'services':
+        worksheetName = 'Services';
+        dataToExport = report_sercive.map(item => ({ 'Service Name': item.service?.service_name || 'N/A', 'Start Date': item.start_date, 'Stop Date': item.stop_date, 'Total': item.total }));
+        break;
+      case 'animals':
+        worksheetName = 'Animals';
+        dataToExport = reportroom_pet.map(item => ({ 'Room Name': item.room?.room_name || 'ບໍ່ລະບຸ', 'Status': item.room?.status, 'Price': item.room?.price || 0, 'Start Date': item.start_date, 'Stop Date': item.stop_date }));
+        break;
+      case 'bookings':
+        worksheetName = 'Bookings';
+        dataToExport = reportbook.map(item => {
+          const serviceName = item.service?.service_name;
+          const treatmentDescriptions = item.tb_service_infos?.map(info => info.description).filter(Boolean).join(', ');
+          
+          let fullService;
+          if (serviceName && serviceName !== 'N/A') {
+            fullService = serviceName;
+            if (treatmentDescriptions) {
+              fullService += ` (${treatmentDescriptions})`;
+            }
+          } else {
+            if (treatmentDescriptions) {
+              fullService = `(${treatmentDescriptions})`;
+            } else {
+              fullService = 'N/A';
+            }
+          }
+
+          return {
+            'Customer': item.cu?.cus_name || 'N/A',
+            'Pet': `${item.pet?.pet_name} (${item.pet?.pet_type})`,
+            'Service': fullService,
+            'Start Date': item.start_date,
+            'Stop Date': item.stop_date,
+            'Base Cost': parseInt(item.total),
+            'Treatment Cost': item.tb_service_infos?.reduce((sum, info) => sum + parseInt(info.price || 0), 0) || 0,
+            'Total Cost': parseInt(item.total) + (item.tb_service_infos?.reduce((sum, info) => sum + parseInt(info.price || 0), 0) || 0)
+          };
+        });
+        break;
+      case 'grooming':
+        worksheetName = 'Grooming';
+        dataToExport = reportcut.map(item => ({ 'Service Name': item.service?.service_name || 'N/A', 'Start Date': item.start_date, 'Stop Date': item.stop_date, 'Total': item.total }));
+        break;
+      case 'treatment':
+        worksheetName = 'Treatment';
+        dataToExport = reporthelp.map(item => ({
+          'Service Name': item.service?.service_name || 'N/A',
+          'Start Date': item.start_date,
+          'Stop Date': item.stop_date,
+          'Base Cost': parseInt(item.total),
+          'Additional Cost': item.tb_service_infos?.reduce((sum, info) => sum + parseInt(info.price || 0), 0) || 0,
+          'Total Cost': parseInt(item.total) + (item.tb_service_infos?.reduce((sum, info) => sum + parseInt(info.price || 0), 0) || 0)
+        }));
+        break;
+      case 'daily_income':
+        worksheetName = 'Daily_Income';
+        dataToExport = reportdaily.filter(item => item.pay_id !== null).map(item => ({ 'Service Name': item.service?.service_name || 'N/A', 'Start Date': item.start_date, 'Stop Date': item.stop_date, 'Income': item.total }));
+        break;
+      case 'payments':
+        worksheetName = 'Payments';
+        dataToExport = reportpayment.filter(item => item.pay_id !== null).map(item => ({ 'Service Name': item.service?.service_name || 'N/A', 'Payment Date': item.pay?.pay_date || '-', 'Amount': item.total, 'Booking ID': item.book_id }));
+        break;
+      default:
+        return;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, worksheetName);
+    XLSX.writeFile(wb, fileName);
   };
 
   const handleReportTypeChange = (event) => {
@@ -1247,6 +1336,7 @@ const ReportPage = () => {
                     color="primary"
                     aria-label="download report"
                     disabled={!reportData || isLoading}
+                    onClick={handleDownload}
                   >
                     <DownloadIcon />
                   </IconButton>

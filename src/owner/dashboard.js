@@ -451,7 +451,7 @@ const Dashboard = () => {
                                         <Box key={index}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                                 <Typography variant="body2" fontWeight="medium">{service.name}</Typography>
-                                                <Typography variant="body2" color="text.secondary">{service.count}/{service.target}</Typography>
+                                                <Typography variant="body2" color="text.secondary">{service.count}/{reportData?.report?.report_roompet?.length ?? 0}</Typography>
                                             </Box>
                                             <LinearProgress
                                                 variant="determinate"
