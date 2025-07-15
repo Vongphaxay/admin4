@@ -560,7 +560,7 @@ const ReportPage = () => {
       printWindow.document.close();
       printWindow.focus();
       printWindow.print();
-      printWindow.close();
+      // printWindow.close();
     } else {
       // Fallback to original method if popup is blocked
       const originalContents = document.body.innerHTML;
