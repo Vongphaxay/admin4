@@ -218,6 +218,10 @@ const BathPet = () => {
         }
     }
 
+    useEffect(() => {
+        document.title = "ອາບນ້ຳສັດລ້ຽງ";
+    }, []);
+
     const handleReceivePet = (id) => {
         // Optional: update local state
         setReceivedPets(prev => ({

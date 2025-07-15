@@ -217,6 +217,10 @@ const PetBar = () => {
         }
     }
 
+    useEffect(() => {
+        document.title = "ຕັດຂົນສັດລ້ຽງ";
+    }, []);
+
     const handleReceivePet = (id) => {
         // Optional: update local state
 

@@ -174,13 +174,16 @@ const TreatPet = () => {
                         });
                     });
                 });
-
                 setBoardingData(flatBoardingData);
                 console.log("flatBoardingData", flatBoardingData);
             }
         };
         getAllCategoryServices();
     }, [accessToken]);
+
+    useEffect(() => {
+        document.title = "ປິ່ນປົວສັດລ້ຽງ";
+    }, []);
 
     const today = new Date();
     const completedCount = boardingData.filter(item => {
