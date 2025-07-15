@@ -227,6 +227,10 @@ const TreatPet = () => {
         setOpenDialog(true);
     };
 
+    useEffect(() => {
+        document.title = "ປິ່ນປົວສັດລ້ຽງ";
+    }, []);
+
     const handleDetailsOpen = (boarding) => {
         setSelectedBoarding(boarding);
         setOpenDetailsDialog(true);

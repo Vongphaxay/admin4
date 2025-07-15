@@ -186,7 +186,7 @@ const ReportPage = () => {
         dataToExport = reportbook.map(item => {
           const serviceName = item.service?.service_name;
           const treatmentDescriptions = item.tb_service_infos?.map(info => info.description).filter(Boolean).join(', ');
-          
+
           let fullService;
           if (serviceName && serviceName !== 'N/A') {
             fullService = serviceName;
@@ -303,6 +303,10 @@ const ReportPage = () => {
       fetchBookingData();
     }
   }, [reportType, accessToken]);
+
+  useEffect(() => {
+    document.title = "ລາຍງານ";
+  }, []);
 
   const formatDateToYMD = (date) => {
     const local = new Date(date);

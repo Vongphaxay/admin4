@@ -51,7 +51,7 @@ import {
     Pets,
     Bathtub,
     ContentCut,
-    Vaccines,Assessment as AssessmentIcon, AddBoxRounded,
+    Vaccines, Assessment as AssessmentIcon, AddBoxRounded,
     Menu,
     ChevronRight,
     Notifications,
@@ -206,6 +206,10 @@ const PetBoarding = () => {
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+
+    useEffect(() => {
+        document.title = "ຝາກສັດລ້ຽງ";
+    }, []);
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);

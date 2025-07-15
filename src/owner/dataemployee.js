@@ -12,7 +12,7 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Dialog, DialogActions, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem, Select, InputLabel, FormControl, useTheme, styled, Container
 } from '@mui/material';
 import {
-    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines,Assessment as AssessmentIcon, AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, Work
+    Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Assessment as AssessmentIcon, AddBoxRounded, Menu, ChevronRight, Notifications, Close, Logout, Phone, Email, Work
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import Snackbar from '@mui/material/Snackbar';
@@ -220,6 +220,10 @@ const EmployeeManagement = () => {
         }
         setOpenDialog(true);
     };
+
+    useEffect(() => {
+        document.title = "ຂໍ້ມູນພະນັກງານ";
+    }, []);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);

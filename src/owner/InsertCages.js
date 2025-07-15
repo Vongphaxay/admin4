@@ -9,7 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import React, { useState, useEffect } from 'react';
-import { GetAllroompet, UpdateRoompet,createRoompet, DeleteRoompet } from '../services/report.service';
+import { GetAllroompet, UpdateRoompet, createRoompet, DeleteRoompet } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -96,6 +96,10 @@ const InsertCages = () => {
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+
+    useEffect(() => {
+        document.title = "ເພີ່ມກົງສັດລ້ຽງ";
+    }, []);
 
     const handleLogout = () => {
         Cookies.remove("name_admin");
@@ -650,9 +654,9 @@ const InsertCages = () => {
                                 ທ່ານຕ້ອງການລຶບກົງສັດລ້ຽງນີ້ແທ້ບໍ?
                             </Typography>
                             {cageToDelete && (
-                                <Box sx={{ 
-                                    bgcolor: '#f5f5f5', 
-                                    p: 2, 
+                                <Box sx={{
+                                    bgcolor: '#f5f5f5',
+                                    p: 2,
                                     borderRadius: 2,
                                     border: '1px solid #ddd'
                                 }}>

@@ -131,6 +131,10 @@ const Dashboard = () => {
 
     const navigate = useNavigate();
 
+        useEffect(() => {
+        document.title = "ພາບລວມຄລີນິກ";
+    }, []);
+
 
     // Create the drawer content component
     const drawerContent = (

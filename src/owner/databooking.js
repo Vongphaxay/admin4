@@ -10,7 +10,7 @@ import {
 import { CheckCircle, ExpandMore, Search } from '@mui/icons-material';
 import {
     Edit, Delete, AddCircle, Home, Person, People, CalendarMonth, Pets, Bathtub,
-    ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print,Assessment as AssessmentIcon,AddBoxRounded,
+    ContentCut, Vaccines, Menu, ChevronRight, Notifications, Close, Logout, Print, Assessment as AssessmentIcon, AddBoxRounded,
     LocalHospital, MedicalServices
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
@@ -183,6 +183,10 @@ const BookingTable = () => {
             stopDate.includes(searchTerm)
         );
     });
+
+    useEffect(() => {
+        document.title = "ຂໍ້ມູນການຈອງ";
+    }, []);
 
     const handleDialogOpen = (booking = null) => {
         if (booking) {

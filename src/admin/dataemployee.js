@@ -165,6 +165,10 @@ const EmployeeManagement = () => {
         );
     });
 
+    useEffect(() => {
+        document.title = "ຂໍ້ມູນພະນັກງານ";
+    }, []);
+
     const handleDialogOpen = (employee = null) => {
         if (employee) {
             console.log("🔍 ຂໍ້ມູນພະນັກງານທີ່ເລືອກແກ້ໄຂ:", employee);

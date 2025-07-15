@@ -214,6 +214,10 @@ const BathPet = () => {
         setSidebarOpen(!sidebarOpen);
     };
 
+    useEffect(() => {
+        document.title = "ອາບນ້ຳສັດລ້ຽງ";
+    }, []);
+
     const handleDialogClose = () => setOpenDialog(false);
 
     const handleSaveBoarding = () => {

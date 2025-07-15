@@ -52,7 +52,7 @@ import {
     Pets,
     Bathtub,
     ContentCut,
-    Vaccines,Assessment as AssessmentIcon, AddBoxRounded,
+    Vaccines, Assessment as AssessmentIcon, AddBoxRounded,
     Menu,
     ChevronRight,
     Notifications,
@@ -172,6 +172,10 @@ const TreatPet = () => {
         };
         getAllCategoryServices();
     }, [accessToken]);
+
+    useEffect(() => {
+        document.title = "ປິ່ນປົວສັດລ້ຽງ";
+    }, []);
 
     const today = new Date();
     const completedCount = boardingData.filter(item => {

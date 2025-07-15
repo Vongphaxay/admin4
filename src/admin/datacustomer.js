@@ -235,6 +235,10 @@ const CustomerManagement = () => {
         setDeleteDialogOpen(true);
     };
 
+    useEffect(() => {
+        document.title = "ຂໍ້ມູນລູກຄ້າ";
+    }, []);
+
     // ຟັງຊັນປິດ Dialog ຢືນຢັນການລົບ
     const handleCloseDeleteDialog = () => {
         setDeleteDialogOpen(false);

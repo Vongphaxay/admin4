@@ -192,6 +192,10 @@ const PetBoarding = () => {
         setOpenDialog(true);
     };
 
+    useEffect(() => {
+        document.title = "ຝາກສັດລ້ຽງ";
+    }, []);
+
     const handleDetailsOpen = (boarding) => {
         setSelectedBoarding(boarding);
         setOpenDetailsDialog(true);
@@ -488,7 +492,7 @@ const PetBoarding = () => {
                                         <TableCell>{boarding.endDate}</TableCell>
                                         <TableCell>{boarding.pet.type}</TableCell>
                                         <TableCell>{boarding.pet.gender}</TableCell>
-                                
+
                                     </TableRow>
                                 ))}
                                 {filteredData.length === 0 && (

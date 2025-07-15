@@ -195,6 +195,10 @@ const BathPet = () => {
         setOpenDialog(true);
     };
 
+        useEffect(() => {
+            document.title = "ອາບນ້ຳສັດລ້ຽງ";
+        }, []);
+
     const handleDetailsOpen = (boarding) => {
         setSelectedBoarding(boarding);
         setOpenDetailsDialog(true);

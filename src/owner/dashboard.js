@@ -2,7 +2,7 @@ import {
     Box, CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Grid, Button, Avatar, Card, CardContent, LinearProgress, Chip, Stack, Container, useTheme, styled
 } from '@mui/material';
 import {
-    ChevronRight, Home, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines,Assessment as AssessmentIcon,AddBoxRounded, LocalHospital, History, Menu, Logout, TrendingUp, CheckCircle, AttachMoney, Notifications, Close
+    ChevronRight, Home, People, CalendarMonth, Pets, Bathtub, ContentCut, Vaccines, Assessment as AssessmentIcon, AddBoxRounded, LocalHospital, History, Menu, Logout, TrendingUp, CheckCircle, AttachMoney, Notifications, Close
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -28,8 +28,8 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/owner/dataemployee' },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/owner/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/owner/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding'},
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet'  },
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/owner/petboarding' },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/owner/bathpet' },
     { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/owner/petbar' },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/owner/treatpet' },
     { icon: <AssessmentIcon />, label: 'ລາຍງານ', path: '/owner/report' },
@@ -132,6 +132,10 @@ const Dashboard = () => {
     };
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = "ພາບລວມຄລີນິກ";
+    }, []);
 
 
     // Create the drawer content component

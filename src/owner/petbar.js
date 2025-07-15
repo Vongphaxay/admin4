@@ -52,7 +52,7 @@ import {
     Pets,
     Bathtub,
     ContentCut,
-    Vaccines,Assessment as AssessmentIcon, AddBoxRounded,
+    Vaccines, Assessment as AssessmentIcon, AddBoxRounded,
     Menu,
     ChevronRight,
     Notifications,
@@ -162,7 +162,7 @@ const PetBar = () => {
                             groomer: {
                                 name: booking.groomer?.groomer_name
                             },
-                            
+
                             // Add the service info array
                             tb_service_infos: serviceInfos
                         });
@@ -214,6 +214,10 @@ const PetBar = () => {
         }
         setOpenDialog(true);
     };
+
+    useEffect(() => {
+        document.title = "ຕັດຂົນສັດລ້ຽງ";
+    }, []);
 
     const handleDetailsOpen = (boarding) => {
         setSelectedBoarding(boarding);

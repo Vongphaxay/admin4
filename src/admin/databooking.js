@@ -182,6 +182,10 @@ const BookingTable = () => {
         );
     });
 
+    useEffect(() => {
+        document.title = "ຂໍ້ມູນການຈອງ";
+    }, []);
+
     const handleDialogOpen = (booking = null) => {
         if (booking) {
             setCurrentBooking(booking);

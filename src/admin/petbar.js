@@ -92,9 +92,9 @@ const menuItems = [
     { icon: <People />, label: 'ຂໍ້ມູນພະນັກງານ', path: '/dataemployee' },
     { icon: <People />, label: 'ຂໍ້ມູນລູກຄ້າ', path: '/datacustomer' },
     { icon: <CalendarMonth />, label: 'ຂໍ້ມູນການຈອງ', path: '/databooking' },
-    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding'},
-    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet'  },
-    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar' , active: true},
+    { icon: <Pets />, label: 'ຝາກສັດລ້ຽງ', path: '/petboarding' },
+    { icon: <Bathtub />, label: 'ອາບນ້ຳສັດລ້ຽງ', path: '/bathpet' },
+    { icon: <ContentCut />, label: 'ຕັດຂົນສັດລ້ຽງ', path: '/petbar', active: true },
     { icon: <Vaccines />, label: 'ປິ່ນປົວສັດລ້ຽງ', path: '/treatpet' },
 ];
 
@@ -160,7 +160,7 @@ const PetBar = () => {
                             groomer: {
                                 name: booking.groomer?.groomer_name
                             },
-                            
+
                             // Add the service info array
                             tb_service_infos: serviceInfos
                         });
@@ -212,6 +212,10 @@ const PetBar = () => {
         }
         setOpenDialog(true);
     };
+
+    useEffect(() => {
+        document.title = "ຕັດຂົນສັດລ້ຽງ";
+    }, []);
 
     const handleDetailsOpen = (boarding) => {
         setSelectedBoarding(boarding);
