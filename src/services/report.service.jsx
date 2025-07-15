@@ -48,6 +48,32 @@ export const UpdateCus = async (cus_id, cusData, token) => {
     return response.data;
 };
 
+export const UpdateBooking_groomer_shower = async (book_id, groomer_id, token) => {
+    const response = await axios.put(
+        `${REACT_APP_API_URL}/groomer/Updatetbbooking_groomer_shower_c?book_id=${book_id}&groomer_id=${groomer_id}`,
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+};
+
+export const UpdateStatus_groomer = async ( groomer_id, token) => {
+    const response = await axios.put(
+        `${REACT_APP_API_URL}/groomer/UpdateStatusGroomer_c?groomer_id=${groomer_id}`,
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}
+
 export const DeleteCustomer = async (cus_id, token) => {
     const response = await axios.delete(
         `${REACT_APP_API_URL}/customer/delete/${cus_id}`,

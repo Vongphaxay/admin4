@@ -159,6 +159,9 @@ const PetBar = () => {
                                 color: booking.pet?.color,
                                 age: booking.pet?.age
                             },
+                            groomer: {
+                                name: booking.groomer?.groomer_name
+                            },
                             
                             // Add the service info array
                             tb_service_infos: serviceInfos
@@ -496,6 +499,7 @@ const PetBar = () => {
                                     <TableCell>ວັນທີຮັບກັບ</TableCell>
                                     <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
                                     <TableCell>ເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell>ຊ່າງຕັດຂົນ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -508,6 +512,7 @@ const PetBar = () => {
                                         <TableCell>{boarding.endDate}</TableCell>
                                         <TableCell>{boarding.pet.type}</TableCell>
                                         <TableCell>{boarding.pet.gender}</TableCell>
+                                        <TableCell>{boarding.groomer?.name || '-'}</TableCell>
                                     </TableRow>
                                 ))}
                                 {filteredData.length === 0 && (

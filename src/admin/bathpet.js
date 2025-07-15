@@ -141,6 +141,9 @@ const BathPet = () => {
                                 size: booking.pet?.size,
                                 color: booking.pet?.color,
                                 age: booking.pet?.age
+                            },
+                            groomer: {
+                                name: booking.groomer?.groomer_name
                             }
                         });
                     });
@@ -476,6 +479,7 @@ const BathPet = () => {
                                     <TableCell>ວັນທີຮັບກັບ</TableCell>
                                     <TableCell>ປະເພດສັດລ້ຽງ</TableCell>
                                     <TableCell>ເພດສັດລ້ຽງ</TableCell>
+                                    <TableCell>ຊ່າງຕັດຂົນ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -488,6 +492,7 @@ const BathPet = () => {
                                         <TableCell>{boarding.endDate}</TableCell>
                                         <TableCell>{boarding.pet.type}</TableCell>
                                         <TableCell>{boarding.pet.gender}</TableCell>
+                                        <TableCell>{boarding.groomer?.name || '-'}</TableCell>
                                     </TableRow>
                                 ))}
                                 {filteredData.length === 0 && (

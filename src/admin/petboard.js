@@ -488,6 +488,7 @@ const PetBoarding = () => {
                                         <TableCell>{boarding.endDate}</TableCell>
                                         <TableCell>{boarding.pet.type}</TableCell>
                                         <TableCell>{boarding.pet.gender}</TableCell>
+                                
                                     </TableRow>
                                 ))}
                                 {filteredData.length === 0 && (

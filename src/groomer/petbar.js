@@ -69,7 +69,7 @@ import {
     CheckCircleOutline
 } from '@mui/icons-material';
 import Cookies from 'js-cookie';
-import { GetAllcategory_service } from '../services/report.service';
+import { GetAllcategory_service, UpdateBooking_groomer_shower, UpdateStatus_groomer } from '../services/report.service';
 
 // Create a custom styled container for the logo
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -106,6 +106,14 @@ const PetBar = () => {
 
     // Success dialog state
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+    const [openSuccessDialog1, setOpenSuccessDialog1] = useState(false);
+
+    const [selectedBooking, setSelectedBooking] = useState(null);
+
+    // Track which pets have been received
+    const [receivedPets, setReceivedPets] = useState({}); // <-- Remove this
+
+    const [successAction, setSuccessAction] = useState(''); // 'receive' or 'save'
 
     useEffect(() => {
         const getAllCategoryServices = async () => {
@@ -139,6 +147,7 @@ const PetBar = () => {
                             total: booking.total,
                             cage: booking.room_id,
                             payid: booking.pay_id,
+                            groomerId: booking.groomer_id,
 
                             customer: {
                                 id: booking.cu?.cus_id,
@@ -156,7 +165,7 @@ const PetBar = () => {
                                 color: booking.pet?.color,
                                 age: booking.pet?.age
                             },
-                            
+
                             // Add the service info array
                             tb_service_infos: serviceInfos
                         });
@@ -185,22 +194,59 @@ const PetBar = () => {
         specialRequirements: ''
     });
 
-    // Handle marking a pet as received
-    const handleReceivePet = (booking) => {
-        // Update local state to mark as received
-        setBoardingData(prevData => 
-            prevData.map(item => 
-                item.id === booking.id 
-                    ? { ...item, isReceived: true }
-                    : item
-            )
-        );
 
-        // Show success dialog
+
+    // Handle marking a pet as received
+    const APIUpdate_groomer_shower = async (book_id) => {
+        try {
+            const getgroomer_id = Number(Cookies.get('cus_idg'));
+            const response = await UpdateBooking_groomer_shower(book_id, getgroomer_id, accessToken);
+            console.log("response", response);
+        } catch (error) {
+            console.error("Error in APIUpdate_groomer_shower:", error);
+        }
+    }
+
+    const APIUpdateStatus_groomer = async () => {
+        try {
+            const getgroomer_od = Number(Cookies.get('cus_idg'));
+            const response = await UpdateStatus_groomer(getgroomer_od, accessToken);
+            console.log("response", response);
+        } catch (error) {
+            console.error("Error in APIUpdateStatus_groomer:", error);
+        }
+    }
+
+    const handleReceivePet = (id) => {
+        // Optional: update local state
+
+
+        // Call API to create service info with current booking
+        APIUpdate_groomer_shower(id);
+
+        // Set dialog and success UI
+        setSelectedBooking(id);
+        setSuccessAction('receive');
         setOpenSuccessDialog(true);
 
         setTimeout(() => {
             setOpenSuccessDialog(false);
+            window.location.reload();
+        }, 1500);
+    };
+
+    const handleReceivePet1 = () => {
+
+        // Call API to create service info with current booking
+        APIUpdateStatus_groomer();
+
+        // Set dialog and success UI
+        setSuccessAction('receive');
+        setOpenSuccessDialog1(true);
+
+        setTimeout(() => {
+            setOpenSuccessDialog1(false);
+            window.location.reload();
         }, 1500);
     };
 
@@ -492,7 +538,7 @@ const PetBar = () => {
                                     <TableCell align="center">ວັນທີຮັບກັບ</TableCell>
                                     <TableCell align="center">ປະເພດສັດລ້ຽງ</TableCell>
                                     <TableCell align="center">ເພດສັດລ້ຽງ</TableCell>
-
+                                    <TableCell align="center">ຈັດການ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -505,7 +551,53 @@ const PetBar = () => {
                                         <TableCell align="center">{boarding.endDate}</TableCell>
                                         <TableCell align="center">{boarding.pet.type}</TableCell>
                                         <TableCell align="center">{boarding.pet.gender}</TableCell>
-                                        
+                                        <TableCell align="center">
+                                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                                {boarding.groomerId ? (
+                                                    <Button
+                                                        disabled
+                                                        sx={{
+                                                            bgcolor: '#9e9e9e',
+                                                            color: 'white',
+                                                            px: 2
+                                                        }}
+                                                    >
+                                                        ຮັບແລ້ວ
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        onClick={() => handleReceivePet(boarding.id)}
+                                                        sx={{
+                                                            bgcolor: '#1976d2',
+                                                            color: 'white',
+                                                            '&:hover': { bgcolor: '#1565c0' },
+                                                            px: 2
+                                                        }}
+                                                    >
+                                                        ຮັບ
+                                                    </Button>
+                                                )}
+
+                                                <Button
+                                                    onClick={() => handleReceivePet1()}
+                                                    disabled={!boarding.groomerId}
+                                                    sx={{
+                                                        bgcolor:
+                                                            boarding.groomerId && boarding.groomerId.length > 0
+                                                                ? '#2e7d32'
+                                                                : '#818181ff',
+                                                        color: 'white',
+                                                        '&:hover':
+                                                            boarding.groomerId && boarding.groomerId.length > 0
+                                                                ? { bgcolor: '#1b5e20' }
+                                                                : {},
+                                                        px: 2
+                                                    }}
+                                                >
+                                                    ສຳເລັດແລ້ວ
+                                                </Button>
+                                            </Box>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -514,7 +606,6 @@ const PetBar = () => {
                 </Container>
             </Box>
 
-            {/* Success Dialog */}
             <Dialog
                 open={openSuccessDialog}
                 aria-labelledby="success-dialog-title"
@@ -546,7 +637,48 @@ const PetBar = () => {
                         id="success-dialog-title"
                         sx={{ fontWeight: 'bold' }}
                     >
-                        ຮັບສັດລ້ຽງສຳເລັດແລ້ວ
+                        {successAction === 'receive' ?
+                            'ຮັບສັດລ້ຽງສຳເລັດແລ້ວ' :
+                            'ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ'
+                        }
+                    </Typography>
+                </Box>
+            </Dialog>
+            <Dialog
+                open={openSuccessDialog1}
+                aria-labelledby="success-dialog-title"
+                sx={{
+                    '& .MuiDialog-paper': {
+                        borderRadius: 2,
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                        padding: 2,
+                        maxWidth: 400,
+                        margin: 'auto'
+                    }
+                }}
+            >
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 3
+                }}>
+                    <CheckCircleOutline sx={{
+                        fontSize: 80,
+                        color: '#4caf50',
+                        mb: 2
+                    }} />
+                    <Typography
+                        variant="h6"
+                        align="center"
+                        id="success-dialog-title"
+                        sx={{ fontWeight: 'bold' }}
+                    >
+                        {successAction === 'receive' ?
+                            'ສຳເລັດແລ້ວ' :
+                            'ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ'
+                        }
                     </Typography>
                 </Box>
             </Dialog>
